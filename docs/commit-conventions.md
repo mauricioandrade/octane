@@ -10,7 +10,7 @@ Seguimos o padrão [Conventional Commits](https://www.conventionalcommits.org/).
 
 - **type**: categoria da mudança (obrigatório)
 - **scope**: contexto afetado (opcional)
-- **descrição**: frase curta no imperativo, sem ponto final, máx. 72 chars
+- **descrição**: frase curta no imperativo, sem ponto final — 72 chars total na subject line
 
 ## Types
 
@@ -25,6 +25,7 @@ Seguimos o padrão [Conventional Commits](https://www.conventionalcommits.org/).
 | `chore` | Tarefas de manutenção (deps, config, scripts) |
 | `build` | Mudanças no sistema de build ou ferramentas externas |
 | `ci` | Configuração de CI/CD |
+| `revert` | Reversão de um commit anterior |
 
 ## Scopes
 
@@ -33,11 +34,14 @@ Seguimos o padrão [Conventional Commits](https://www.conventionalcommits.org/).
 | `backend` | Código do servidor Spring Boot |
 | `frontend` | Código do cliente React |
 | `infra` | Docker, Makefile, scripts |
-| `docs` | Documentação |
+
+> Use `docs:` sem scope para mudanças de documentação em geral. Reserve `docs(docs):` para quando existir uma pasta `docs/` com sub-seções próprias que precisem de escopo.
+
+Quando uma mudança atravessa múltiplos scopes, omita o scope: `refactor: extract shared validation logic`.
 
 ## Exemplos
 
-```bash
+```text
 feat(backend): add create station use case
 fix(frontend): correct query invalidation on station update
 docs: add commit conventions guide
@@ -46,6 +50,22 @@ chore(infra): add docker-compose for local postgres
 test(backend): add health check endpoint test
 ```
 
+## Body e Footer
+
+O body e o footer são separados da subject line por uma linha em branco:
+
+```text
+feat(backend): add rate limiting to station API
+
+Implementa token bucket por IP com limite de 100 req/min.
+Configura via application.yml.
+
+BREAKING CHANGE: o header X-RateLimit-Limit agora é obrigatório nas respostas.
+```
+
+- **Body**: contexto e motivação da mudança (opcional)
+- **Footer**: tokens como `BREAKING CHANGE:`, `Closes #123`, `Co-authored-by:` (opcional)
+
 ## Regras
 
 - Use o imperativo: "add" não "added", "fix" não "fixed"
@@ -53,3 +73,4 @@ test(backend): add health check endpoint test
 - Sem ponto final
 - Commits pequenos e focados — um assunto por commit
 - Breaking changes: adicione `!` após o type/scope, ex: `feat(backend)!: change station API response format`
+- Mudanças que afetam múltiplos scopes: omita o scope e descreva o contexto no body

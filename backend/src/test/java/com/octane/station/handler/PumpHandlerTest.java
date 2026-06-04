@@ -74,4 +74,32 @@ class PumpHandlerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].number").value(1));
     }
+
+    @Test
+    void postNozzles_returns404_whenPumpNotFound() throws Exception {
+        var pumpId = UUID.randomUUID();
+        var fuelId = UUID.randomUUID();
+        when(createNozzleUseCase.execute(eq(pumpId), any(CreateNozzleRequest.class)))
+            .thenThrow(new com.octane.shared.exception.EntityNotFoundException("Pump not found: " + pumpId));
+
+        mockMvc.perform(post("/api/pumps/" + pumpId + "/nozzles")
+                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(new CreateNozzleRequest(1, fuelId))))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message").value("Pump not found: " + pumpId));
+    }
+
+    @Test
+    void postNozzles_returns422_whenNozzleNumberAlreadyUsed() throws Exception {
+        var pumpId = UUID.randomUUID();
+        var fuelId = UUID.randomUUID();
+        when(createNozzleUseCase.execute(eq(pumpId), any(CreateNozzleRequest.class)))
+            .thenThrow(new com.octane.shared.exception.BusinessException("Bico número 1 já existe nesta bomba"));
+
+        mockMvc.perform(post("/api/pumps/" + pumpId + "/nozzles")
+                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(new CreateNozzleRequest(1, fuelId))))
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.message").value("Bico número 1 já existe nesta bomba"));
+    }
 }

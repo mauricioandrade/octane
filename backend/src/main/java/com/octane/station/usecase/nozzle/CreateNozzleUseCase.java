@@ -1,0 +1,45 @@
+package com.octane.station.usecase.nozzle;
+
+import com.octane.shared.exception.BusinessException;
+import com.octane.shared.exception.EntityNotFoundException;
+import com.octane.station.domain.Nozzle;
+import com.octane.station.domain.repository.FuelRepository;
+import com.octane.station.domain.repository.NozzleRepository;
+import com.octane.station.domain.repository.PumpRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Service
+public class CreateNozzleUseCase {
+
+    private final PumpRepository pumpRepository;
+    private final FuelRepository fuelRepository;
+    private final NozzleRepository nozzleRepository;
+
+    public CreateNozzleUseCase(PumpRepository pumpRepository, FuelRepository fuelRepository,
+                               NozzleRepository nozzleRepository) {
+        this.pumpRepository = pumpRepository;
+        this.fuelRepository = fuelRepository;
+        this.nozzleRepository = nozzleRepository;
+    }
+
+    @Transactional
+    public Nozzle execute(UUID pumpId, CreateNozzleRequest request) {
+        var pump = pumpRepository.findById(pumpId)
+            .orElseThrow(() -> new EntityNotFoundException("Pump not found: " + pumpId));
+
+        var fuel = fuelRepository.findById(request.fuelId())
+            .orElseThrow(() -> new EntityNotFoundException("Fuel not found: " + request.fuelId()));
+
+        if (nozzleRepository.existsByPumpIdAndNumber(pumpId, request.number())) {
+            throw new BusinessException("Bico número " + request.number() + " já existe nesta bomba");
+        }
+
+        var now = LocalDateTime.now();
+        var nozzle = new Nozzle(null, request.number(), pump, fuel, true, now, now);
+        return nozzleRepository.save(nozzle);
+    }
+}

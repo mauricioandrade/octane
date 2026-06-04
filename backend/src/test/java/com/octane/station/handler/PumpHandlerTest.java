@@ -1,0 +1,77 @@
+package com.octane.station.handler;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.octane.station.domain.Fuel;
+import com.octane.station.domain.FuelUnit;
+import com.octane.station.domain.Nozzle;
+import com.octane.station.domain.Pump;
+import com.octane.station.domain.PumpStatus;
+import com.octane.station.domain.Station;
+import com.octane.station.usecase.nozzle.CreateNozzleRequest;
+import com.octane.station.usecase.nozzle.CreateNozzleUseCase;
+import com.octane.station.usecase.nozzle.ListNozzlesByPumpUseCase;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(PumpHandler.class)
+class PumpHandlerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private CreateNozzleUseCase createNozzleUseCase;
+
+    @MockitoBean
+    private ListNozzlesByPumpUseCase listNozzlesByPumpUseCase;
+
+    private Nozzle buildNozzle(UUID pumpId, UUID fuelId) {
+        var station = new Station(UUID.randomUUID(), "Posto X", "12.345.678/0001-90", "Rua A, 1",
+            "São Paulo", "SP", true, LocalDateTime.now(), LocalDateTime.now());
+        var pump = new Pump(pumpId, 1, PumpStatus.ACTIVE, station, LocalDateTime.now(), LocalDateTime.now());
+        var fuel = new Fuel(fuelId, "Gasolina Comum", FuelUnit.LITER, true, LocalDateTime.now());
+        return new Nozzle(UUID.randomUUID(), 1, pump, fuel, true, LocalDateTime.now(), LocalDateTime.now());
+    }
+
+    @Test
+    void postNozzles_returns201WithBody() throws Exception {
+        var pumpId = UUID.randomUUID();
+        var fuelId = UUID.randomUUID();
+        var nozzle = buildNozzle(pumpId, fuelId);
+        when(createNozzleUseCase.execute(eq(pumpId), any(CreateNozzleRequest.class))).thenReturn(nozzle);
+
+        mockMvc.perform(post("/api/pumps/" + pumpId + "/nozzles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(new CreateNozzleRequest(1, fuelId))))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.number").value(1))
+            .andExpect(jsonPath("$.active").value(true));
+    }
+
+    @Test
+    void getNozzles_returns200WithList() throws Exception {
+        var pumpId = UUID.randomUUID();
+        var fuelId = UUID.randomUUID();
+        when(listNozzlesByPumpUseCase.execute(pumpId)).thenReturn(List.of(buildNozzle(pumpId, fuelId)));
+
+        mockMvc.perform(get("/api/pumps/" + pumpId + "/nozzles"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].number").value(1));
+    }
+}

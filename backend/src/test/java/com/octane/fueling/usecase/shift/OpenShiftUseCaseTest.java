@@ -80,6 +80,23 @@ class OpenShiftUseCaseTest {
     }
 
     @Test
+    void execute_throwsBusinessException_whenStationInactive() {
+        var stationId = UUID.randomUUID();
+        var now = LocalDateTime.now();
+        var inactiveStation = new Station(stationId, "Posto A", "00.000.000/0001-00",
+                "Rua X, 1", "Curitiba", "PR", false, now, now);
+        var request = new OpenShiftRequest(stationId, "João", null);
+
+        when(stationRepository.findById(stationId)).thenReturn(Optional.of(inactiveStation));
+
+        assertThatThrownBy(() -> sut.execute(request))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("inativo");
+
+        verify(shiftRepository, never()).save(any());
+    }
+
+    @Test
     void execute_throwsBusinessException_whenOpenShiftAlreadyExists() {
         var stationId = UUID.randomUUID();
         var station = makeStation(stationId);

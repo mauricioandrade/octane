@@ -28,6 +28,10 @@ public class OpenShiftUseCase {
         var station = stationRepository.findById(stationId)
                 .orElseThrow(() -> new EntityNotFoundException("Station not found: " + stationId));
 
+        if (!station.isActive()) {
+            throw new BusinessException("Posto inativo: não é possível abrir turno");
+        }
+
         if (shiftRepository.findOpenByStationId(stationId).isPresent()) {
             throw new BusinessException("Já existe um turno aberto para este posto");
         }

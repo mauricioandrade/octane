@@ -18,6 +18,11 @@ public class FuelRepositoryImpl implements FuelRepository {
     }
 
     @Override
+    public Fuel save(Fuel fuel) {
+        return jpaRepository.save(fuel);
+    }
+
+    @Override
     public Optional<Fuel> findById(UUID id) {
         return jpaRepository.findById(id);
     }

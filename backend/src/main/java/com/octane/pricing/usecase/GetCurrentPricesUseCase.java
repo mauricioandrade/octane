@@ -1,0 +1,29 @@
+package com.octane.pricing.usecase;
+
+import com.octane.pricing.domain.FuelPrice;
+import com.octane.pricing.domain.repository.FuelPriceRepository;
+import com.octane.shared.exception.EntityNotFoundException;
+import com.octane.station.domain.repository.StationRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class GetCurrentPricesUseCase {
+
+    private final FuelPriceRepository fuelPriceRepository;
+    private final StationRepository stationRepository;
+
+    public GetCurrentPricesUseCase(FuelPriceRepository fuelPriceRepository,
+                                   StationRepository stationRepository) {
+        this.fuelPriceRepository = fuelPriceRepository;
+        this.stationRepository = stationRepository;
+    }
+
+    public List<FuelPrice> execute(UUID stationId) {
+        stationRepository.findById(stationId)
+            .orElseThrow(() -> new EntityNotFoundException("Station not found: " + stationId));
+        return fuelPriceRepository.findCurrentByStation(stationId);
+    }
+}

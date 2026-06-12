@@ -12,6 +12,10 @@ import com.octane.station.usecase.station.CreateStationRequest;
 import com.octane.station.usecase.station.CreateStationUseCase;
 import com.octane.station.usecase.station.FindStationUseCase;
 import com.octane.station.usecase.station.ListStationsUseCase;
+import com.octane.station.usecase.station.UpdateStationRequest;
+import com.octane.station.usecase.station.UpdateStationStatusRequest;
+import com.octane.station.usecase.station.UpdateStationStatusUseCase;
+import com.octane.station.usecase.station.UpdateStationUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -27,7 +31,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -53,6 +59,12 @@ class StationHandlerTest {
 
     @MockitoBean
     private ListPumpsByStationUseCase listPumpsByStationUseCase;
+
+    @MockitoBean
+    private UpdateStationUseCase updateStationUseCase;
+
+    @MockitoBean
+    private UpdateStationStatusUseCase updateStationStatusUseCase;
 
     private Station buildStation(UUID id) {
         return new Station(id, "Posto X", "12.345.678/0001-90", "Rua A, 1",
@@ -106,6 +118,33 @@ class StationHandlerTest {
         mockMvc.perform(get("/api/stations/" + id))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.message").value("Station not found: " + id));
+    }
+
+    @Test
+    void putStation_returns200WithBody() throws Exception {
+        var id = UUID.randomUUID();
+        when(updateStationUseCase.execute(eq(id), any(UpdateStationRequest.class)))
+            .thenReturn(buildStation(id));
+
+        mockMvc.perform(put("/api/stations/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(
+                    new UpdateStationRequest("Posto X", "12.345.678/0001-90", "Rua A, 1", "São Paulo", "SP"))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(id.toString()));
+    }
+
+    @Test
+    void patchStationStatus_returns200WithBody() throws Exception {
+        var id = UUID.randomUUID();
+        when(updateStationStatusUseCase.execute(eq(id), any(UpdateStationStatusRequest.class)))
+            .thenReturn(buildStation(id));
+
+        mockMvc.perform(patch("/api/stations/" + id + "/status")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new UpdateStationStatusRequest(false))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(id.toString()));
     }
 
     @Test

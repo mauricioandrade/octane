@@ -10,6 +10,10 @@ import com.octane.station.domain.Station;
 import com.octane.station.usecase.nozzle.CreateNozzleRequest;
 import com.octane.station.usecase.nozzle.CreateNozzleUseCase;
 import com.octane.station.usecase.nozzle.ListNozzlesByPumpUseCase;
+import com.octane.station.usecase.pump.UpdatePumpRequest;
+import com.octane.station.usecase.pump.UpdatePumpStatusRequest;
+import com.octane.station.usecase.pump.UpdatePumpStatusUseCase;
+import com.octane.station.usecase.pump.UpdatePumpUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -25,7 +29,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,6 +46,18 @@ class PumpHandlerTest {
 
     @MockitoBean
     private ListNozzlesByPumpUseCase listNozzlesByPumpUseCase;
+
+    @MockitoBean
+    private UpdatePumpUseCase updatePumpUseCase;
+
+    @MockitoBean
+    private UpdatePumpStatusUseCase updatePumpStatusUseCase;
+
+    private Pump buildPump(UUID id, int number, PumpStatus status) {
+        var station = new Station(UUID.randomUUID(), "Posto X", "12.345.678/0001-90", "Rua A, 1",
+            "São Paulo", "SP", true, LocalDateTime.now(), LocalDateTime.now());
+        return new Pump(id, number, status, station, LocalDateTime.now(), LocalDateTime.now());
+    }
 
     private Nozzle buildNozzle(UUID pumpId, UUID fuelId) {
         var station = new Station(UUID.randomUUID(), "Posto X", "12.345.678/0001-90", "Rua A, 1",
@@ -73,6 +91,32 @@ class PumpHandlerTest {
         mockMvc.perform(get("/api/pumps/" + pumpId + "/nozzles"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].number").value(1));
+    }
+
+    @Test
+    void putPump_returns200WithBody() throws Exception {
+        var id = UUID.randomUUID();
+        when(updatePumpUseCase.execute(eq(id), any(UpdatePumpRequest.class)))
+            .thenReturn(buildPump(id, 2, PumpStatus.ACTIVE));
+
+        mockMvc.perform(put("/api/pumps/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(new UpdatePumpRequest(2))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.number").value(2));
+    }
+
+    @Test
+    void patchPumpStatus_returns200WithBody() throws Exception {
+        var id = UUID.randomUUID();
+        when(updatePumpStatusUseCase.execute(eq(id), any(UpdatePumpStatusRequest.class)))
+            .thenReturn(buildPump(id, 1, PumpStatus.MAINTENANCE));
+
+        mockMvc.perform(patch("/api/pumps/" + id + "/status")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(new UpdatePumpStatusRequest("MAINTENANCE"))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("MAINTENANCE"));
     }
 
     @Test

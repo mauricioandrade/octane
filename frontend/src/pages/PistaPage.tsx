@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TopBar } from '@/components/layout/TopBar'
 import { OpenShiftSheet } from '@/components/pista/OpenShiftSheet'
+import { CloseShiftSheet } from '@/components/pista/CloseShiftSheet'
 import { NozzleList } from '@/components/pista/NozzleList'
 import { useActiveStation } from '@/hooks/useActiveStation'
 import { useShift } from '@/hooks/useShift'
@@ -24,6 +25,7 @@ export function PistaPage() {
   const { station } = useActiveStation()
   const { data: shift, isLoading } = useShift()
   const [openSheetOpen, setOpenSheetOpen] = useState(false)
+  const [closeSheetOpen, setCloseSheetOpen] = useState(false)
 
   const { data: summary } = useQuery({
     queryKey: ['shift-summary', shift?.id],
@@ -34,14 +36,11 @@ export function PistaPage() {
 
   const lastFueledAt =
     summary?.fuelings.length
-      ? new Date(
-          Math.max(...summary.fuelings.map((f) => new Date(f.fueledAt).getTime())),
-        )
+      ? new Date(Math.max(...summary.fuelings.map((f) => new Date(f.fueledAt).getTime())))
       : null
 
   function relativeTime(date: Date): string {
-    const diffMs = Date.now() - date.getTime()
-    const diffMin = Math.floor(diffMs / 60_000)
+    const diffMin = Math.floor((Date.now() - date.getTime()) / 60_000)
     if (diffMin < 1) return 'agora'
     if (diffMin < 60) return `há ${diffMin} min`
     return `há ${Math.floor(diffMin / 60)} h`
@@ -62,12 +61,14 @@ export function PistaPage() {
         title="Pista"
         actions={
           shift ? (
-            <div className="flex items-center gap-2">
+            <>
               <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
                 ● Turno aberto · {shift.employeeName}
               </span>
-              {/* Fechar turno: Task 08 */}
-            </div>
+              <Button size="sm" variant="destructive" onClick={() => setCloseSheetOpen(true)}>
+                Fechar turno
+              </Button>
+            </>
           ) : undefined
         }
       />
@@ -81,42 +82,32 @@ export function PistaPage() {
         ) : !shift ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4">
             <p className="text-slate-500">Nenhum turno aberto.</p>
-            <Button
-              onClick={() => setOpenSheetOpen(true)}
-              className="bg-orange-600 hover:bg-orange-700"
-            >
+            <Button onClick={() => setOpenSheetOpen(true)} className="bg-orange-600 hover:bg-orange-700">
               Abrir turno
             </Button>
           </div>
         ) : (
           <>
-            {/* Métricas */}
             <div className="grid grid-cols-4 gap-3">
-              <MetricCard
-                label="Volume total"
-                value={formatLiters(summary?.totalLiters ?? 0)}
-              />
-              <MetricCard
-                label="Receita"
-                value={formatBRL(summary?.totalAmount ?? 0)}
-              />
-              <MetricCard
-                label="Abastecimentos"
-                value={String(summary?.fuelings.length ?? 0)}
-              />
-              <MetricCard
-                label="Últ. abastecimento"
-                value={lastFueledAt ? relativeTime(lastFueledAt) : '—'}
-              />
+              <MetricCard label="Volume total" value={formatLiters(summary?.totalLiters ?? 0)} />
+              <MetricCard label="Receita" value={formatBRL(summary?.totalAmount ?? 0)} />
+              <MetricCard label="Abastecimentos" value={String(summary?.fuelings.length ?? 0)} />
+              <MetricCard label="Últ. abastecimento" value={lastFueledAt ? relativeTime(lastFueledAt) : '—'} />
             </div>
-
-            {/* Lista de bicos */}
             <NozzleList shiftId={shift.id} summary={summary} />
           </>
         )}
       </div>
 
       <OpenShiftSheet open={openSheetOpen} onOpenChange={setOpenSheetOpen} />
+      {shift && (
+        <CloseShiftSheet
+          open={closeSheetOpen}
+          onOpenChange={setCloseSheetOpen}
+          shiftId={shift.id}
+          employeeName={shift.employeeName}
+        />
+      )}
     </div>
   )
 }

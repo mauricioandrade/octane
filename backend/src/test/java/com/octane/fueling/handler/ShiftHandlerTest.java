@@ -15,6 +15,7 @@ import com.octane.fueling.usecase.shift.OpenShiftRequest;
 import com.octane.fueling.usecase.shift.OpenShiftUseCase;
 import com.octane.fueling.usecase.shift.ShiftReconciliationResponse;
 import com.octane.shared.exception.EntityNotFoundException;
+import com.octane.shared.pagination.PageResponse;
 import com.octane.station.domain.Fuel;
 import com.octane.station.domain.FuelUnit;
 import com.octane.station.domain.Nozzle;
@@ -145,16 +146,18 @@ class ShiftHandlerTest {
     }
 
     @Test
-    void listByStation_returns200() throws Exception {
+    void listByStation_returns200WithPage() throws Exception {
         var stationId = UUID.randomUUID();
         var station = buildStation(stationId);
         var shift = buildShift(UUID.randomUUID(), station);
-        when(listShiftsByStationUseCase.execute(stationId)).thenReturn(List.of(shift));
+        when(listShiftsByStationUseCase.execute(stationId, null, null, null, 0, 20))
+            .thenReturn(PageResponse.of(List.of(shift), 0, 20, 1));
 
         mockMvc.perform(get("/api/stations/" + stationId + "/shifts"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].employeeName").value("Funcionario A"))
-            .andExpect(jsonPath("$[0].stationId").value(stationId.toString()));
+            .andExpect(jsonPath("$.content[0].employeeName").value("Funcionario A"))
+            .andExpect(jsonPath("$.content[0].stationId").value(stationId.toString()))
+            .andExpect(jsonPath("$.totalElements").value(1));
     }
 
     @Test

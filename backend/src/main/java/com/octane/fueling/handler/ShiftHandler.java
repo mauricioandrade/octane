@@ -10,15 +10,18 @@ import com.octane.fueling.usecase.shift.ListShiftsByStationUseCase;
 import com.octane.fueling.usecase.shift.OpenShiftRequest;
 import com.octane.fueling.usecase.shift.OpenShiftUseCase;
 import com.octane.fueling.usecase.shift.ShiftResponse;
+import com.octane.shared.pagination.PageResponse;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -69,10 +72,16 @@ public class ShiftHandler {
     }
 
     @GetMapping("/api/stations/{stationId}/shifts")
-    public List<ShiftResponse> listByStation(@PathVariable UUID stationId) {
-        return listShiftsByStationUseCase.execute(stationId).stream()
-            .map(ShiftResponse::from)
-            .toList();
+    public PageResponse<ShiftResponse> listByStation(
+        @PathVariable UUID stationId,
+        @RequestParam(required = false) String status,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        return listShiftsByStationUseCase.execute(stationId, status, from, to, page, size)
+            .map(ShiftResponse::from);
     }
 
     @PostMapping("/api/shifts/{id}/readings")

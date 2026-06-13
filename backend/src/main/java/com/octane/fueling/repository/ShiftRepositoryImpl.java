@@ -3,8 +3,13 @@ package com.octane.fueling.repository;
 import com.octane.fueling.domain.Shift;
 import com.octane.fueling.domain.ShiftStatus;
 import com.octane.fueling.domain.repository.ShiftRepository;
+import com.octane.shared.pagination.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,7 +38,21 @@ public class ShiftRepositoryImpl implements ShiftRepository {
     }
 
     @Override
-    public List<Shift> findByStationId(UUID stationId) {
-        return jpaRepository.findByStation_Id(stationId);
+    public PageResponse<Shift> findByStationId(UUID stationId, ShiftStatus status,
+                                               LocalDateTime from, LocalDateTime to,
+                                               int page, int size) {
+        Specification<Shift> spec = (root, query, cb) -> cb.equal(root.get("station").get("id"), stationId);
+        if (status != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
+        }
+        if (from != null) {
+            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("openedAt"), from));
+        }
+        if (to != null) {
+            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("openedAt"), to));
+        }
+        Page<Shift> result = jpaRepository.findAll(spec,
+            PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "openedAt")));
+        return PageResponse.of(result.getContent(), page, size, result.getTotalElements());
     }
 }

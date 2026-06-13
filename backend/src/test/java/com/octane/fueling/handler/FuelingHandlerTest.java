@@ -97,7 +97,7 @@ class FuelingHandlerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(
                     new RegisterFuelingRequest(nozzle.getId(), new BigDecimal("10.000"),
-                        new BigDecimal("5.9990"), new BigDecimal("59.99"), "PIX", "ABC1234", null))))
+                        new BigDecimal("59.99"), "PIX", "ABC1234", null))))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(fueling.getId().toString()))
             .andExpect(jsonPath("$.paymentMethod").value("PIX"))

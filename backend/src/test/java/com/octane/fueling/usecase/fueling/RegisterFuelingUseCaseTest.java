@@ -1,11 +1,12 @@
 package com.octane.fueling.usecase.fueling;
 
 import com.octane.fueling.domain.Fueling;
-import com.octane.fueling.domain.PaymentMethod;
 import com.octane.fueling.domain.Shift;
 import com.octane.fueling.domain.ShiftStatus;
 import com.octane.fueling.domain.repository.FuelingRepository;
 import com.octane.fueling.domain.repository.ShiftRepository;
+import com.octane.pricing.domain.FuelPrice;
+import com.octane.pricing.domain.repository.FuelPriceRepository;
 import com.octane.shared.exception.BusinessException;
 import com.octane.shared.exception.EntityNotFoundException;
 import com.octane.station.domain.Fuel;
@@ -45,159 +46,187 @@ class RegisterFuelingUseCaseTest {
     @Mock
     private NozzleRepository nozzleRepository;
 
+    @Mock
+    private FuelPriceRepository fuelPriceRepository;
+
     @InjectMocks
     private RegisterFuelingUseCase sut;
 
-    private Station makeStation(UUID id) {
-        var now = LocalDateTime.now();
-        return new Station(id, "Posto A", "00.000.000/0001-00", "Rua X, 1", "Curitiba", "PR", true, now, now);
-    }
+    private final Station station = new Station(UUID.randomUUID(), "Posto X", "12.345.678/0001-90",
+        "Rua A, 1", "São Paulo", "SP", true, LocalDateTime.now(), LocalDateTime.now());
+    private final Pump pump = new Pump(UUID.randomUUID(), 1, PumpStatus.ACTIVE, station,
+        LocalDateTime.now(), LocalDateTime.now());
+    private final Fuel fuel = new Fuel(UUID.randomUUID(), "Gasolina Comum", FuelUnit.LITER,
+        true, LocalDateTime.now());
+    private final Nozzle nozzle = new Nozzle(UUID.randomUUID(), 1, pump, fuel, true,
+        LocalDateTime.now(), LocalDateTime.now());
+    private final Shift openShift = new Shift(UUID.randomUUID(), station, "João",
+        ShiftStatus.OPEN, LocalDateTime.now(), null, null, LocalDateTime.now());
+    private final FuelPrice currentPrice = new FuelPrice(UUID.randomUUID(), station, fuel,
+        new BigDecimal("5.00"), LocalDateTime.now(), LocalDateTime.now());
 
-    private Pump makePump(UUID id, Station station) {
-        var now = LocalDateTime.now();
-        return new Pump(id, 1, PumpStatus.ACTIVE, station, now, now);
-    }
-
-    private Fuel makeFuel(UUID id) {
-        return new Fuel(id, "Gasolina Comum", FuelUnit.LITER, true, LocalDateTime.now());
-    }
-
-    private Nozzle makeNozzle(UUID id, Pump pump) {
-        var now = LocalDateTime.now();
-        return new Nozzle(id, 1, pump, makeFuel(UUID.randomUUID()), true, now, now);
-    }
-
-    private Shift makeShift(UUID id, Station station, ShiftStatus status) {
-        var now = LocalDateTime.now();
-        return new Shift(id, station, "Funcionario", status, now, null, null, now);
-    }
-
-    private Fueling makeFueling(UUID id, Shift shift, Nozzle nozzle) {
-        var now = LocalDateTime.now();
-        return new Fueling(id, shift, nozzle,
-                new BigDecimal("50.000"), new BigDecimal("5.8900"), new BigDecimal("294.50"),
-                PaymentMethod.PIX, com.octane.fueling.domain.FuelingStatus.ACTIVE, null,
-                "ABC-1234", null, now, now);
+    private void stubHappyPath() {
+        when(shiftRepository.findById(openShift.getId())).thenReturn(Optional.of(openShift));
+        when(nozzleRepository.findById(nozzle.getId())).thenReturn(Optional.of(nozzle));
+        when(fuelPriceRepository.findCurrent(station.getId(), fuel.getId()))
+            .thenReturn(Optional.of(currentPrice));
     }
 
     @Test
-    void execute_savesAndReturnsFueling_whenHappyPath() {
-        var stationId = UUID.randomUUID();
-        var shiftId = UUID.randomUUID();
-        var nozzleId = UUID.randomUUID();
+    void execute_computesTotalFromLiters_usingCurrentPrice() {
+        stubHappyPath();
+        when(fuelingRepository.save(any(Fueling.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        var station = makeStation(stationId);
-        var pump = makePump(UUID.randomUUID(), station);
-        var nozzle = makeNozzle(nozzleId, pump);
-        var shift = makeShift(shiftId, station, ShiftStatus.OPEN);
-        // 50 liters * 5.89 = 294.50
-        var request = new RegisterFuelingRequest(
-                nozzleId,
-                new BigDecimal("50.000"),
-                new BigDecimal("5.8900"),
-                new BigDecimal("294.50"),
-                "PIX", "ABC-1234", null
-        );
-        var savedFueling = makeFueling(UUID.randomUUID(), shift, nozzle);
+        var request = new RegisterFuelingRequest(nozzle.getId(), new BigDecimal("10.000"),
+            null, "PIX", null, null);
 
-        when(shiftRepository.findById(shiftId)).thenReturn(Optional.of(shift));
-        when(nozzleRepository.findById(nozzleId)).thenReturn(Optional.of(nozzle));
-        when(fuelingRepository.save(any(Fueling.class))).thenReturn(savedFueling);
+        var result = sut.execute(openShift.getId(), request);
 
-        var result = sut.execute(shiftId, request);
-
-        assertThat(result).isNotNull();
-        assertThat(result.getPaymentMethod()).isEqualTo(PaymentMethod.PIX);
-        verify(fuelingRepository).save(any(Fueling.class));
+        assertThat(result.getLiters()).isEqualByComparingTo("10.000");
+        assertThat(result.getUnitPrice()).isEqualByComparingTo("5.00");
+        assertThat(result.getTotalAmount()).isEqualByComparingTo("50.00");
     }
 
     @Test
-    void execute_throwsEntityNotFoundException_whenShiftNotFound() {
-        var shiftId = UUID.randomUUID();
-        var request = new RegisterFuelingRequest(
-                UUID.randomUUID(), new BigDecimal("10.000"), new BigDecimal("5.00"),
-                new BigDecimal("50.00"), "CASH", null, null
-        );
+    void execute_computesLitersFromTotal_usingCurrentPrice() {
+        stubHappyPath();
+        when(fuelingRepository.save(any(Fueling.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        when(shiftRepository.findById(shiftId)).thenReturn(Optional.empty());
+        var request = new RegisterFuelingRequest(nozzle.getId(), null,
+            new BigDecimal("50.00"), "CASH", null, null);
 
-        assertThatThrownBy(() -> sut.execute(shiftId, request))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining(shiftId.toString());
+        var result = sut.execute(openShift.getId(), request);
+
+        assertThat(result.getLiters()).isEqualByComparingTo("10.000");
+        assertThat(result.getTotalAmount()).isEqualByComparingTo("50.00");
+    }
+
+    @Test
+    void execute_acceptsBothValues_whenConsistentWithinTolerance() {
+        stubHappyPath();
+        when(fuelingRepository.save(any(Fueling.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        var request = new RegisterFuelingRequest(nozzle.getId(), new BigDecimal("10.000"),
+            new BigDecimal("50.01"), "PIX", null, null);
+
+        var result = sut.execute(openShift.getId(), request);
+
+        assertThat(result.getTotalAmount()).isEqualByComparingTo("50.01");
+    }
+
+    @Test
+    void execute_throwsBusinessException_whenBothValuesInconsistent() {
+        stubHappyPath();
+
+        var request = new RegisterFuelingRequest(nozzle.getId(), new BigDecimal("10.000"),
+            new BigDecimal("55.00"), "PIX", null, null);
+
+        assertThatThrownBy(() -> sut.execute(openShift.getId(), request))
+            .isInstanceOf(BusinessException.class)
+            .hasMessageContaining("não confere");
 
         verify(fuelingRepository, never()).save(any());
+    }
+
+    @Test
+    void execute_throwsBusinessException_whenNeitherLitersNorTotalGiven() {
+        stubHappyPath();
+
+        var request = new RegisterFuelingRequest(nozzle.getId(), null, null, "PIX", null, null);
+
+        assertThatThrownBy(() -> sut.execute(openShift.getId(), request))
+            .isInstanceOf(BusinessException.class)
+            .hasMessageContaining("litros ou valor total");
+    }
+
+    @Test
+    void execute_throwsBusinessException_whenNoPriceRegistered() {
+        when(shiftRepository.findById(openShift.getId())).thenReturn(Optional.of(openShift));
+        when(nozzleRepository.findById(nozzle.getId())).thenReturn(Optional.of(nozzle));
+        when(fuelPriceRepository.findCurrent(station.getId(), fuel.getId()))
+            .thenReturn(Optional.empty());
+
+        var request = new RegisterFuelingRequest(nozzle.getId(), new BigDecimal("10.000"),
+            null, "PIX", null, null);
+
+        assertThatThrownBy(() -> sut.execute(openShift.getId(), request))
+            .isInstanceOf(BusinessException.class)
+            .hasMessageContaining("preço");
+    }
+
+    @Test
+    void execute_throwsBusinessException_whenNozzleInactive() {
+        var inactiveNozzle = new Nozzle(UUID.randomUUID(), 2, pump, fuel, false,
+            LocalDateTime.now(), LocalDateTime.now());
+        when(shiftRepository.findById(openShift.getId())).thenReturn(Optional.of(openShift));
+        when(nozzleRepository.findById(inactiveNozzle.getId())).thenReturn(Optional.of(inactiveNozzle));
+
+        var request = new RegisterFuelingRequest(inactiveNozzle.getId(), new BigDecimal("10.000"),
+            null, "PIX", null, null);
+
+        assertThatThrownBy(() -> sut.execute(openShift.getId(), request))
+            .isInstanceOf(BusinessException.class)
+            .hasMessageContaining("inativ");
+    }
+
+    @Test
+    void execute_throwsBusinessException_whenPumpNotActive() {
+        var maintenancePump = new Pump(UUID.randomUUID(), 2, PumpStatus.MAINTENANCE, station,
+            LocalDateTime.now(), LocalDateTime.now());
+        var nozzleOnMaintenancePump = new Nozzle(UUID.randomUUID(), 1, maintenancePump, fuel, true,
+            LocalDateTime.now(), LocalDateTime.now());
+        when(shiftRepository.findById(openShift.getId())).thenReturn(Optional.of(openShift));
+        when(nozzleRepository.findById(nozzleOnMaintenancePump.getId()))
+            .thenReturn(Optional.of(nozzleOnMaintenancePump));
+
+        var request = new RegisterFuelingRequest(nozzleOnMaintenancePump.getId(),
+            new BigDecimal("10.000"), null, "PIX", null, null);
+
+        assertThatThrownBy(() -> sut.execute(openShift.getId(), request))
+            .isInstanceOf(BusinessException.class)
+            .hasMessageContaining("Bomba");
     }
 
     @Test
     void execute_throwsBusinessException_whenShiftNotOpen() {
-        var stationId = UUID.randomUUID();
-        var shiftId = UUID.randomUUID();
-        var station = makeStation(stationId);
-        var shift = makeShift(shiftId, station, ShiftStatus.CLOSED);
-        var request = new RegisterFuelingRequest(
-                UUID.randomUUID(), new BigDecimal("10.000"), new BigDecimal("5.00"),
-                new BigDecimal("50.00"), "CASH", null, null
-        );
+        var closedShift = new Shift(UUID.randomUUID(), station, "João", ShiftStatus.CLOSED,
+            LocalDateTime.now(), LocalDateTime.now(), null, LocalDateTime.now());
+        when(shiftRepository.findById(closedShift.getId())).thenReturn(Optional.of(closedShift));
 
-        when(shiftRepository.findById(shiftId)).thenReturn(Optional.of(shift));
+        var request = new RegisterFuelingRequest(nozzle.getId(), new BigDecimal("10.000"),
+            null, "PIX", null, null);
 
-        assertThatThrownBy(() -> sut.execute(shiftId, request))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("não está aberto");
-
-        verify(fuelingRepository, never()).save(any());
+        assertThatThrownBy(() -> sut.execute(closedShift.getId(), request))
+            .isInstanceOf(BusinessException.class)
+            .hasMessageContaining("aberto");
     }
 
     @Test
-    void execute_throwsBusinessException_whenNozzleNotInStation() {
-        var stationId = UUID.randomUUID();
-        var otherStationId = UUID.randomUUID();
-        var shiftId = UUID.randomUUID();
-        var nozzleId = UUID.randomUUID();
+    void execute_throwsBusinessException_whenNozzleBelongsToAnotherStation() {
+        var otherStation = new Station(UUID.randomUUID(), "Posto Y", "99.999.999/0001-99",
+            "Rua B, 2", "Campinas", "SP", true, LocalDateTime.now(), LocalDateTime.now());
+        var otherPump = new Pump(UUID.randomUUID(), 1, PumpStatus.ACTIVE, otherStation,
+            LocalDateTime.now(), LocalDateTime.now());
+        var foreignNozzle = new Nozzle(UUID.randomUUID(), 1, otherPump, fuel, true,
+            LocalDateTime.now(), LocalDateTime.now());
+        when(shiftRepository.findById(openShift.getId())).thenReturn(Optional.of(openShift));
+        when(nozzleRepository.findById(foreignNozzle.getId())).thenReturn(Optional.of(foreignNozzle));
 
-        var station = makeStation(stationId);
-        var otherStation = makeStation(otherStationId);
-        var pump = makePump(UUID.randomUUID(), otherStation);
-        var nozzle = makeNozzle(nozzleId, pump);
-        var shift = makeShift(shiftId, station, ShiftStatus.OPEN);
-        var request = new RegisterFuelingRequest(
-                nozzleId, new BigDecimal("10.000"), new BigDecimal("5.00"),
-                new BigDecimal("50.00"), "CASH", null, null
-        );
+        var request = new RegisterFuelingRequest(foreignNozzle.getId(), new BigDecimal("10.000"),
+            null, "PIX", null, null);
 
-        when(shiftRepository.findById(shiftId)).thenReturn(Optional.of(shift));
-        when(nozzleRepository.findById(nozzleId)).thenReturn(Optional.of(nozzle));
-
-        assertThatThrownBy(() -> sut.execute(shiftId, request))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("Bico não pertence ao posto");
-
-        verify(fuelingRepository, never()).save(any());
+        assertThatThrownBy(() -> sut.execute(openShift.getId(), request))
+            .isInstanceOf(BusinessException.class)
+            .hasMessageContaining("posto");
     }
 
     @Test
-    void execute_throwsBusinessException_whenTotalAmountMismatch() {
-        var stationId = UUID.randomUUID();
+    void execute_throwsEntityNotFound_whenShiftMissing() {
         var shiftId = UUID.randomUUID();
-        var nozzleId = UUID.randomUUID();
+        when(shiftRepository.findById(shiftId)).thenReturn(Optional.empty());
 
-        var station = makeStation(stationId);
-        var pump = makePump(UUID.randomUUID(), station);
-        var nozzle = makeNozzle(nozzleId, pump);
-        var shift = makeShift(shiftId, station, ShiftStatus.OPEN);
-        // 10 liters * 5.00 = 50.00, but we pass 99.99
-        var request = new RegisterFuelingRequest(
-                nozzleId, new BigDecimal("10.000"), new BigDecimal("5.00"),
-                new BigDecimal("99.99"), "CASH", null, null
-        );
-
-        when(shiftRepository.findById(shiftId)).thenReturn(Optional.of(shift));
-        when(nozzleRepository.findById(nozzleId)).thenReturn(Optional.of(nozzle));
-
-        assertThatThrownBy(() -> sut.execute(shiftId, request))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("Valor total não confere");
-
-        verify(fuelingRepository, never()).save(any());
+        assertThatThrownBy(() -> sut.execute(shiftId,
+            new RegisterFuelingRequest(nozzle.getId(), BigDecimal.ONE, null, "PIX", null, null)))
+            .isInstanceOf(EntityNotFoundException.class);
     }
 }

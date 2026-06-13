@@ -6,29 +6,37 @@ import com.octane.fueling.domain.PaymentMethod;
 import com.octane.fueling.domain.ShiftStatus;
 import com.octane.fueling.domain.repository.FuelingRepository;
 import com.octane.fueling.domain.repository.ShiftRepository;
+import com.octane.pricing.domain.repository.FuelPriceRepository;
 import com.octane.shared.exception.BusinessException;
 import com.octane.shared.exception.EntityNotFoundException;
+import com.octane.station.domain.PumpStatus;
 import com.octane.station.domain.repository.NozzleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 public class RegisterFuelingUseCase {
 
+    private static final BigDecimal TOLERANCE = new BigDecimal("0.01");
+
     private final ShiftRepository shiftRepository;
     private final FuelingRepository fuelingRepository;
     private final NozzleRepository nozzleRepository;
+    private final FuelPriceRepository fuelPriceRepository;
 
     public RegisterFuelingUseCase(ShiftRepository shiftRepository,
                                   FuelingRepository fuelingRepository,
-                                  NozzleRepository nozzleRepository) {
+                                  NozzleRepository nozzleRepository,
+                                  FuelPriceRepository fuelPriceRepository) {
         this.shiftRepository = shiftRepository;
         this.fuelingRepository = fuelingRepository;
         this.nozzleRepository = nozzleRepository;
+        this.fuelPriceRepository = fuelPriceRepository;
     }
 
     @Transactional
@@ -48,17 +56,46 @@ public class RegisterFuelingUseCase {
             throw new BusinessException("Bico não pertence ao posto deste turno");
         }
 
-        PaymentMethod paymentMethod = PaymentMethod.valueOf(request.paymentMethod());
-
-        BigDecimal calculated = request.liters().multiply(request.unitPrice());
-        if (calculated.subtract(request.totalAmount()).abs().compareTo(new BigDecimal("0.01")) > 0) {
-            throw new BusinessException("Valor total não confere com liters × preço unitário");
+        if (!shift.getStation().isActive()) {
+            throw new BusinessException("Posto inativo");
         }
+        if (nozzle.getPump().getStatus() != PumpStatus.ACTIVE) {
+            throw new BusinessException("Bomba não está ativa");
+        }
+        if (!nozzle.isActive()) {
+            throw new BusinessException("Bico inativo");
+        }
+
+        var stationId = shift.getStation().getId();
+        var fuelId = nozzle.getFuel().getId();
+        var price = fuelPriceRepository.findCurrent(stationId, fuelId)
+                .orElseThrow(() -> new BusinessException(
+                    "Sem preço vigente para o combustível " + nozzle.getFuel().getName()))
+                .getPrice();
+
+        BigDecimal liters = request.liters();
+        BigDecimal totalAmount = request.totalAmount();
+
+        if (liters == null && totalAmount == null) {
+            throw new BusinessException("Informe litros ou valor total");
+        }
+        if (liters == null) {
+            liters = totalAmount.divide(price, 3, RoundingMode.HALF_UP);
+        } else if (totalAmount == null) {
+            totalAmount = liters.multiply(price).setScale(2, RoundingMode.HALF_UP);
+        } else {
+            BigDecimal calculated = liters.multiply(price).setScale(2, RoundingMode.HALF_UP);
+            if (calculated.subtract(totalAmount).abs().compareTo(TOLERANCE) > 0) {
+                throw new BusinessException("Valor total não confere com litros × preço vigente");
+            }
+        }
+
+        PaymentMethod paymentMethod = PaymentMethod.valueOf(request.paymentMethod());
 
         var now = LocalDateTime.now();
         var fueling = new Fueling(
                 null, shift, nozzle,
-                request.liters(), request.unitPrice(), request.totalAmount(),
+                liters, price, totalAmount,
                 paymentMethod, FuelingStatus.ACTIVE, null,
                 request.vehiclePlate(), request.notes(),
                 now, now

@@ -6,7 +6,6 @@ import java.util.UUID;
 public record RegisterFuelingRequest(
         UUID nozzleId,
         BigDecimal liters,
-        BigDecimal unitPrice,
         BigDecimal totalAmount,
         String paymentMethod,
         String vehiclePlate,

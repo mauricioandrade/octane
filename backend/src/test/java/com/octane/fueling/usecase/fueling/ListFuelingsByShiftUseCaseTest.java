@@ -100,6 +100,33 @@ class ListFuelingsByShiftUseCaseTest {
     }
 
     @Test
+    void execute_excludesCanceledFuelings_fromListAndTotals() {
+        var stationId = UUID.randomUUID();
+        var shiftId = UUID.randomUUID();
+
+        var station = makeStation(stationId);
+        var pump = makePump(UUID.randomUUID(), station);
+        var nozzle = makeNozzle(UUID.randomUUID(), pump);
+        var shift = makeShift(shiftId, station);
+
+        var active = makeFueling(UUID.randomUUID(), shift, nozzle,
+                new BigDecimal("30.000"), new BigDecimal("5.00"), new BigDecimal("150.00"));
+        var now = LocalDateTime.now();
+        var canceled = new Fueling(UUID.randomUUID(), shift, nozzle,
+                new BigDecimal("20.000"), new BigDecimal("5.00"), new BigDecimal("100.00"),
+                PaymentMethod.CASH, FuelingStatus.CANCELED, now, null, null, now, now);
+
+        when(shiftRepository.findById(shiftId)).thenReturn(Optional.of(shift));
+        when(fuelingRepository.findByShiftId(shiftId)).thenReturn(List.of(active, canceled));
+
+        var result = sut.execute(shiftId);
+
+        assertThat(result.fuelings()).hasSize(1);
+        assertThat(result.totalLiters()).isEqualByComparingTo(new BigDecimal("30.000"));
+        assertThat(result.totalAmount()).isEqualByComparingTo(new BigDecimal("150.00"));
+    }
+
+    @Test
     void execute_throwsEntityNotFoundException_whenShiftNotFound() {
         var shiftId = UUID.randomUUID();
 

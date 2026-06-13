@@ -1,6 +1,7 @@
 package com.octane.fueling.usecase.fueling;
 
 import com.octane.fueling.domain.Fueling;
+import com.octane.fueling.domain.FuelingStatus;
 import com.octane.fueling.domain.repository.FuelingRepository;
 import com.octane.fueling.domain.repository.ShiftRepository;
 import com.octane.shared.exception.EntityNotFoundException;
@@ -26,7 +27,9 @@ public class ListFuelingsByShiftUseCase {
         shiftRepository.findById(shiftId)
                 .orElseThrow(() -> new EntityNotFoundException("Shift not found: " + shiftId));
 
-        List<Fueling> fuelings = fuelingRepository.findByShiftId(shiftId);
+        List<Fueling> fuelings = fuelingRepository.findByShiftId(shiftId).stream()
+                .filter(f -> f.getStatus() == FuelingStatus.ACTIVE)
+                .toList();
 
         BigDecimal totalLiters = fuelings.stream()
                 .map(Fueling::getLiters)

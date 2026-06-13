@@ -1,5 +1,6 @@
 package com.octane.fueling.handler;
 
+import com.octane.fueling.usecase.fueling.CancelFuelingUseCase;
 import com.octane.fueling.usecase.fueling.FuelingResponse;
 import com.octane.fueling.usecase.fueling.ListFuelingsByShiftUseCase;
 import com.octane.fueling.usecase.fueling.RegisterFuelingRequest;
@@ -22,13 +23,21 @@ public class FuelingHandler {
 
     private final RegisterFuelingUseCase registerFuelingUseCase;
     private final ListFuelingsByShiftUseCase listFuelingsByShiftUseCase;
+    private final CancelFuelingUseCase cancelFuelingUseCase;
 
     public FuelingHandler(
         RegisterFuelingUseCase registerFuelingUseCase,
-        ListFuelingsByShiftUseCase listFuelingsByShiftUseCase
+        ListFuelingsByShiftUseCase listFuelingsByShiftUseCase,
+        CancelFuelingUseCase cancelFuelingUseCase
     ) {
         this.registerFuelingUseCase = registerFuelingUseCase;
         this.listFuelingsByShiftUseCase = listFuelingsByShiftUseCase;
+        this.cancelFuelingUseCase = cancelFuelingUseCase;
+    }
+
+    @PostMapping("/{fuelingId}/cancel")
+    public FuelingResponse cancelFueling(@PathVariable UUID shiftId, @PathVariable UUID fuelingId) {
+        return FuelingResponse.from(cancelFuelingUseCase.execute(shiftId, fuelingId));
     }
 
     @PostMapping

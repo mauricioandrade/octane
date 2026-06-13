@@ -6,6 +6,7 @@ import com.octane.fueling.domain.FuelingStatus;
 import com.octane.fueling.domain.PaymentMethod;
 import com.octane.fueling.domain.Shift;
 import com.octane.fueling.domain.ShiftStatus;
+import com.octane.fueling.usecase.fueling.CancelFuelingUseCase;
 import com.octane.fueling.usecase.fueling.FuelingResponse;
 import com.octane.fueling.usecase.fueling.ListFuelingsByShiftUseCase;
 import com.octane.fueling.usecase.fueling.RegisterFuelingRequest;
@@ -50,6 +51,9 @@ class FuelingHandlerTest {
 
     @MockitoBean
     private ListFuelingsByShiftUseCase listFuelingsByShiftUseCase;
+
+    @MockitoBean
+    private CancelFuelingUseCase cancelFuelingUseCase;
 
     private Station buildStation() {
         return new Station(UUID.randomUUID(), "Posto X", "12.345.678/0001-90", "Rua A, 1",
@@ -102,6 +106,32 @@ class FuelingHandlerTest {
             .andExpect(jsonPath("$.id").value(fueling.getId().toString()))
             .andExpect(jsonPath("$.paymentMethod").value("PIX"))
             .andExpect(jsonPath("$.vehiclePlate").value("ABC1234"));
+    }
+
+    @Test
+    void postCancelFueling_returns200WithBody() throws Exception {
+        var station = buildStation();
+        var shift = buildShift(station);
+        var nozzle = buildNozzle(station);
+        var shiftId = shift.getId();
+        var canceled = new Fueling(
+            UUID.randomUUID(), shift, nozzle,
+            new BigDecimal("10.000"),
+            new BigDecimal("5.9990"),
+            new BigDecimal("59.99"),
+            PaymentMethod.PIX,
+            FuelingStatus.CANCELED,
+            LocalDateTime.now(),
+            "ABC1234",
+            null,
+            LocalDateTime.now(),
+            LocalDateTime.now()
+        );
+        when(cancelFuelingUseCase.execute(shiftId, canceled.getId())).thenReturn(canceled);
+
+        mockMvc.perform(post("/api/shifts/" + shiftId + "/fuelings/" + canceled.getId() + "/cancel"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(canceled.getId().toString()));
     }
 
     @Test

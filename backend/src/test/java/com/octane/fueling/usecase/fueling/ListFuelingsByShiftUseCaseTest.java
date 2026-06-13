@@ -1,6 +1,7 @@
 package com.octane.fueling.usecase.fueling;
 
 import com.octane.fueling.domain.Fueling;
+import com.octane.fueling.domain.FuelingStatus;
 import com.octane.fueling.domain.PaymentMethod;
 import com.octane.fueling.domain.Shift;
 import com.octane.fueling.domain.ShiftStatus;
@@ -67,7 +68,8 @@ class ListFuelingsByShiftUseCaseTest {
 
     private Fueling makeFueling(UUID id, Shift shift, Nozzle nozzle, BigDecimal liters, BigDecimal unitPrice, BigDecimal totalAmount) {
         var now = LocalDateTime.now();
-        return new Fueling(id, shift, nozzle, liters, unitPrice, totalAmount, PaymentMethod.CASH, null, null, now, now);
+        return new Fueling(id, shift, nozzle, liters, unitPrice, totalAmount, PaymentMethod.CASH,
+                FuelingStatus.ACTIVE, null, null, null, now, now);
     }
 
     @Test

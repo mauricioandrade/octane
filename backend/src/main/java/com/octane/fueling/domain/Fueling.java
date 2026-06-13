@@ -34,6 +34,13 @@ public class Fueling {
     @Column(name = "payment_method", nullable = false, length = 30)
     private PaymentMethod paymentMethod;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private FuelingStatus status;
+
+    @Column(name = "canceled_at")
+    private LocalDateTime canceledAt;
+
     @Column(name = "vehicle_plate", length = 10)
     private String vehiclePlate;
 
@@ -49,8 +56,9 @@ public class Fueling {
     public Fueling() {}
 
     public Fueling(UUID id, Shift shift, Nozzle nozzle, BigDecimal liters, BigDecimal unitPrice,
-                   BigDecimal totalAmount, PaymentMethod paymentMethod, String vehiclePlate,
-                   String notes, LocalDateTime fueledAt, LocalDateTime createdAt) {
+                   BigDecimal totalAmount, PaymentMethod paymentMethod, FuelingStatus status,
+                   LocalDateTime canceledAt, String vehiclePlate, String notes,
+                   LocalDateTime fueledAt, LocalDateTime createdAt) {
         this.id = id;
         this.shift = shift;
         this.nozzle = nozzle;
@@ -58,6 +66,8 @@ public class Fueling {
         this.unitPrice = unitPrice;
         this.totalAmount = totalAmount;
         this.paymentMethod = paymentMethod;
+        this.status = status;
+        this.canceledAt = canceledAt;
         this.vehiclePlate = vehiclePlate;
         this.notes = notes;
         this.fueledAt = fueledAt;
@@ -71,6 +81,8 @@ public class Fueling {
     public BigDecimal getUnitPrice() { return unitPrice; }
     public BigDecimal getTotalAmount() { return totalAmount; }
     public PaymentMethod getPaymentMethod() { return paymentMethod; }
+    public FuelingStatus getStatus() { return status; }
+    public LocalDateTime getCanceledAt() { return canceledAt; }
     public String getVehiclePlate() { return vehiclePlate; }
     public String getNotes() { return notes; }
     public LocalDateTime getFueledAt() { return fueledAt; }

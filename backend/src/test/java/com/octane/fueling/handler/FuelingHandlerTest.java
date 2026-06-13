@@ -2,6 +2,7 @@ package com.octane.fueling.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.octane.fueling.domain.Fueling;
+import com.octane.fueling.domain.FuelingStatus;
 import com.octane.fueling.domain.PaymentMethod;
 import com.octane.fueling.domain.Shift;
 import com.octane.fueling.domain.ShiftStatus;
@@ -73,6 +74,8 @@ class FuelingHandlerTest {
             new BigDecimal("5.9990"),
             new BigDecimal("59.99"),
             PaymentMethod.PIX,
+            FuelingStatus.ACTIVE,
+            null,
             "ABC1234",
             null,
             LocalDateTime.now(),

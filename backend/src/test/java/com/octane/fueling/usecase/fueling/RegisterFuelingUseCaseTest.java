@@ -76,7 +76,8 @@ class RegisterFuelingUseCaseTest {
         var now = LocalDateTime.now();
         return new Fueling(id, shift, nozzle,
                 new BigDecimal("50.000"), new BigDecimal("5.8900"), new BigDecimal("294.50"),
-                PaymentMethod.PIX, "ABC-1234", null, now, now);
+                PaymentMethod.PIX, com.octane.fueling.domain.FuelingStatus.ACTIVE, null,
+                "ABC-1234", null, now, now);
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.octane.fueling.usecase.fueling;
 
 import com.octane.fueling.domain.Fueling;
+import com.octane.fueling.domain.FuelingStatus;
 import com.octane.fueling.domain.PaymentMethod;
 import com.octane.fueling.domain.ShiftStatus;
 import com.octane.fueling.domain.repository.FuelingRepository;
@@ -58,7 +59,8 @@ public class RegisterFuelingUseCase {
         var fueling = new Fueling(
                 null, shift, nozzle,
                 request.liters(), request.unitPrice(), request.totalAmount(),
-                paymentMethod, request.vehiclePlate(), request.notes(),
+                paymentMethod, FuelingStatus.ACTIVE, null,
+                request.vehiclePlate(), request.notes(),
                 now, now
         );
         return fuelingRepository.save(fueling);

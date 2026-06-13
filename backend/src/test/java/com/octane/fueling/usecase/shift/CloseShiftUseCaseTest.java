@@ -1,10 +1,16 @@
 package com.octane.fueling.usecase.shift;
 
+import com.octane.fueling.domain.Fueling;
+import com.octane.fueling.domain.FuelingStatus;
 import com.octane.fueling.domain.NozzleReading;
 import com.octane.fueling.domain.NozzleReadingType;
+import com.octane.fueling.domain.PaymentMethod;
 import com.octane.fueling.domain.Shift;
+import com.octane.fueling.domain.ShiftReconciliation;
 import com.octane.fueling.domain.ShiftStatus;
+import com.octane.fueling.domain.repository.FuelingRepository;
 import com.octane.fueling.domain.repository.NozzleReadingRepository;
+import com.octane.fueling.domain.repository.ShiftReconciliationRepository;
 import com.octane.fueling.domain.repository.ShiftRepository;
 import com.octane.shared.exception.BusinessException;
 import com.octane.shared.exception.EntityNotFoundException;
@@ -18,6 +24,7 @@ import com.octane.station.domain.repository.NozzleRepository;
 import com.octane.station.domain.repository.PumpRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -49,6 +56,12 @@ class CloseShiftUseCaseTest {
 
     @Mock
     private PumpRepository pumpRepository;
+
+    @Mock
+    private FuelingRepository fuelingRepository;
+
+    @Mock
+    private ShiftReconciliationRepository shiftReconciliationRepository;
 
     @InjectMocks
     private CloseShiftUseCase sut;
@@ -106,6 +119,81 @@ class CloseShiftUseCaseTest {
 
         assertThat(result.getStatus()).isEqualTo(ShiftStatus.CLOSED);
         verify(shiftRepository).save(any(Shift.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void execute_persistsReconciliationPerNozzle_onClose() {
+        var stationId = UUID.randomUUID();
+        var shiftId = UUID.randomUUID();
+        var pumpId = UUID.randomUUID();
+        var nozzleId = UUID.randomUUID();
+
+        var station = makeStation(stationId);
+        var shift = makeShift(shiftId, station, ShiftStatus.OPEN);
+        var pump = makePump(pumpId, station);
+        var nozzle = makeNozzle(nozzleId, pump, true);
+
+        var opening = new NozzleReading(UUID.randomUUID(), shift, nozzle, NozzleReadingType.OPENING,
+                new BigDecimal("1000.000"), LocalDateTime.now());
+        var closing = new NozzleReading(UUID.randomUUID(), shift, nozzle, NozzleReadingType.CLOSING,
+                new BigDecimal("1100.000"), LocalDateTime.now());
+
+        var now = LocalDateTime.now();
+        var activeFueling = new Fueling(UUID.randomUUID(), shift, nozzle, new BigDecimal("95.500"),
+                new BigDecimal("5.00"), new BigDecimal("477.50"), PaymentMethod.PIX,
+                FuelingStatus.ACTIVE, null, null, null, now, now);
+        var canceledFueling = new Fueling(UUID.randomUUID(), shift, nozzle, new BigDecimal("10.000"),
+                new BigDecimal("5.00"), new BigDecimal("50.00"), PaymentMethod.PIX,
+                FuelingStatus.CANCELED, now, null, null, now, now);
+
+        when(shiftRepository.findById(shiftId)).thenReturn(Optional.of(shift));
+        when(pumpRepository.findByStationId(stationId)).thenReturn(List.of(pump));
+        when(nozzleRepository.findByPumpId(pumpId)).thenReturn(List.of(nozzle));
+        when(nozzleReadingRepository.findByShiftId(shiftId)).thenReturn(List.of(opening, closing));
+        when(fuelingRepository.findByShiftId(shiftId)).thenReturn(List.of(activeFueling, canceledFueling));
+        when(shiftRepository.save(any(Shift.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        sut.execute(shiftId);
+
+        ArgumentCaptor<List<ShiftReconciliation>> captor = ArgumentCaptor.forClass(List.class);
+        verify(shiftReconciliationRepository).saveAll(captor.capture());
+        var lines = captor.getValue();
+        assertThat(lines).hasSize(1);
+        assertThat(lines.get(0).getNozzle().getId()).isEqualTo(nozzleId);
+        assertThat(lines.get(0).getOpeningTotalizer()).isEqualByComparingTo("1000.000");
+        assertThat(lines.get(0).getClosingTotalizer()).isEqualByComparingTo("1100.000");
+        assertThat(lines.get(0).getMeasuredLiters()).isEqualByComparingTo("100.000");
+        assertThat(lines.get(0).getFueledLiters()).isEqualByComparingTo("95.500");
+        assertThat(lines.get(0).getDivergenceLiters()).isEqualByComparingTo("4.500");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void execute_skipsReconciliation_whenNozzleHasNoOpeningReading() {
+        var stationId = UUID.randomUUID();
+        var shiftId = UUID.randomUUID();
+        var pumpId = UUID.randomUUID();
+        var nozzleId = UUID.randomUUID();
+
+        var station = makeStation(stationId);
+        var shift = makeShift(shiftId, station, ShiftStatus.OPEN);
+        var pump = makePump(pumpId, station);
+        var nozzle = makeNozzle(nozzleId, pump, true);
+        var closing = makeClosingReading(shift, nozzle);
+
+        when(shiftRepository.findById(shiftId)).thenReturn(Optional.of(shift));
+        when(pumpRepository.findByStationId(stationId)).thenReturn(List.of(pump));
+        when(nozzleRepository.findByPumpId(pumpId)).thenReturn(List.of(nozzle));
+        when(nozzleReadingRepository.findByShiftId(shiftId)).thenReturn(List.of(closing));
+        when(fuelingRepository.findByShiftId(shiftId)).thenReturn(List.of());
+        when(shiftRepository.save(any(Shift.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        sut.execute(shiftId);
+
+        ArgumentCaptor<List<ShiftReconciliation>> captor = ArgumentCaptor.forClass(List.class);
+        verify(shiftReconciliationRepository).saveAll(captor.capture());
+        assertThat(captor.getValue()).isEmpty();
     }
 
     @Test

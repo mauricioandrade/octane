@@ -9,9 +9,11 @@ import com.octane.fueling.usecase.reading.RegisterNozzleReadingRequest;
 import com.octane.fueling.usecase.reading.RegisterNozzleReadingUseCase;
 import com.octane.fueling.usecase.shift.CloseShiftUseCase;
 import com.octane.fueling.usecase.shift.FindShiftUseCase;
+import com.octane.fueling.usecase.shift.GetShiftReconciliationUseCase;
 import com.octane.fueling.usecase.shift.ListShiftsByStationUseCase;
 import com.octane.fueling.usecase.shift.OpenShiftRequest;
 import com.octane.fueling.usecase.shift.OpenShiftUseCase;
+import com.octane.fueling.usecase.shift.ShiftReconciliationResponse;
 import com.octane.shared.exception.EntityNotFoundException;
 import com.octane.station.domain.Fuel;
 import com.octane.station.domain.FuelUnit;
@@ -61,6 +63,9 @@ class ShiftHandlerTest {
 
     @MockitoBean
     private RegisterNozzleReadingUseCase registerNozzleReadingUseCase;
+
+    @MockitoBean
+    private GetShiftReconciliationUseCase getShiftReconciliationUseCase;
 
     private Station buildStation(UUID id) {
         return new Station(id, "Posto X", "12.345.678/0001-90", "Rua A, 1",
@@ -150,6 +155,19 @@ class ShiftHandlerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].employeeName").value("Funcionario A"))
             .andExpect(jsonPath("$[0].stationId").value(stationId.toString()));
+    }
+
+    @Test
+    void getReconciliation_returns200WithTotals() throws Exception {
+        var shiftId = UUID.randomUUID();
+        var response = new ShiftReconciliationResponse(shiftId, List.of(),
+            new BigDecimal("100.000"), new BigDecimal("95.500"), new BigDecimal("4.500"));
+        when(getShiftReconciliationUseCase.execute(shiftId)).thenReturn(response);
+
+        mockMvc.perform(get("/api/shifts/" + shiftId + "/reconciliation"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.shiftId").value(shiftId.toString()))
+            .andExpect(jsonPath("$.totalDivergenceLiters").value(4.500));
     }
 
     @Test

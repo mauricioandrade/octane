@@ -4,6 +4,8 @@ import com.octane.fueling.usecase.reading.RegisterNozzleReadingRequest;
 import com.octane.fueling.usecase.reading.RegisterNozzleReadingUseCase;
 import com.octane.fueling.usecase.shift.CloseShiftUseCase;
 import com.octane.fueling.usecase.shift.FindShiftUseCase;
+import com.octane.fueling.usecase.shift.GetShiftReconciliationUseCase;
+import com.octane.fueling.usecase.shift.ShiftReconciliationResponse;
 import com.octane.fueling.usecase.shift.ListShiftsByStationUseCase;
 import com.octane.fueling.usecase.shift.OpenShiftRequest;
 import com.octane.fueling.usecase.shift.OpenShiftUseCase;
@@ -27,19 +29,27 @@ public class ShiftHandler {
     private final FindShiftUseCase findShiftUseCase;
     private final ListShiftsByStationUseCase listShiftsByStationUseCase;
     private final RegisterNozzleReadingUseCase registerNozzleReadingUseCase;
+    private final GetShiftReconciliationUseCase getShiftReconciliationUseCase;
 
     public ShiftHandler(
         OpenShiftUseCase openShiftUseCase,
         CloseShiftUseCase closeShiftUseCase,
         FindShiftUseCase findShiftUseCase,
         ListShiftsByStationUseCase listShiftsByStationUseCase,
-        RegisterNozzleReadingUseCase registerNozzleReadingUseCase
+        RegisterNozzleReadingUseCase registerNozzleReadingUseCase,
+        GetShiftReconciliationUseCase getShiftReconciliationUseCase
     ) {
         this.openShiftUseCase = openShiftUseCase;
         this.closeShiftUseCase = closeShiftUseCase;
         this.findShiftUseCase = findShiftUseCase;
         this.listShiftsByStationUseCase = listShiftsByStationUseCase;
         this.registerNozzleReadingUseCase = registerNozzleReadingUseCase;
+        this.getShiftReconciliationUseCase = getShiftReconciliationUseCase;
+    }
+
+    @GetMapping("/api/shifts/{id}/reconciliation")
+    public ShiftReconciliationResponse reconciliation(@PathVariable UUID id) {
+        return getShiftReconciliationUseCase.execute(id);
     }
 
     @PostMapping("/api/shifts")

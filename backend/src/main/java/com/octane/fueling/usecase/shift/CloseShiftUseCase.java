@@ -1,5 +1,6 @@
 package com.octane.fueling.usecase.shift;
 
+import com.octane.commission.usecase.entry.CalculateCommissionUseCase;
 import com.octane.fueling.domain.Fueling;
 import com.octane.fueling.domain.FuelingStatus;
 import com.octane.fueling.domain.NozzleReading;
@@ -34,19 +35,22 @@ public class CloseShiftUseCase {
     private final PumpRepository pumpRepository;
     private final FuelingRepository fuelingRepository;
     private final ShiftReconciliationRepository shiftReconciliationRepository;
+    private final CalculateCommissionUseCase calculateCommissionUseCase;
 
     public CloseShiftUseCase(ShiftRepository shiftRepository,
                              NozzleReadingRepository nozzleReadingRepository,
                              NozzleRepository nozzleRepository,
                              PumpRepository pumpRepository,
                              FuelingRepository fuelingRepository,
-                             ShiftReconciliationRepository shiftReconciliationRepository) {
+                             ShiftReconciliationRepository shiftReconciliationRepository,
+                             CalculateCommissionUseCase calculateCommissionUseCase) {
         this.shiftRepository = shiftRepository;
         this.nozzleReadingRepository = nozzleReadingRepository;
         this.nozzleRepository = nozzleRepository;
         this.pumpRepository = pumpRepository;
         this.fuelingRepository = fuelingRepository;
         this.shiftReconciliationRepository = shiftReconciliationRepository;
+        this.calculateCommissionUseCase = calculateCommissionUseCase;
     }
 
     @Transactional
@@ -108,6 +112,14 @@ public class CloseShiftUseCase {
                 shift.getNotes(),
                 shift.getCreatedAt()
         );
-        return shiftRepository.save(closedShift);
+        var saved = shiftRepository.save(closedShift);
+
+        try {
+            calculateCommissionUseCase.execute(saved.getId());
+        } catch (Exception e) {
+            // comissão é opcional — não propaga erro
+        }
+
+        return saved;
     }
 }

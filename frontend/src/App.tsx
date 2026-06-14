@@ -17,6 +17,9 @@ import { FrotaClienteDetailPage } from '@/pages/FrotaClienteDetailPage'
 import { FrotaVeiculosPage } from '@/pages/FrotaVeiculosPage'
 import { FrotaMotoristasPage } from '@/pages/FrotaMotoristasPage'
 import { FrotaRelatorioPage } from '@/pages/FrotaRelatorioPage'
+import { OrdensServicoPage } from '@/pages/OrdensServicoPage'
+import { OrdemServicoDetailPage } from '@/pages/OrdemServicoDetailPage'
+import { VehicleHistoryPage } from '@/pages/VehicleHistoryPage'
 
 function ProtectedApp() {
   const { authState } = useAuth()
@@ -54,6 +57,9 @@ function ProtectedApp() {
           <Route path="/frota/veiculos" element={<FrotaVeiculosPage />} />
           <Route path="/frota/motoristas" element={<FrotaMotoristasPage />} />
           <Route path="/frota/relatorio" element={<FrotaRelatorioPage />} />
+          <Route path="/os/historico" element={<VehicleHistoryPage />} />
+          <Route path="/os/:id" element={<OrdemServicoDetailPage />} />
+          <Route path="/os" element={<OrdensServicoPage />} />
         </Route>
       </Routes>
     </StationProvider>

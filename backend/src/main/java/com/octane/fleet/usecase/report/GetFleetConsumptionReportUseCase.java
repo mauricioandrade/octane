@@ -3,6 +3,7 @@ package com.octane.fleet.usecase.report;
 import com.octane.fleet.domain.FleetFueling;
 import com.octane.fleet.domain.repository.FleetFuelingRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class GetFleetConsumptionReportUseCase {
 
     private final FleetFuelingRepository fleetFuelingRepository;

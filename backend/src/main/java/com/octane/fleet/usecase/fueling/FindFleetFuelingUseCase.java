@@ -8,10 +8,12 @@ import com.octane.fleet.usecase.driver.CreateFleetDriverUseCase;
 import com.octane.fleet.usecase.vehicle.CreateFleetVehicleUseCase;
 import com.octane.shared.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class FindFleetFuelingUseCase {
 
     private final FleetFuelingRepository fleetFuelingRepository;

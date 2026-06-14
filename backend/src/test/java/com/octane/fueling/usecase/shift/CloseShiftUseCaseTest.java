@@ -170,7 +170,7 @@ class CloseShiftUseCaseTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    void execute_skipsReconciliation_whenNozzleHasNoOpeningReading() {
+    void execute_usesZeroAsOpeningTotalizer_whenNozzleHasNoOpeningReading() {
         var stationId = UUID.randomUUID();
         var shiftId = UUID.randomUUID();
         var pumpId = UUID.randomUUID();
@@ -180,7 +180,7 @@ class CloseShiftUseCaseTest {
         var shift = makeShift(shiftId, station, ShiftStatus.OPEN);
         var pump = makePump(pumpId, station);
         var nozzle = makeNozzle(nozzleId, pump, true);
-        var closing = makeClosingReading(shift, nozzle);
+        var closing = makeClosingReading(shift, nozzle); // totalizer = 1000.0
 
         when(shiftRepository.findById(shiftId)).thenReturn(Optional.of(shift));
         when(pumpRepository.findByStationId(stationId)).thenReturn(List.of(pump));
@@ -193,7 +193,12 @@ class CloseShiftUseCaseTest {
 
         ArgumentCaptor<List<ShiftReconciliation>> captor = ArgumentCaptor.forClass(List.class);
         verify(shiftReconciliationRepository).saveAll(captor.capture());
-        assertThat(captor.getValue()).isEmpty();
+        var lines = captor.getValue();
+        assertThat(lines).hasSize(1);
+        assertThat(lines.get(0).getOpeningTotalizer()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(lines.get(0).getClosingTotalizer()).isEqualByComparingTo("1000.0");
+        assertThat(lines.get(0).getMeasuredLiters()).isEqualByComparingTo("1000.0");
+        assertThat(lines.get(0).getDivergenceLiters()).isEqualByComparingTo("1000.0");
     }
 
     @Test

@@ -78,13 +78,6 @@ public class CloseShiftUseCase {
             throw new BusinessException("Faltam leituras de fechamento para todos os bicos ativos");
         }
 
-        List<UUID> nozzlesMissingOpening = closingByNozzle.keySet().stream()
-                .filter(nozzleId -> !openingByNozzle.containsKey(nozzleId))
-                .toList();
-        if (!nozzlesMissingOpening.isEmpty()) {
-            throw new BusinessException("Faltam leituras de abertura para " + nozzlesMissingOpening.size() + " bico(s). Registre os encerrantes de abertura antes de fechar o turno.");
-        }
-
         Map<UUID, BigDecimal> fueledByNozzle = fuelingRepository.findByShiftId(shiftId).stream()
                 .filter(f -> f.getStatus() == FuelingStatus.ACTIVE)
                 .collect(Collectors.groupingBy(f -> f.getNozzle().getId(),
@@ -95,10 +88,11 @@ public class CloseShiftUseCase {
                 .map(entry -> {
                     var opening = openingByNozzle.get(entry.getKey());
                     var closing = entry.getValue();
-                    var measured = closing.getTotalizer().subtract(opening.getTotalizer());
+                    var openingTotalizer = opening != null ? opening.getTotalizer() : BigDecimal.ZERO;
+                    var measured = closing.getTotalizer().subtract(openingTotalizer);
                     var fueled = fueledByNozzle.getOrDefault(entry.getKey(), BigDecimal.ZERO);
                     return new ShiftReconciliation(null, shift, closing.getNozzle(),
-                            opening.getTotalizer(), closing.getTotalizer(),
+                            openingTotalizer, closing.getTotalizer(),
                             measured, fueled, measured.subtract(fueled), now);
                 })
                 .toList();

@@ -17,6 +17,7 @@ export function registerFleetFueling(req: {
 
 export function getFleetFuelingsByClient(
   clientId: string,
+  stationId: string,
   params?: {
     from?: string
     to?: string
@@ -24,7 +25,8 @@ export function getFleetFuelingsByClient(
     driverId?: string
   },
 ): Promise<FleetFueling[]> {
-  const entries = Object.entries(params ?? {}).filter(([, v]) => v) as [string, string][]
+  const allParams = { stationId, ...(params ?? {}) }
+  const entries = Object.entries(allParams).filter(([, v]) => v) as [string, string][]
   const q = entries.length ? '?' + new URLSearchParams(entries) : ''
   return api.get<FleetFueling[]>(`/fleet/clients/${clientId}/fuelings${q}`)
 }

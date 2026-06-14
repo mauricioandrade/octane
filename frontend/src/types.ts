@@ -269,3 +269,49 @@ export interface FleetConsumptionLine {
   odometerAlert: boolean
   paymentMethod: string
 }
+
+// ── Service Order ─────────────────────────────────────────────────────────────
+
+export type ServiceOrderStatus = 'OPEN' | 'CLOSED' | 'CANCELLED'
+
+export type ServiceOrderItem = {
+  id: string
+  description: string
+  quantity: number
+  unitPrice: number
+  totalPrice: number
+  createdAt: string
+}
+
+export type ServiceOrder = {
+  id: string
+  stationId: string
+  stationName: string
+  plate: string
+  odometer: number
+  customerName: string | null
+  customerPhone: string | null
+  status: ServiceOrderStatus
+  notes: string | null
+  items: ServiceOrderItem[]
+  totalAmount: number
+  openedAt: string
+  closedAt: string | null
+  cancelledAt: string | null
+  createdAt: string
+}
+
+export type CreateServiceOrderRequest = {
+  stationId: string
+  plate: string
+  odometer: number
+  customerName?: string
+  customerPhone?: string
+  notes?: string
+}
+
+export type AddServiceOrderItemRequest = {
+  description: string
+  quantity: number
+  unitPrice: number
+}

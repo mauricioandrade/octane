@@ -33,7 +33,7 @@ export function DriverIdentifier({ stationId, onIdentified }: Props) {
     mutationFn: () =>
       identifyFleetDriver({
         stationId,
-        cpf: identifierType !== 'RFID' ? cpf : '',
+        cpf: identifierType !== 'RFID' ? cpf : undefined,
         pin: identifierType === 'PIN' ? pin : undefined,
         rfidTag: identifierType === 'RFID' ? rfidTag : undefined,
         identifierType,

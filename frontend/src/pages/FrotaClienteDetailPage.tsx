@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { useActiveStation } from '@/hooks/useActiveStation'
 import { ArrowLeft, Plus, Pencil } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
@@ -22,6 +23,7 @@ type Tab = 'veiculos' | 'motoristas' | 'historico'
 export function FrotaClienteDetailPage() {
   const { clientId } = useParams<{ clientId: string }>()
   const navigate = useNavigate()
+  const { station } = useActiveStation()
   const [activeTab, setActiveTab] = useState<Tab>('veiculos')
 
   const [vehicleSheetOpen, setVehicleSheetOpen] = useState(false)
@@ -49,9 +51,9 @@ export function FrotaClienteDetailPage() {
   })
 
   const { data: fuelings = [], isLoading: fuelingsLoading } = useQuery({
-    queryKey: ['fleet-fuelings', clientId],
-    queryFn: () => getFleetFuelingsByClient(clientId!),
-    enabled: !!clientId && activeTab === 'historico',
+    queryKey: ['fleet-fuelings', clientId, station?.id],
+    queryFn: () => getFleetFuelingsByClient(clientId!, station!.id, {}),
+    enabled: activeTab === 'historico' && !!clientId && !!station,
   })
 
   if (clientLoading) {

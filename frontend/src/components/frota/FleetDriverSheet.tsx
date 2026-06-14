@@ -16,25 +16,27 @@ import { Label } from '@/components/ui/label'
 import { createFleetDriver, updateFleetDriver } from '@/api/fleet-drivers'
 import type { FleetDriver } from '@/types'
 
-const schema = z
-  .object({
-    name: z.string().min(1, 'Obrigatório').max(150),
-    cpf: z
-      .string()
-      .min(1, 'Obrigatório')
-      .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, 'Formato: XXX.XXX.XXX-XX'),
-    pin: z
-      .string()
-      .optional()
-      .refine((v) => !v || /^\d{6}$/.test(v), { message: 'PIN deve ter 6 dígitos' }),
-    rfidTag: z.string().max(100).optional(),
-  })
-  .refine(
-    (d) => (d.pin && d.pin.trim() !== '') || (d.rfidTag && d.rfidTag.trim() !== ''),
-    { message: 'Preencha ao menos PIN ou Tag RFID', path: ['pin'] },
-  )
+const baseFields = {
+  name: z.string().min(1, 'Obrigatório').max(150),
+  cpf: z
+    .string()
+    .min(1, 'Obrigatório')
+    .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, 'Formato: XXX.XXX.XXX-XX'),
+  pin: z
+    .string()
+    .optional()
+    .refine((v) => !v || /^\d{6}$/.test(v), { message: 'PIN deve ter 6 dígitos' }),
+  rfidTag: z.string().max(100).optional(),
+}
 
-type FormData = z.infer<typeof schema>
+const createSchema = z.object(baseFields).refine(
+  (d) => (d.pin && d.pin.trim() !== '') || (d.rfidTag && d.rfidTag.trim() !== ''),
+  { message: 'Preencha ao menos PIN ou Tag RFID', path: ['pin'] },
+)
+
+const editSchema = z.object(baseFields)
+
+type FormData = z.infer<typeof createSchema>
 
 type Props = {
   open: boolean
@@ -52,7 +54,7 @@ export function FleetDriverSheet({ open, onOpenChange, driver, clientId }: Props
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(schema) })
+  } = useForm<FormData>({ resolver: zodResolver(isEdit ? editSchema : createSchema) })
 
   useEffect(() => {
     if (open) {

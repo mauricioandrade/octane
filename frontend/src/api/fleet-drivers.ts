@@ -34,7 +34,7 @@ export function patchFleetDriverStatus(id: string, active: boolean): Promise<Fle
 
 export function identifyFleetDriver(req: {
   stationId: string
-  cpf: string
+  cpf?: string
   pin?: string
   rfidTag?: string
   identifierType: 'CPF' | 'PIN' | 'RFID'

@@ -1,8 +1,10 @@
 package com.octane.station.usecase.station;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record UpdateStationRequest(
-    String name,
-    String cnpj,
+    @NotBlank String name,
+    @NotBlank String cnpj,
     String address,
     String city,
     String state

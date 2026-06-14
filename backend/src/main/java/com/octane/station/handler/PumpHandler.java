@@ -7,6 +7,7 @@ import com.octane.station.usecase.pump.UpdatePumpRequest;
 import com.octane.station.usecase.pump.UpdatePumpStatusRequest;
 import com.octane.station.usecase.pump.UpdatePumpStatusUseCase;
 import com.octane.station.usecase.pump.UpdatePumpUseCase;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -42,7 +43,7 @@ public class PumpHandler {
     }
 
     @PutMapping("/{id}")
-    public PumpResponse update(@PathVariable UUID id, @RequestBody UpdatePumpRequest request) {
+    public PumpResponse update(@PathVariable UUID id, @Valid @RequestBody UpdatePumpRequest request) {
         return PumpResponse.from(updatePumpUseCase.execute(id, request));
     }
 
@@ -53,7 +54,7 @@ public class PumpHandler {
 
     @PostMapping("/{id}/nozzles")
     @ResponseStatus(HttpStatus.CREATED)
-    public NozzleResponse createNozzle(@PathVariable UUID id, @RequestBody CreateNozzleRequest request) {
+    public NozzleResponse createNozzle(@PathVariable UUID id, @Valid @RequestBody CreateNozzleRequest request) {
         return NozzleResponse.from(createNozzleUseCase.execute(id, request));
     }
 

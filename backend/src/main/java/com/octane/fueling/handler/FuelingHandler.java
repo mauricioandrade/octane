@@ -6,6 +6,7 @@ import com.octane.fueling.usecase.fueling.ListFuelingsByShiftUseCase;
 import com.octane.fueling.usecase.fueling.RegisterFuelingRequest;
 import com.octane.fueling.usecase.fueling.RegisterFuelingUseCase;
 import com.octane.fueling.usecase.fueling.ShiftSummaryResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,7 +43,7 @@ public class FuelingHandler {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FuelingResponse registerFueling(@PathVariable UUID shiftId, @RequestBody RegisterFuelingRequest request) {
+    public FuelingResponse registerFueling(@PathVariable UUID shiftId, @Valid @RequestBody RegisterFuelingRequest request) {
         return FuelingResponse.from(registerFuelingUseCase.execute(shiftId, request));
     }
 

@@ -1,3 +1,5 @@
 package com.octane.station.usecase.fuel;
 
-public record UpdateFuelRequest(String name, String unit) {}
+import jakarta.validation.constraints.NotBlank;
+
+public record UpdateFuelRequest(@NotBlank String name, @NotBlank String unit) {}

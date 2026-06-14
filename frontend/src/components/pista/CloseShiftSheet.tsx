@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Download } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -23,6 +24,7 @@ import { getNozzles } from '@/api/nozzles'
 import { getFuels } from '@/api/fuels'
 import { useActiveStation } from '@/hooks/useActiveStation'
 import type { ShiftReconciliation, ReconciliationLine } from '@/types'
+import { exportReconciliationCSV } from '@/lib/export'
 
 const schema = z.object({
   readings: z.record(z.string(), z.coerce.number().min(0, 'Obrigatório')),
@@ -233,6 +235,16 @@ export function CloseShiftSheet({ open, onOpenChange, shiftId, employeeName }: P
                 </tfoot>
               </table>
             </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={() => exportReconciliationCSV(reconciliation, `reconciliacao-${shiftId.slice(0, 8)}.csv`)}
+            >
+              <Download size={14} className="mr-1" />
+              Exportar CSV
+            </Button>
 
             <Button onClick={handleClose} className="w-full bg-slate-700 hover:bg-slate-800">
               Concluído

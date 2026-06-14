@@ -1,3 +1,5 @@
 package com.octane.station.usecase.pump;
 
-public record UpdatePumpRequest(int number) {}
+import jakarta.validation.constraints.Positive;
+
+public record UpdatePumpRequest(@Positive int number) {}

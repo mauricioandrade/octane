@@ -9,5 +9,6 @@ export function useShift() {
     queryKey: ['shift', 'open', station?.id],
     queryFn: () => getOpenShift(station!.id),
     enabled: !!station,
+    refetchInterval: 30_000,
   })
 }

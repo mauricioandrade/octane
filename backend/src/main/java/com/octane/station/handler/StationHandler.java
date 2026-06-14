@@ -11,6 +11,7 @@ import com.octane.station.usecase.station.UpdateStationRequest;
 import com.octane.station.usecase.station.UpdateStationStatusRequest;
 import com.octane.station.usecase.station.UpdateStationStatusUseCase;
 import com.octane.station.usecase.station.UpdateStationUseCase;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -58,7 +59,7 @@ public class StationHandler {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public StationResponse create(@RequestBody CreateStationRequest request) {
+    public StationResponse create(@Valid @RequestBody CreateStationRequest request) {
         return StationResponse.from(createStationUseCase.execute(request));
     }
 
@@ -75,7 +76,7 @@ public class StationHandler {
     }
 
     @PutMapping("/{id}")
-    public StationResponse update(@PathVariable UUID id, @RequestBody UpdateStationRequest request) {
+    public StationResponse update(@PathVariable UUID id, @Valid @RequestBody UpdateStationRequest request) {
         return StationResponse.from(updateStationUseCase.execute(id, request));
     }
 
@@ -86,7 +87,7 @@ public class StationHandler {
 
     @PostMapping("/{id}/pumps")
     @ResponseStatus(HttpStatus.CREATED)
-    public PumpResponse createPump(@PathVariable UUID id, @RequestBody CreatePumpRequest request) {
+    public PumpResponse createPump(@PathVariable UUID id, @Valid @RequestBody CreatePumpRequest request) {
         return PumpResponse.from(createPumpUseCase.execute(id, request));
     }
 

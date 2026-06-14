@@ -4,6 +4,7 @@ import com.octane.station.usecase.nozzle.UpdateNozzleRequest;
 import com.octane.station.usecase.nozzle.UpdateNozzleStatusRequest;
 import com.octane.station.usecase.nozzle.UpdateNozzleStatusUseCase;
 import com.octane.station.usecase.nozzle.UpdateNozzleUseCase;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,7 +28,7 @@ public class NozzleHandler {
     }
 
     @PutMapping("/{id}")
-    public NozzleResponse update(@PathVariable UUID id, @RequestBody UpdateNozzleRequest request) {
+    public NozzleResponse update(@PathVariable UUID id, @Valid @RequestBody UpdateNozzleRequest request) {
         return NozzleResponse.from(updateNozzleUseCase.execute(id, request));
     }
 

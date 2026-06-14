@@ -4,6 +4,7 @@ import com.octane.pricing.usecase.GetCurrentPricesUseCase;
 import com.octane.pricing.usecase.ListPriceHistoryUseCase;
 import com.octane.pricing.usecase.SetFuelPriceRequest;
 import com.octane.pricing.usecase.SetFuelPriceUseCase;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +38,7 @@ public class FuelPriceHandler {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FuelPriceResponse setPrice(@PathVariable UUID stationId, @RequestBody SetFuelPriceRequest request) {
+    public FuelPriceResponse setPrice(@PathVariable UUID stationId, @Valid @RequestBody SetFuelPriceRequest request) {
         return FuelPriceResponse.from(setFuelPriceUseCase.execute(stationId, request));
     }
 

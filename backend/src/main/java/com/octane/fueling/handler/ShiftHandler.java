@@ -11,6 +11,7 @@ import com.octane.fueling.usecase.shift.OpenShiftRequest;
 import com.octane.fueling.usecase.shift.OpenShiftUseCase;
 import com.octane.fueling.usecase.shift.ShiftResponse;
 import com.octane.shared.pagination.PageResponse;
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,7 +58,7 @@ public class ShiftHandler {
 
     @PostMapping("/api/shifts")
     @ResponseStatus(HttpStatus.CREATED)
-    public ShiftResponse openShift(@RequestBody OpenShiftRequest request) {
+    public ShiftResponse openShift(@Valid @RequestBody OpenShiftRequest request) {
         return ShiftResponse.from(openShiftUseCase.execute(request));
     }
 
@@ -86,7 +87,7 @@ public class ShiftHandler {
 
     @PostMapping("/api/shifts/{id}/readings")
     @ResponseStatus(HttpStatus.CREATED)
-    public void registerReading(@PathVariable UUID id, @RequestBody RegisterNozzleReadingRequest request) {
+    public void registerReading(@PathVariable UUID id, @Valid @RequestBody RegisterNozzleReadingRequest request) {
         registerNozzleReadingUseCase.execute(id, request);
     }
 }

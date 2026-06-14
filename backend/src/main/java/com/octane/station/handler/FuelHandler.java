@@ -7,6 +7,7 @@ import com.octane.station.usecase.fuel.UpdateFuelRequest;
 import com.octane.station.usecase.fuel.UpdateFuelStatusRequest;
 import com.octane.station.usecase.fuel.UpdateFuelStatusUseCase;
 import com.octane.station.usecase.fuel.UpdateFuelUseCase;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -49,12 +50,12 @@ public class FuelHandler {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FuelResponse create(@RequestBody CreateFuelRequest request) {
+    public FuelResponse create(@Valid @RequestBody CreateFuelRequest request) {
         return FuelResponse.from(createFuelUseCase.execute(request));
     }
 
     @PutMapping("/{id}")
-    public FuelResponse update(@PathVariable UUID id, @RequestBody UpdateFuelRequest request) {
+    public FuelResponse update(@PathVariable UUID id, @Valid @RequestBody UpdateFuelRequest request) {
         return FuelResponse.from(updateFuelUseCase.execute(id, request));
     }
 

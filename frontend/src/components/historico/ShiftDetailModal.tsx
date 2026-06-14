@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { X } from 'lucide-react'
+import { Download, X } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Dialog,
@@ -14,6 +14,7 @@ import { Separator } from '@/components/ui/separator'
 import { getShiftSummary, cancelFueling } from '@/api/fuelings'
 import { getReconciliation } from '@/api/shifts'
 import { formatBRL, formatLiters } from '@/lib/utils'
+import { exportReconciliationCSV } from '@/lib/export'
 import { PAYMENT_METHOD_LABELS, type PaymentMethod } from '@/types'
 import type { Shift, ReconciliationLine } from '@/types'
 
@@ -255,6 +256,14 @@ export function ShiftDetailModal({ shift, open, onOpenChange }: Props) {
                       </tfoot>
                     </table>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => exportReconciliationCSV(reconciliation, `reconciliacao-${shift.id.slice(0, 8)}.csv`)}
+                  >
+                    <Download size={14} className="mr-1" />
+                    Exportar CSV
+                  </Button>
                 </div>
               </>
             )}

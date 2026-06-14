@@ -53,20 +53,20 @@ export function CombustiveisPage() {
         ) : fuels.length === 0 ? (
           <p className="text-sm text-slate-400">Nenhum combustível cadastrado no sistema.</p>
         ) : (
-          <div className="overflow-hidden rounded-lg border bg-white">
+          <div className="overflow-hidden rounded-lg border bg-white dark:bg-slate-900">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b bg-slate-50">
-                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400">
+                <tr className="border-b bg-slate-50 dark:bg-slate-800">
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">
                     Nome
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400">
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">
                     Unidade
                   </th>
-                  <th className="px-4 py-2 text-center text-xs font-semibold uppercase text-slate-400">
+                  <th className="px-4 py-2 text-center text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">
                     Status
                   </th>
-                  <th className="px-4 py-2 text-center text-xs font-semibold uppercase text-slate-400">
+                  <th className="px-4 py-2 text-center text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">
                     Ações
                   </th>
                 </tr>
@@ -74,8 +74,8 @@ export function CombustiveisPage() {
               <tbody>
                 {fuels.map((fuel) => (
                   <tr key={fuel.id} className="border-b last:border-0">
-                    <td className="px-4 py-3 font-semibold text-slate-800">{fuel.name}</td>
-                    <td className="px-4 py-3 text-slate-500">{fuel.unit}</td>
+                    <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">{fuel.name}</td>
+                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{fuel.unit}</td>
                     <td className="px-4 py-3 text-center">
                       <StatusToggle
                         id={fuel.id}

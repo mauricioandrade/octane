@@ -48,23 +48,23 @@ export function PostosPage() {
         ) : stations.length === 0 ? (
           <p className="text-sm text-slate-400">Nenhum posto cadastrado.</p>
         ) : (
-          <div className="overflow-hidden rounded-lg border bg-white">
+          <div className="overflow-hidden rounded-lg border bg-white dark:bg-slate-900">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b bg-slate-50">
-                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400">Nome</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400">CNPJ</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400">Cidade</th>
-                  <th className="px-4 py-2 text-center text-xs font-semibold uppercase text-slate-400">Status</th>
+                <tr className="border-b bg-slate-50 dark:bg-slate-800">
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">Nome</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">CNPJ</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">Cidade</th>
+                  <th className="px-4 py-2 text-center text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">Status</th>
                   <th className="px-4 py-2" />
                 </tr>
               </thead>
               <tbody>
                 {stations.map((s) => (
                   <tr key={s.id} className="border-b last:border-0">
-                    <td className="px-4 py-3 font-semibold text-slate-800">{s.name}</td>
-                    <td className="px-4 py-3 text-slate-500">{s.cnpj}</td>
-                    <td className="px-4 py-3 text-slate-500">{s.city} — {s.state}</td>
+                    <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">{s.name}</td>
+                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{s.cnpj}</td>
+                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{s.city} — {s.state}</td>
                     <td className="px-4 py-3 text-center">
                       <StatusToggle
                         id={s.id}
@@ -76,7 +76,7 @@ export function PostosPage() {
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => openEdit(s)}
-                        className="text-slate-400 hover:text-slate-600"
+                        className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
                         title="Editar"
                       >
                         <Pencil size={14} />

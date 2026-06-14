@@ -95,14 +95,14 @@ export function ShiftDetailModal({ shift, open, onOpenChange }: Props) {
         {/* Resumo */}
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div>
-            <span className="text-slate-400">Abertura:</span>{' '}
+            <span className="text-slate-400 dark:text-slate-500">Abertura:</span>{' '}
             <span className="font-medium">
               {new Date(shift.openedAt).toLocaleString('pt-BR')}
             </span>
           </div>
           {shift.closedAt && (
             <div>
-              <span className="text-slate-400">Fechamento:</span>{' '}
+              <span className="text-slate-400 dark:text-slate-500">Fechamento:</span>{' '}
               <span className="font-medium">
                 {new Date(shift.closedAt).toLocaleString('pt-BR')}
               </span>
@@ -110,7 +110,7 @@ export function ShiftDetailModal({ shift, open, onOpenChange }: Props) {
           )}
           {duration !== null && (
             <div>
-              <span className="text-slate-400">Duração:</span>{' '}
+              <span className="text-slate-400 dark:text-slate-500">Duração:</span>{' '}
               <span className="font-medium">
                 {duration >= 60
                   ? `${Math.floor(duration / 60)}h ${duration % 60}min`
@@ -128,17 +128,17 @@ export function ShiftDetailModal({ shift, open, onOpenChange }: Props) {
         ) : summary && (
           <>
             {/* Totais */}
-            <div className="flex gap-4 rounded-lg border bg-slate-50 p-3 text-sm">
+            <div className="flex gap-4 rounded-lg border bg-slate-50 dark:bg-slate-800 p-3 text-sm">
               <div>
-                <p className="text-[10px] uppercase text-slate-400">Volume</p>
+                <p className="text-[10px] uppercase text-slate-400 dark:text-slate-500">Volume</p>
                 <p className="font-bold">{formatLiters(summary.totalLiters)}</p>
               </div>
               <div>
-                <p className="text-[10px] uppercase text-slate-400">Receita</p>
+                <p className="text-[10px] uppercase text-slate-400 dark:text-slate-500">Receita</p>
                 <p className="font-bold text-orange-600">{formatBRL(summary.totalAmount)}</p>
               </div>
               <div>
-                <p className="text-[10px] uppercase text-slate-400">Abastecimentos</p>
+                <p className="text-[10px] uppercase text-slate-400 dark:text-slate-500">Abastecimentos</p>
                 <p className="font-bold">{summary.fuelings.length}</p>
               </div>
             </div>
@@ -147,41 +147,41 @@ export function ShiftDetailModal({ shift, open, onOpenChange }: Props) {
 
             {/* Abastecimentos */}
             <div>
-              <p className="mb-2 text-sm font-semibold text-slate-700">Abastecimentos</p>
+              <p className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">Abastecimentos</p>
               {summary.fuelings.length === 0 ? (
-                <p className="text-xs text-slate-400">Nenhum abastecimento neste turno.</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500">Nenhum abastecimento neste turno.</p>
               ) : (
                 <div className="overflow-hidden rounded-lg border">
                   <table className="w-full text-xs">
-                    <thead className="bg-slate-50">
+                    <thead className="bg-slate-50 dark:bg-slate-800">
                       <tr>
-                        <th className="px-3 py-2 text-left font-semibold text-slate-400">Horário</th>
-                        <th className="px-3 py-2 text-left font-semibold text-slate-400">Bico</th>
-                        <th className="px-3 py-2 text-left font-semibold text-slate-400">Combustível</th>
-                        <th className="px-3 py-2 text-right font-semibold text-slate-400">Litros</th>
-                        <th className="px-3 py-2 text-right font-semibold text-slate-400">Total</th>
-                        <th className="px-3 py-2 text-left font-semibold text-slate-400">Pgto</th>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-400 dark:text-slate-500">Horário</th>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-400 dark:text-slate-500">Bico</th>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-400 dark:text-slate-500">Combustível</th>
+                        <th className="px-3 py-2 text-right font-semibold text-slate-400 dark:text-slate-500">Litros</th>
+                        <th className="px-3 py-2 text-right font-semibold text-slate-400 dark:text-slate-500">Total</th>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-400 dark:text-slate-500">Pgto</th>
                         {shift.status === 'OPEN' && <th className="px-3 py-2" />}
                       </tr>
                     </thead>
                     <tbody>
                       {summary.fuelings.map((f) => (
                         <tr key={f.id} className="border-t">
-                          <td className="px-3 py-1.5 text-slate-400">
+                          <td className="px-3 py-1.5 text-slate-400 dark:text-slate-500">
                             {new Date(f.fueledAt).toLocaleTimeString('pt-BR', {
                               hour: '2-digit',
                               minute: '2-digit',
                             })}
                           </td>
                           <td className="px-3 py-1.5 font-medium">B{f.nozzleNumber}</td>
-                          <td className="px-3 py-1.5 text-slate-600">{f.fuelName}</td>
+                          <td className="px-3 py-1.5 text-slate-600 dark:text-slate-400">{f.fuelName}</td>
                           <td className="px-3 py-1.5 text-right tabular-nums">
                             {formatLiters(f.liters)}
                           </td>
                           <td className="px-3 py-1.5 text-right font-semibold tabular-nums text-orange-600">
                             {formatBRL(f.totalAmount)}
                           </td>
-                          <td className="px-3 py-1.5 text-slate-400">
+                          <td className="px-3 py-1.5 text-slate-400 dark:text-slate-500">
                             {PAYMENT_METHOD_LABELS[f.paymentMethod as PaymentMethod] ?? f.paymentMethod}
                           </td>
                           {shift.status === 'OPEN' && (
@@ -215,15 +215,15 @@ export function ShiftDetailModal({ shift, open, onOpenChange }: Props) {
               <>
                 <Separator />
                 <div>
-                  <p className="mb-2 text-sm font-semibold text-slate-700">Reconciliação</p>
+                  <p className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">Reconciliação</p>
                   <div className="overflow-hidden rounded-lg border">
                     <table className="w-full text-xs">
-                      <thead className="bg-slate-50">
+                      <thead className="bg-slate-50 dark:bg-slate-800">
                         <tr>
-                          <th className="px-3 py-2 text-left font-semibold text-slate-400">Bico</th>
-                          <th className="px-3 py-2 text-right font-semibold text-slate-400">Medido</th>
-                          <th className="px-3 py-2 text-right font-semibold text-slate-400">Lançado</th>
-                          <th className="px-3 py-2 text-right font-semibold text-slate-400">Divergência</th>
+                          <th className="px-3 py-2 text-left font-semibold text-slate-400 dark:text-slate-500">Bico</th>
+                          <th className="px-3 py-2 text-right font-semibold text-slate-400 dark:text-slate-500">Medido</th>
+                          <th className="px-3 py-2 text-right font-semibold text-slate-400 dark:text-slate-500">Lançado</th>
+                          <th className="px-3 py-2 text-right font-semibold text-slate-400 dark:text-slate-500">Divergência</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -244,7 +244,7 @@ export function ShiftDetailModal({ shift, open, onOpenChange }: Props) {
                           </tr>
                         ))}
                       </tbody>
-                      <tfoot className="border-t bg-slate-50">
+                      <tfoot className="border-t bg-slate-50 dark:bg-slate-800">
                         <tr>
                           <td className="px-3 py-2 font-semibold" colSpan={2}>
                             Total medido

@@ -44,12 +44,12 @@ export function PriceHistoryModal({ fuelId, fuelName, open, onOpenChange }: Prop
         ) : (
           <div className="overflow-hidden rounded-lg border">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50">
+              <thead className="bg-slate-50 dark:bg-slate-800">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400">
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">
                     Preço (R$/L)
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400">
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">
                     Vigente desde
                   </th>
                 </tr>
@@ -65,7 +65,7 @@ export function PriceHistoryModal({ fuelId, fuelName, open, onOpenChange }: Prop
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-2 text-slate-500">
+                    <td className="px-4 py-2 text-slate-500 dark:text-slate-400">
                       {new Date(entry.effectiveFrom).toLocaleDateString('pt-BR', {
                         day: '2-digit',
                         month: '2-digit',

@@ -145,10 +145,10 @@ export function CloseShiftSheet({ open, onOpenChange, shiftId, employeeName }: P
 
         {/* Indicador de etapa */}
         <div className="mt-3 mb-4 flex gap-2">
-          <span className={cn('rounded-full px-3 py-1 text-xs font-semibold', step === 1 ? 'bg-orange-600 text-white' : 'bg-slate-100 text-slate-400')}>
+          <span className={cn('rounded-full px-3 py-1 text-xs font-semibold', step === 1 ? 'bg-orange-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400')}>
             1. Encerrantes
           </span>
-          <span className={cn('rounded-full px-3 py-1 text-xs font-semibold', step === 2 ? 'bg-orange-600 text-white' : 'bg-slate-100 text-slate-400')}>
+          <span className={cn('rounded-full px-3 py-1 text-xs font-semibold', step === 2 ? 'bg-orange-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400')}>
             2. Reconciliação
           </span>
         </div>
@@ -156,7 +156,7 @@ export function CloseShiftSheet({ open, onOpenChange, shiftId, employeeName }: P
         {/* Etapa 1: encerrantes */}
         {step === 1 && (
           <form onSubmit={handleSubmit(onCalculate)} className="flex flex-col gap-4">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Informe a leitura do encerrante de fechamento para cada bico.
             </p>
             {activeNozzles.map((nozzle) => (
@@ -193,18 +193,18 @@ export function CloseShiftSheet({ open, onOpenChange, shiftId, employeeName }: P
         {/* Etapa 2: reconciliação */}
         {step === 2 && reconciliation && (
           <div className="flex flex-col gap-4">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Turno fechado. Reconciliação ANP 884/2022:
             </p>
 
             <div className="overflow-hidden rounded-lg border">
               <table className="w-full text-xs">
-                <thead className="bg-slate-50">
+                <thead className="bg-slate-50 dark:bg-slate-800">
                   <tr>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-500">Bico</th>
-                    <th className="px-3 py-2 text-right font-semibold text-slate-500">Medido</th>
-                    <th className="px-3 py-2 text-right font-semibold text-slate-500">Lançado</th>
-                    <th className="px-3 py-2 text-right font-semibold text-slate-500">Divergência</th>
+                    <th className="px-3 py-2 text-left font-semibold text-slate-500 dark:text-slate-400">Bico</th>
+                    <th className="px-3 py-2 text-right font-semibold text-slate-500 dark:text-slate-400">Medido</th>
+                    <th className="px-3 py-2 text-right font-semibold text-slate-500 dark:text-slate-400">Lançado</th>
+                    <th className="px-3 py-2 text-right font-semibold text-slate-500 dark:text-slate-400">Divergência</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -225,7 +225,7 @@ export function CloseShiftSheet({ open, onOpenChange, shiftId, employeeName }: P
                     </tr>
                   ))}
                 </tbody>
-                <tfoot className="border-t bg-slate-50">
+                <tfoot className="border-t bg-slate-50 dark:bg-slate-800">
                   <tr>
                     <td className="px-3 py-2 font-semibold" colSpan={2}>Total medido</td>
                     <td className="px-3 py-2 text-right font-semibold tabular-nums" colSpan={2}>

@@ -65,8 +65,8 @@ export function NozzleList({ shiftId, summary }: Props) {
       {pumps.map((pump, idx) => {
         const nozzles = nozzleResults[idx]?.data ?? []
         return (
-          <div key={pump.id} className="overflow-hidden rounded-lg border bg-white">
-            <div className="border-b bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-500">
+          <div key={pump.id} className="overflow-hidden rounded-lg border bg-white dark:bg-slate-900">
+            <div className="border-b bg-slate-50 dark:bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
               Bomba {pump.number}
             </div>
             {nozzles.map((nozzle) => {
@@ -78,14 +78,14 @@ export function NozzleList({ shiftId, summary }: Props) {
                 <div key={nozzle.id} className="border-b last:border-0">
                   <div className="flex items-center justify-between px-4 py-2.5">
                     <div className="flex items-center gap-3">
-                      <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-500">
+                      <span className="rounded bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-bold text-slate-500 dark:text-slate-400">
                         B{nozzle.number}
                       </span>
                       <div>
-                        <p className="text-sm font-semibold text-slate-800">
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                           {fuel?.name ?? '—'}
                         </p>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-slate-400 dark:text-slate-500">
                           {totals
                             ? `${totals.count} abast. · ${formatLiters(totals.liters)}`
                             : '0 abast. · 0,000 L'}

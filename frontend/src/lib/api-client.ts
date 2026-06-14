@@ -11,8 +11,14 @@ export class ApiError extends Error {
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`/api${path}`, {
     headers: { 'Content-Type': 'application/json', ...init?.headers },
+    credentials: 'include',
     ...init,
   })
+
+  if (res.status === 401) {
+    window.dispatchEvent(new CustomEvent('auth:unauthorized'))
+    throw new ApiError(401, 'Não autenticado')
+  }
 
   if (!res.ok) {
     const text = await res.text().catch(() => '')

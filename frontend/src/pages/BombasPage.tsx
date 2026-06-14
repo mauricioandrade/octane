@@ -89,19 +89,19 @@ export function BombasPage() {
         ) : pumps.length === 0 ? (
           <p className="text-sm text-slate-400">Nenhuma bomba cadastrada neste posto.</p>
         ) : (
-          <div className="overflow-hidden rounded-lg border bg-white">
+          <div className="overflow-hidden rounded-lg border bg-white dark:bg-slate-900">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b bg-slate-50">
-                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400">Número</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400">Status</th>
+                <tr className="border-b bg-slate-50 dark:bg-slate-800">
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">Número</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">Status</th>
                   <th className="px-4 py-2" />
                 </tr>
               </thead>
               <tbody>
                 {pumps.map((pump) => (
                   <tr key={pump.id} className="border-b last:border-0">
-                    <td className="px-4 py-3 font-semibold text-slate-800">Bomba {pump.number}</td>
+                    <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">Bomba {pump.number}</td>
                     <td className="px-4 py-3">
                       <Select
                         value={pump.status}
@@ -128,7 +128,7 @@ export function BombasPage() {
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => openEdit(pump)}
-                        className="text-slate-400 hover:text-slate-600"
+                        className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
                         title="Editar"
                       >
                         <Pencil size={14} />

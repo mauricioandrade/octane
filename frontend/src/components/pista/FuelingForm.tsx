@@ -95,7 +95,7 @@ export function FuelingForm({ shiftId, nozzleId, nozzleNumber, fuelName, onClose
             </span>
           )}
         </span>
-        <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+        <button onClick={onClose} className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300">
           <X size={14} />
         </button>
       </div>
@@ -128,7 +128,7 @@ export function FuelingForm({ shiftId, nozzleId, nozzleNumber, fuelName, onClose
               'flex h-9 items-center rounded-md border px-3 text-sm font-semibold',
               totalAmount > 0
                 ? 'border-green-300 bg-green-50 text-green-700'
-                : 'border-slate-200 bg-slate-50 text-slate-400',
+                : 'border-slate-200 bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500',
             )}
           >
             {totalAmount > 0 ? formatBRL(totalAmount) : '—'}
@@ -152,7 +152,7 @@ export function FuelingForm({ shiftId, nozzleId, nozzleNumber, fuelName, onClose
                       'rounded border px-2 py-1 text-[10px] font-semibold',
                       field.value === value
                         ? 'border-orange-600 bg-orange-50 text-orange-600'
-                        : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300',
+                        : 'border-slate-200 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:border-slate-300',
                     )}
                   >
                     {label}

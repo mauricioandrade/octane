@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Fuel, DollarSign, Store, ClipboardList, ChevronDown, Moon, Sun, ChevronsUpDown } from 'lucide-react'
+import { Fuel, DollarSign, Store, ClipboardList, ChevronDown, Moon, Sun, ChevronsUpDown, X, LogOut } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils'
 import { getTheme, toggleTheme, type Theme } from '@/lib/theme'
 import { useActiveStation } from '@/hooks/useActiveStation'
 import { getStations } from '@/api/stations'
+import { useSidebar } from '@/context/SidebarContext'
 
 const cadastrosItems = [
   { to: '/cadastros/postos', label: 'Postos' },
@@ -24,6 +25,7 @@ export function Sidebar() {
   const { station, setStation } = useActiveStation()
   const [cadastrosOpen, setCadastrosOpen] = useState(false)
   const [theme, setThemeState] = useState<Theme>(getTheme)
+  const { isOpen, close } = useSidebar()
 
   const { data: activeStations = [] } = useQuery({
     queryKey: ['stations', 'active'],
@@ -36,19 +38,32 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="flex w-52 shrink-0 flex-col border-r bg-white">
-      <div className="border-b px-4 py-4">
+    <aside className={cn(
+      'flex w-52 shrink-0 flex-col border-r bg-white dark:bg-slate-900',
+      'fixed inset-y-0 left-0 z-50 transition-transform duration-200',
+      'md:static md:translate-x-0',
+      isOpen ? 'translate-x-0' : '-translate-x-full'
+    )}>
+      <div className="border-b px-4 py-4 flex items-center">
         <span className="text-[17px] font-extrabold tracking-tight text-orange-600">
           ⛽ Octane
         </span>
+        <button
+          onClick={close}
+          className="ml-auto rounded p-1 text-slate-400 hover:text-slate-600 md:hidden dark:text-slate-500"
+          aria-label="Fechar menu"
+        >
+          <X size={16} />
+        </button>
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5 p-2">
         <NavLink
           to="/pista"
+          onClick={close}
           className={({ isActive }) =>
             cn('flex items-center gap-2 rounded-md px-3 py-2 text-sm',
-              isActive ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-500 hover:bg-slate-50')
+              isActive ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800')
           }
         >
           <Fuel size={15} /> Pista
@@ -56,9 +71,10 @@ export function Sidebar() {
 
         <NavLink
           to="/precos"
+          onClick={close}
           className={({ isActive }) =>
             cn('flex items-center gap-2 rounded-md px-3 py-2 text-sm',
-              isActive ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-500 hover:bg-slate-50')
+              isActive ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800')
           }
         >
           <DollarSign size={15} /> Preços
@@ -66,7 +82,7 @@ export function Sidebar() {
 
         <button
           onClick={() => setCadastrosOpen((v) => !v)}
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-500 hover:bg-slate-50"
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
         >
           <Store size={15} /> Cadastros
           <ChevronDown size={12} className={cn('ml-auto transition-transform', cadastrosOpen && 'rotate-180')} />
@@ -77,9 +93,10 @@ export function Sidebar() {
               <NavLink
                 key={item.to}
                 to={item.to}
+                onClick={close}
                 className={({ isActive }) =>
                   cn('rounded px-3 py-1.5 text-xs',
-                    isActive ? 'font-semibold text-orange-600' : 'text-slate-400 hover:text-slate-600')
+                    isActive ? 'font-semibold text-orange-600' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300')
                 }
               >
                 {item.label}
@@ -90,9 +107,10 @@ export function Sidebar() {
 
         <NavLink
           to="/historico"
+          onClick={close}
           className={({ isActive }) =>
             cn('flex items-center gap-2 rounded-md px-3 py-2 text-sm',
-              isActive ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-500 hover:bg-slate-50')
+              isActive ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800')
           }
         >
           <ClipboardList size={15} /> Histórico
@@ -102,14 +120,14 @@ export function Sidebar() {
       <div className="border-t p-2 flex flex-col gap-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex w-full items-center justify-between rounded-md border bg-slate-50 px-3 py-2 text-left hover:bg-slate-100">
+            <button className="flex w-full items-center justify-between rounded-md border bg-slate-50 dark:bg-slate-800 dark:border-slate-700 px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-700">
               <div>
-                <p className="text-[9px] uppercase tracking-wider text-slate-400">Posto ativo</p>
-                <p className="max-w-[130px] truncate text-xs font-semibold text-slate-800">
+                <p className="text-[9px] uppercase tracking-wider text-slate-400 dark:text-slate-500">Posto ativo</p>
+                <p className="max-w-[130px] truncate text-xs font-semibold text-slate-800 dark:text-slate-100">
                   {station?.name ?? 'Selecionar posto'}
                 </p>
               </div>
-              <ChevronsUpDown size={12} className="text-slate-400" />
+              <ChevronsUpDown size={12} className="text-slate-400 dark:text-slate-500" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-48">
@@ -129,12 +147,12 @@ export function Sidebar() {
         </DropdownMenu>
 
         <div className="flex items-center justify-between px-1">
-          <span className="text-[10px] text-slate-400">Tema escuro</span>
+          <span className="text-[10px] text-slate-400 dark:text-slate-500">Tema escuro</span>
           <button onClick={handleThemeToggle} aria-label="Toggle theme">
             {theme === 'dark' ? (
-              <Sun size={14} className="text-slate-400" />
+              <Sun size={14} className="text-slate-400 dark:text-slate-500" />
             ) : (
-              <Moon size={14} className="text-slate-400" />
+              <Moon size={14} className="text-slate-400 dark:text-slate-500" />
             )}
           </button>
         </div>

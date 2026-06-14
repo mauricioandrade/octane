@@ -14,9 +14,9 @@ import { formatBRL, formatLiters } from '@/lib/utils'
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border bg-white p-4">
-      <p className="text-[10px] uppercase tracking-wider text-slate-400">{label}</p>
-      <p className="mt-1 text-xl font-bold text-slate-900">{value}</p>
+    <div className="rounded-lg border bg-white dark:bg-slate-900 p-4">
+      <p className="text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500">{label}</p>
+      <p className="mt-1 text-xl font-bold text-slate-900 dark:text-slate-100">{value}</p>
     </div>
   )
 }

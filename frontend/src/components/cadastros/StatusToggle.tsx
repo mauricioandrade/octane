@@ -44,7 +44,7 @@ export function StatusToggle({
           'cursor-pointer select-none',
           active
             ? 'bg-green-100 text-green-700 hover:bg-green-200'
-            : 'bg-slate-100 text-slate-400 hover:bg-slate-200',
+            : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200',
         )}
       >
         {active ? labelActive : labelInactive}

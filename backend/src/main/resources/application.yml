@@ -21,3 +21,8 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+octane:
+  admin:
+    username: ${ADMIN_USERNAME:admin}
+    password: ${ADMIN_PASSWORD:octane123}

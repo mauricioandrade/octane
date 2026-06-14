@@ -106,25 +106,25 @@ export function BicosPage() {
         ) : filteredNozzles.length === 0 ? (
           <p className="text-sm text-slate-400">Nenhum bico cadastrado neste posto.</p>
         ) : (
-          <div className="overflow-hidden rounded-lg border bg-white">
+          <div className="overflow-hidden rounded-lg border bg-white dark:bg-slate-900">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b bg-slate-50">
-                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400">Bico</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400">Bomba</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400">Combustível</th>
-                  <th className="px-4 py-2 text-center text-xs font-semibold uppercase text-slate-400">Status</th>
+                <tr className="border-b bg-slate-50 dark:bg-slate-800">
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">Bico</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">Bomba</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">Combustível</th>
+                  <th className="px-4 py-2 text-center text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">Status</th>
                   <th className="px-4 py-2" />
                 </tr>
               </thead>
               <tbody>
                 {filteredNozzles.map((nozzle) => (
                   <tr key={nozzle.id} className="border-b last:border-0">
-                    <td className="px-4 py-3 font-semibold text-slate-800">Bico {nozzle.number}</td>
-                    <td className="px-4 py-3 text-slate-500">
+                    <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">Bico {nozzle.number}</td>
+                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400">
                       Bomba {pumpById[nozzle.pumpId]?.number ?? '—'}
                     </td>
-                    <td className="px-4 py-3 text-slate-500">
+                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400">
                       {fuelById[nozzle.fuelId]?.name ?? '—'}
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -138,7 +138,7 @@ export function BicosPage() {
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => openEdit(nozzle)}
-                        className="text-slate-400 hover:text-slate-600"
+                        className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
                         title="Editar"
                       >
                         <Pencil size={14} />

@@ -188,3 +188,84 @@ export type CreatePriceRequest = {
   fuelId: string
   price: number
 }
+
+// ── Fleet ─────────────────────────────────────────────────────────────────────
+
+export interface FleetClient {
+  id: string
+  stationId: string
+  cnpj: string
+  companyName: string
+  tradeName?: string
+  monthlyLimit?: number
+  currentMonthSpend: number
+  active: boolean
+  createdAt: string
+}
+
+export interface FleetVehicle {
+  id: string
+  clientId: string
+  plate: string
+  model?: string
+  allowedFuelId: string
+  allowedFuelName: string
+  active: boolean
+  createdAt: string
+}
+
+export interface FleetDriver {
+  id: string
+  clientId: string
+  name: string
+  cpf: string
+  hasPIN: boolean
+  hasRFID: boolean
+  active: boolean
+  createdAt: string
+}
+
+export interface FleetFueling {
+  id: string
+  fuelingId: string
+  driver: FleetDriver
+  vehicle: FleetVehicle
+  liters: number
+  unitPrice: number
+  totalAmount: number
+  paymentMethod: string
+  odometer: number
+  previousOdometer?: number
+  odometerAlert: boolean
+  fueledAt: string
+}
+
+export interface FleetDriverIdentification {
+  driver: FleetDriver
+  client: FleetClient
+  vehicles: FleetVehicle[]
+}
+
+export interface FleetConsumptionReport {
+  summary: {
+    totalLiters: number
+    totalAmount: number
+    count: number
+    odometerAlerts: number
+  }
+  lines: FleetConsumptionLine[]
+}
+
+export interface FleetConsumptionLine {
+  fueledAt: string
+  driverName: string
+  driverCpf: string
+  vehiclePlate: string
+  vehicleModel?: string
+  fuelName: string
+  liters: number
+  totalAmount: number
+  odometer: number
+  odometerAlert: boolean
+  paymentMethod: string
+}

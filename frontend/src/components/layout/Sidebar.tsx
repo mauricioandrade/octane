@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Fuel, DollarSign, Store, ClipboardList, ChevronDown, Moon, Sun, ChevronsUpDown, X, LogOut } from 'lucide-react'
+import { Fuel, DollarSign, Store, ClipboardList, ChevronDown, Moon, Sun, ChevronsUpDown, X, LogOut, Truck } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,9 +22,17 @@ const cadastrosItems = [
   { to: '/cadastros/combustiveis', label: 'Combustíveis' },
 ]
 
+const frotaItems = [
+  { to: '/frota/clientes', label: 'Clientes' },
+  { to: '/frota/veiculos', label: 'Veículos' },
+  { to: '/frota/motoristas', label: 'Motoristas' },
+  { to: '/frota/relatorio', label: 'Relatório' },
+]
+
 export function Sidebar() {
   const { station, setStation } = useActiveStation()
   const [cadastrosOpen, setCadastrosOpen] = useState(false)
+  const [frotaOpen, setFrotaOpen] = useState(false)
   const [theme, setThemeState] = useState<Theme>(getTheme)
   const { isOpen, close } = useSidebar()
   const { logout } = useAuth()
@@ -117,6 +125,31 @@ export function Sidebar() {
         >
           <ClipboardList size={15} /> Histórico
         </NavLink>
+
+        <button
+          onClick={() => setFrotaOpen((v) => !v)}
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+        >
+          <Truck size={15} /> Frota
+          <ChevronDown size={12} className={cn('ml-auto transition-transform', frotaOpen && 'rotate-180')} />
+        </button>
+        {frotaOpen && (
+          <div className="ml-6 flex flex-col gap-0.5">
+            {frotaItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={close}
+                className={({ isActive }) =>
+                  cn('rounded px-3 py-1.5 text-xs',
+                    isActive ? 'font-semibold text-orange-600' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300')
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+        )}
       </nav>
 
       <div className="border-t p-2 flex flex-col gap-2">

@@ -12,6 +12,11 @@ import { BicosPage } from '@/pages/BicosPage'
 import { CombustiveisPage } from '@/pages/CombustiveisPage'
 import { HistoricoPage } from '@/pages/HistoricoPage'
 import { LoginPage } from '@/pages/LoginPage'
+import { FrotaClientesPage } from '@/pages/FrotaClientesPage'
+import { FrotaClienteDetailPage } from '@/pages/FrotaClienteDetailPage'
+import { FrotaVeiculosPage } from '@/pages/FrotaVeiculosPage'
+import { FrotaMotoristasPage } from '@/pages/FrotaMotoristasPage'
+import { FrotaRelatorioPage } from '@/pages/FrotaRelatorioPage'
 
 function ProtectedApp() {
   const { authState } = useAuth()
@@ -43,6 +48,12 @@ function ProtectedApp() {
             <Route path="combustiveis" element={<CombustiveisPage />} />
           </Route>
           <Route path="/historico" element={<HistoricoPage />} />
+          <Route path="/frota" element={<Navigate to="/frota/clientes" replace />} />
+          <Route path="/frota/clientes" element={<FrotaClientesPage />} />
+          <Route path="/frota/clientes/:clientId" element={<FrotaClienteDetailPage />} />
+          <Route path="/frota/veiculos" element={<FrotaVeiculosPage />} />
+          <Route path="/frota/motoristas" element={<FrotaMotoristasPage />} />
+          <Route path="/frota/relatorio" element={<FrotaRelatorioPage />} />
         </Route>
       </Routes>
     </StationProvider>

@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -86,7 +87,7 @@ class PumpHandlerTest {
     void getNozzles_returns200WithList() throws Exception {
         var pumpId = UUID.randomUUID();
         var fuelId = UUID.randomUUID();
-        when(listNozzlesByPumpUseCase.execute(pumpId)).thenReturn(List.of(buildNozzle(pumpId, fuelId)));
+        when(listNozzlesByPumpUseCase.execute(eq(pumpId), isNull())).thenReturn(List.of(buildNozzle(pumpId, fuelId)));
 
         mockMvc.perform(get("/api/pumps/" + pumpId + "/nozzles"))
             .andExpect(status().isOk())

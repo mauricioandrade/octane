@@ -2,8 +2,9 @@ spring:
   application:
     name: octane
   jackson:
-    serialization:
-      write-dates-as-timestamps: false
+    datatype:
+      datetime:
+        write-dates-as-timestamps: false
 
 ---
 spring:

@@ -213,8 +213,6 @@ class RegisterNozzleReadingUseCaseTest {
 
         when(shiftRepository.findById(shiftId)).thenReturn(Optional.of(shift));
         when(nozzleRepository.findById(nozzleId)).thenReturn(Optional.of(nozzle));
-        when(nozzleReadingRepository.findByShiftIdAndNozzleIdAndType(shiftId, nozzleId, NozzleReadingType.CLOSING))
-                .thenReturn(Optional.empty());
         when(nozzleReadingRepository.findByShiftIdAndNozzleIdAndType(shiftId, nozzleId, NozzleReadingType.OPENING))
                 .thenReturn(Optional.of(openingReading));
 

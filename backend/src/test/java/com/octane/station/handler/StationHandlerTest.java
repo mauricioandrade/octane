@@ -29,6 +29,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -93,7 +94,7 @@ class StationHandlerTest {
     @Test
     void getStations_returns200WithList() throws Exception {
         var station = buildStation(UUID.randomUUID());
-        when(listStationsUseCase.execute()).thenReturn(List.of(station));
+        when(listStationsUseCase.execute((Boolean) null)).thenReturn(List.of(station));
 
         mockMvc.perform(get("/api/stations"))
             .andExpect(status().isOk())
@@ -166,7 +167,7 @@ class StationHandlerTest {
     void getPumps_returns200WithList() throws Exception {
         var stationId = UUID.randomUUID();
         var station = buildStation(stationId);
-        when(listPumpsByStationUseCase.execute(stationId)).thenReturn(List.of(buildPump(UUID.randomUUID(), station)));
+        when(listPumpsByStationUseCase.execute(eq(stationId), isNull())).thenReturn(List.of(buildPump(UUID.randomUUID(), station)));
 
         mockMvc.perform(get("/api/stations/" + stationId + "/pumps"))
             .andExpect(status().isOk())

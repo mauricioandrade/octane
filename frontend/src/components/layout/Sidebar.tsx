@@ -13,6 +13,7 @@ import { getTheme, toggleTheme, type Theme } from '@/lib/theme'
 import { useActiveStation } from '@/hooks/useActiveStation'
 import { getStations } from '@/api/stations'
 import { useSidebar } from '@/context/SidebarContext'
+import { useAuth } from '@/context/AuthContext'
 
 const cadastrosItems = [
   { to: '/cadastros/postos', label: 'Postos' },
@@ -26,6 +27,7 @@ export function Sidebar() {
   const [cadastrosOpen, setCadastrosOpen] = useState(false)
   const [theme, setThemeState] = useState<Theme>(getTheme)
   const { isOpen, close } = useSidebar()
+  const { logout } = useAuth()
 
   const { data: activeStations = [] } = useQuery({
     queryKey: ['stations', 'active'],
@@ -156,6 +158,14 @@ export function Sidebar() {
             )}
           </button>
         </div>
+
+        <button
+          onClick={() => logout()}
+          className="flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-xs text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-300"
+        >
+          <LogOut size={13} />
+          Sair
+        </button>
       </div>
     </aside>
   )

@@ -3,9 +3,13 @@ package com.octane.station.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.octane.station.domain.Fuel;
 import com.octane.station.domain.FuelUnit;
+import com.octane.station.usecase.fuel.CreateFuelRequest;
+import com.octane.station.usecase.fuel.CreateFuelUseCase;
 import com.octane.station.usecase.fuel.ListFuelsUseCase;
+import com.octane.station.usecase.fuel.UpdateFuelRequest;
 import com.octane.station.usecase.fuel.UpdateFuelStatusRequest;
 import com.octane.station.usecase.fuel.UpdateFuelStatusUseCase;
+import com.octane.station.usecase.fuel.UpdateFuelUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -38,6 +42,12 @@ class FuelHandlerTest {
 
     @MockitoBean
     private UpdateFuelStatusUseCase updateFuelStatusUseCase;
+
+    @MockitoBean
+    private CreateFuelUseCase createFuelUseCase;
+
+    @MockitoBean
+    private UpdateFuelUseCase updateFuelUseCase;
 
     @Test
     void getFuels_returns200WithList() throws Exception {

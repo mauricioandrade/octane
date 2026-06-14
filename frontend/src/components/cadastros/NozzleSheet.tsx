@@ -82,7 +82,10 @@ export function NozzleSheet({ open, onOpenChange, nozzle }: Props) {
         : createNozzle(data.pumpId, { number: data.number, pumpId: data.pumpId, fuelId: data.fuelId }),
     onSuccess: () => {
       toast.success(isEdit ? 'Bico atualizado!' : 'Bico criado!')
-      pumps.forEach((p) => qc.invalidateQueries({ queryKey: ['nozzles', p.id] }))
+      pumps.forEach((p) => {
+        qc.invalidateQueries({ queryKey: ['nozzles', p.id] })
+        qc.invalidateQueries({ queryKey: ['nozzles', p.id, 'active'] })
+      })
       onOpenChange(false)
     },
     onError: () => {

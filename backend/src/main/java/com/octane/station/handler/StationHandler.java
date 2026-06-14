@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -62,8 +63,8 @@ public class StationHandler {
     }
 
     @GetMapping
-    public List<StationResponse> list() {
-        return listStationsUseCase.execute().stream()
+    public List<StationResponse> list(@RequestParam(required = false) Boolean active) {
+        return listStationsUseCase.execute(active).stream()
             .map(StationResponse::from)
             .toList();
     }
@@ -90,8 +91,9 @@ public class StationHandler {
     }
 
     @GetMapping("/{id}/pumps")
-    public List<PumpResponse> listPumps(@PathVariable UUID id) {
-        return listPumpsByStationUseCase.execute(id).stream()
+    public List<PumpResponse> listPumps(@PathVariable UUID id,
+                                        @RequestParam(required = false) String status) {
+        return listPumpsByStationUseCase.execute(id, status).stream()
             .map(PumpResponse::from)
             .toList();
     }

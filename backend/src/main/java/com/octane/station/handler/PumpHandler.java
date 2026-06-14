@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -57,8 +58,9 @@ public class PumpHandler {
     }
 
     @GetMapping("/{id}/nozzles")
-    public List<NozzleResponse> listNozzles(@PathVariable UUID id) {
-        return listNozzlesByPumpUseCase.execute(id).stream()
+    public List<NozzleResponse> listNozzles(@PathVariable UUID id,
+                                            @RequestParam(required = false) Boolean active) {
+        return listNozzlesByPumpUseCase.execute(id, active).stream()
             .map(NozzleResponse::from)
             .toList();
     }

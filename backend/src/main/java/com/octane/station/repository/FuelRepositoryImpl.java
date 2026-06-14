@@ -28,6 +28,11 @@ public class FuelRepositoryImpl implements FuelRepository {
     }
 
     @Override
+    public Optional<Fuel> findByName(String name) {
+        return jpaRepository.findByName(name);
+    }
+
+    @Override
     public List<Fuel> findAll() {
         return jpaRepository.findAll();
     }

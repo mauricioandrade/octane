@@ -166,28 +166,34 @@ class RegisterNozzleReadingUseCaseTest {
     }
 
     @Test
-    void execute_throwsBusinessException_whenDuplicateReading() {
+    void execute_updatesAndReturnsReading_whenDuplicateReading() {
         var stationId = UUID.randomUUID();
         var shiftId = UUID.randomUUID();
         var nozzleId = UUID.randomUUID();
+        var existingId = UUID.randomUUID();
 
         var station = makeStation(stationId);
         var pump = makePump(UUID.randomUUID(), station);
         var nozzle = makeNozzle(nozzleId, pump);
         var shift = makeShift(shiftId, station, ShiftStatus.OPEN);
-        var request = new RegisterNozzleReadingRequest(nozzleId, "OPENING", new BigDecimal("1000.000"));
-        var existingReading = makeReading(UUID.randomUUID(), shift, nozzle, NozzleReadingType.OPENING, request.totalizer());
+        var originalTotalizer = new BigDecimal("1000.000");
+        var updatedTotalizer = new BigDecimal("1050.000");
+        var request = new RegisterNozzleReadingRequest(nozzleId, "OPENING", updatedTotalizer);
+        var existingReading = makeReading(existingId, shift, nozzle, NozzleReadingType.OPENING, originalTotalizer);
+        var savedReading = makeReading(existingId, shift, nozzle, NozzleReadingType.OPENING, updatedTotalizer);
 
         when(shiftRepository.findById(shiftId)).thenReturn(Optional.of(shift));
         when(nozzleRepository.findById(nozzleId)).thenReturn(Optional.of(nozzle));
         when(nozzleReadingRepository.findByShiftIdAndNozzleIdAndType(shiftId, nozzleId, NozzleReadingType.OPENING))
                 .thenReturn(Optional.of(existingReading));
+        when(nozzleReadingRepository.save(any(NozzleReading.class))).thenReturn(savedReading);
 
-        assertThatThrownBy(() -> sut.execute(shiftId, request))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("já registrada");
+        var result = sut.execute(shiftId, request);
 
-        verify(nozzleReadingRepository, never()).save(any());
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(existingId);
+        assertThat(result.getTotalizer()).isEqualByComparingTo(updatedTotalizer);
+        verify(nozzleReadingRepository).save(any(NozzleReading.class));
     }
 
     @Test

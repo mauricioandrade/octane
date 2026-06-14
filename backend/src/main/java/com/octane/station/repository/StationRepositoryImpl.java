@@ -36,4 +36,12 @@ public class StationRepositoryImpl implements StationRepository {
     public List<Station> findAll() {
         return jpaRepository.findAll();
     }
+
+    @Override
+    public List<Station> findAll(Boolean active) {
+        if (active != null) {
+            return jpaRepository.findByActive(active);
+        }
+        return jpaRepository.findAll();
+    }
 }

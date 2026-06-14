@@ -8,5 +8,6 @@ import java.util.UUID;
 
 interface NozzleJpaRepository extends JpaRepository<Nozzle, UUID> {
     List<Nozzle> findByPump_Id(UUID pumpId);
+    List<Nozzle> findByPump_IdAndActive(UUID pumpId, boolean active);
     boolean existsByPump_IdAndNumber(UUID pumpId, int number);
 }

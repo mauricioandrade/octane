@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -21,6 +22,8 @@ export function HistoricoPage() {
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
 
+  const dateRangeValid = !fromDate || !toDate || fromDate <= toDate
+
   const { data, isLoading } = useQuery({
     queryKey: ['shifts', station?.id, page, statusFilter, fromDate, toDate],
     queryFn: () =>
@@ -31,7 +34,7 @@ export function HistoricoPage() {
         from: fromDate ? `${fromDate}T00:00:00` : undefined,
         to: toDate ? `${toDate}T23:59:59` : undefined,
       }),
-    enabled: !!station,
+    enabled: !!station && dateRangeValid,
   })
 
   if (!station) {
@@ -53,14 +56,28 @@ export function HistoricoPage() {
             <Input
               type="date"
               value={fromDate}
-              onChange={(e) => { setFromDate(e.target.value); setPage(0) }}
+              onChange={(e) => {
+                const next = e.target.value
+                setFromDate(next)
+                setPage(0)
+                if (next && toDate && next > toDate) {
+                  toast.error('Data inicial deve ser anterior à data final')
+                }
+              }}
               className="h-8 w-36 text-xs"
             />
             <span className="text-slate-400 text-xs">até</span>
             <Input
               type="date"
               value={toDate}
-              onChange={(e) => { setToDate(e.target.value); setPage(0) }}
+              onChange={(e) => {
+                const next = e.target.value
+                setToDate(next)
+                setPage(0)
+                if (fromDate && next && fromDate > next) {
+                  toast.error('Data inicial deve ser anterior à data final')
+                }
+              }}
               className="h-8 w-36 text-xs"
             />
           </div>

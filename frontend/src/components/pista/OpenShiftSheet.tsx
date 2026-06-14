@@ -148,6 +148,7 @@ export function OpenShiftSheet({ open, onOpenChange }: Props) {
                       step="0.001"
                       min="0"
                       placeholder="0.000"
+                      defaultValue="0"
                       {...register(`readings.${nozzle.id}`)}
                     />
                     {errors.readings?.[nozzle.id] && (

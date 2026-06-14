@@ -1,8 +1,13 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Plus, Pencil } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
 import { TopBar } from '@/components/layout/TopBar'
 import { StatusToggle } from '@/components/cadastros/StatusToggle'
+import { FuelSheet } from '@/components/cadastros/FuelSheet'
 import { getFuels, patchFuelStatus } from '@/api/fuels'
+import type { Fuel } from '@/types'
 
 export function CombustiveisPage() {
   const { data: fuels = [], isLoading } = useQuery({
@@ -10,11 +15,35 @@ export function CombustiveisPage() {
     queryFn: () => getFuels(),
   })
 
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [editFuel, setEditFuel] = useState<Fuel | undefined>()
+
+  function openCreate() {
+    setEditFuel(undefined)
+    setSheetOpen(true)
+  }
+
+  function openEdit(fuel: Fuel) {
+    setEditFuel(fuel)
+    setSheetOpen(true)
+  }
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <TopBar title="Combustíveis" subtitle="Lista global — ative ou inative conforme disponibilidade" />
 
       <div className="flex-1 overflow-auto p-6">
+        <div className="mb-4 flex justify-end">
+          <Button
+            size="sm"
+            className="bg-orange-600 hover:bg-orange-700"
+            onClick={openCreate}
+          >
+            <Plus size={14} className="mr-1" />
+            Novo combustível
+          </Button>
+        </div>
+
         {isLoading ? (
           <div className="flex flex-col gap-2">
             <Skeleton className="h-10 w-full" />
@@ -37,6 +66,9 @@ export function CombustiveisPage() {
                   <th className="px-4 py-2 text-center text-xs font-semibold uppercase text-slate-400">
                     Status
                   </th>
+                  <th className="px-4 py-2 text-center text-xs font-semibold uppercase text-slate-400">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -52,6 +84,16 @@ export function CombustiveisPage() {
                         onToggle={(id, active) => patchFuelStatus(id, active)}
                       />
                     </td>
+                    <td className="px-4 py-3 text-center">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => openEdit(fuel)}
+                      >
+                        <Pencil size={14} />
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -59,6 +101,12 @@ export function CombustiveisPage() {
           </div>
         )}
       </div>
+
+      <FuelSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        fuel={editFuel}
+      />
     </div>
   )
 }

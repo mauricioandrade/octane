@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useMutation, useQuery, useQueries, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueries, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   Sheet,
@@ -94,38 +94,37 @@ export function CloseShiftSheet({ open, onOpenChange, shiftId, employeeName }: P
   async function onCalculate(data: FormData) {
     setCalculating(true)
     try {
+      let readingFailed = false
       for (const nozzle of activeNozzles) {
         const totalizer = data.readings[nozzle.id]
         if (totalizer === undefined) continue
-        await registerReading(shiftId, {
-          nozzleId: nozzle.id,
-          type: 'CLOSING',
-          totalizer,
-        })
+        try {
+          await registerReading(shiftId, {
+            nozzleId: nozzle.id,
+            type: 'CLOSING',
+            totalizer,
+          })
+        } catch {
+          toast.error(`Erro ao registrar encerrante do bico ${nozzle.number}`)
+          readingFailed = true
+        }
       }
+      if (readingFailed) {
+        setCalculating(false)
+        return
+      }
+      // Fecha o turno (grava reconciliação atomicamente no backend)
+      await closeShift(shiftId)
+      qc.invalidateQueries({ queryKey: ['shift', 'open', station?.id] })
       const rec = await getReconciliation(shiftId)
       setReconciliation(rec)
       setStep(2)
     } catch {
-      toast.error('Erro ao registrar encerrantes de fechamento')
+      toast.error('Erro ao fechar turno')
     } finally {
       setCalculating(false)
     }
   }
-
-  const closeMutation = useMutation({
-    mutationFn: () => closeShift(shiftId),
-    onSuccess: () => {
-      toast.success('Turno fechado!')
-      qc.invalidateQueries({ queryKey: ['shift', 'open', station?.id] })
-      onOpenChange(false)
-      setStep(1)
-      setReconciliation(null)
-    },
-    onError: () => {
-      toast.error('Erro ao fechar turno')
-    },
-  })
 
   function handleClose() {
     onOpenChange(false)
@@ -193,7 +192,7 @@ export function CloseShiftSheet({ open, onOpenChange, shiftId, employeeName }: P
         {step === 2 && reconciliation && (
           <div className="flex flex-col gap-4">
             <p className="text-sm text-slate-500">
-              Revise a reconciliação antes de confirmar o fechamento.
+              Turno fechado. Reconciliação ANP 884/2022:
             </p>
 
             <div className="overflow-hidden rounded-lg border">
@@ -235,22 +234,9 @@ export function CloseShiftSheet({ open, onOpenChange, shiftId, employeeName }: P
               </table>
             </div>
 
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setStep(1)}
-                className="flex-1"
-              >
-                ← Voltar
-              </Button>
-              <Button
-                onClick={() => closeMutation.mutate()}
-                disabled={closeMutation.isPending}
-                className="flex-1 bg-red-600 hover:bg-red-700"
-              >
-                {closeMutation.isPending ? 'Fechando…' : 'Confirmar fechamento'}
-              </Button>
-            </div>
+            <Button onClick={handleClose} className="w-full bg-slate-700 hover:bg-slate-800">
+              Concluído
+            </Button>
           </div>
         )}
       </SheetContent>

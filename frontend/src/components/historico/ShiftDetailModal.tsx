@@ -1,4 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { X } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
@@ -6,9 +8,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
-import { getShiftSummary } from '@/api/fuelings'
+import { getShiftSummary, cancelFueling } from '@/api/fuelings'
 import { getReconciliation } from '@/api/shifts'
 import { formatBRL, formatLiters } from '@/lib/utils'
 import { PAYMENT_METHOD_LABELS, type PaymentMethod } from '@/types'
@@ -39,10 +42,24 @@ function divergenceBadge(line: ReconciliationLine) {
 }
 
 export function ShiftDetailModal({ shift, open, onOpenChange }: Props) {
+  const qc = useQueryClient()
+
   const { data: summary, isLoading: summaryLoading } = useQuery({
     queryKey: ['shift-summary', shift.id],
     queryFn: () => getShiftSummary(shift.id),
     enabled: open,
+  })
+
+  const cancelMutation = useMutation({
+    mutationFn: (fuelingId: string) => cancelFueling(shift.id, fuelingId),
+    onSuccess: () => {
+      toast.success('Abastecimento cancelado')
+      qc.invalidateQueries({ queryKey: ['shift-summary', shift.id] })
+      qc.invalidateQueries({ queryKey: ['shift', 'open', shift.stationId] })
+    },
+    onError: () => {
+      toast.error('Erro ao cancelar abastecimento')
+    },
   })
 
   const { data: reconciliation } = useQuery({
@@ -143,6 +160,7 @@ export function ShiftDetailModal({ shift, open, onOpenChange }: Props) {
                         <th className="px-3 py-2 text-right font-semibold text-slate-400">Litros</th>
                         <th className="px-3 py-2 text-right font-semibold text-slate-400">Total</th>
                         <th className="px-3 py-2 text-left font-semibold text-slate-400">Pgto</th>
+                        {shift.status === 'OPEN' && <th className="px-3 py-2" />}
                       </tr>
                     </thead>
                     <tbody>
@@ -165,6 +183,24 @@ export function ShiftDetailModal({ shift, open, onOpenChange }: Props) {
                           <td className="px-3 py-1.5 text-slate-400">
                             {PAYMENT_METHOD_LABELS[f.paymentMethod as PaymentMethod] ?? f.paymentMethod}
                           </td>
+                          {shift.status === 'OPEN' && (
+                            <td className="px-3 py-1.5">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6 text-slate-400 hover:text-red-500"
+                                aria-label="Cancelar abastecimento"
+                                disabled={cancelMutation.isPending}
+                                onClick={() => {
+                                  if (window.confirm('Cancelar este abastecimento?')) {
+                                    cancelMutation.mutate(f.id)
+                                  }
+                                }}
+                              >
+                                <X size={14} />
+                              </Button>
+                            </td>
+                          )}
                         </tr>
                       ))}
                     </tbody>

@@ -88,7 +88,7 @@ export function PistaPage() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <MetricCard label="Volume total" value={formatLiters(summary?.totalLiters ?? 0)} />
               <MetricCard label="Receita" value={formatBRL(summary?.totalAmount ?? 0)} />
               <MetricCard label="Abastecimentos" value={String(summary?.fuelings.length ?? 0)} />

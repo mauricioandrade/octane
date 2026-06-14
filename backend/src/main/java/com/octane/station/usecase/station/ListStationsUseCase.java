@@ -18,4 +18,8 @@ public class ListStationsUseCase {
     public List<Station> execute() {
         return stationRepository.findAll();
     }
+
+    public List<Station> execute(Boolean active) {
+        return stationRepository.findAll(active);
+    }
 }

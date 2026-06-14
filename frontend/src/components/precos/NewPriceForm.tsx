@@ -41,7 +41,8 @@ export function NewPriceForm({ fuels, currentPrices }: Props) {
     control,
     reset,
     formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(schema) })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } = useForm<FormData>({ resolver: zodResolver(schema) as any })
 
   const selectedFuelId = watch('fuelId')
   const newPrice = watch('price')

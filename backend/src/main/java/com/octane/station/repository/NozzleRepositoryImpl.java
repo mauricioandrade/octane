@@ -33,6 +33,11 @@ public class NozzleRepositoryImpl implements NozzleRepository {
     }
 
     @Override
+    public List<Nozzle> findByPumpId(UUID pumpId, boolean active) {
+        return jpaRepository.findByPump_IdAndActive(pumpId, active);
+    }
+
+    @Override
     public boolean existsByPumpIdAndNumber(UUID pumpId, int number) {
         return jpaRepository.existsByPump_IdAndNumber(pumpId, number);
     }

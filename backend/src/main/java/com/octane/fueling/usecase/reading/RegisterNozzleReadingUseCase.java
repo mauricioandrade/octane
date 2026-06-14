@@ -44,10 +44,6 @@ public class RegisterNozzleReadingUseCase {
         var nozzle = nozzleRepository.findById(nozzleId)
                 .orElseThrow(() -> new EntityNotFoundException("Nozzle not found: " + nozzleId));
 
-        if (nozzleReadingRepository.findByShiftIdAndNozzleIdAndType(shiftId, nozzleId, type).isPresent()) {
-            throw new BusinessException("Leitura do tipo " + type + " já registrada para este bico neste turno");
-        }
-
         if (type == NozzleReadingType.CLOSING) {
             var openingReading = nozzleReadingRepository
                     .findByShiftIdAndNozzleIdAndType(shiftId, nozzleId, NozzleReadingType.OPENING);
@@ -56,6 +52,13 @@ public class RegisterNozzleReadingUseCase {
                     throw new BusinessException("Leitura de fechamento não pode ser menor que a leitura de abertura");
                 }
             }
+        }
+
+        var existing = nozzleReadingRepository.findByShiftIdAndNozzleIdAndType(shiftId, nozzleId, type);
+        if (existing.isPresent()) {
+            var updated = new NozzleReading(existing.get().getId(), shift, nozzle, type,
+                    request.totalizer(), existing.get().getRecordedAt());
+            return nozzleReadingRepository.save(updated);
         }
 
         var reading = new NozzleReading(null, shift, nozzle, type, request.totalizer(), LocalDateTime.now());

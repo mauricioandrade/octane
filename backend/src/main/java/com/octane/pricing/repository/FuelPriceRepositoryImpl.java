@@ -4,7 +4,6 @@ import com.octane.pricing.domain.FuelPrice;
 import com.octane.pricing.domain.repository.FuelPriceRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,10 +29,7 @@ public class FuelPriceRepositoryImpl implements FuelPriceRepository {
 
     @Override
     public List<FuelPrice> findCurrentByStation(UUID stationId) {
-        var seenFuels = new HashSet<UUID>();
-        return jpaRepository.findByStation_IdOrderByEffectiveFromDesc(stationId).stream()
-            .filter(price -> seenFuels.add(price.getFuel().getId()))
-            .toList();
+        return jpaRepository.findCurrentByStationId(stationId);
     }
 
     @Override

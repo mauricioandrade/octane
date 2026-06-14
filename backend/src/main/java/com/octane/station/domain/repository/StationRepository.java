@@ -11,4 +11,5 @@ public interface StationRepository {
     Optional<Station> findById(UUID id);
     Optional<Station> findByCnpj(String cnpj);
     List<Station> findAll();
+    List<Station> findAll(Boolean active);
 }

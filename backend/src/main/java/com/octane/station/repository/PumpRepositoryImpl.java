@@ -1,6 +1,7 @@
 package com.octane.station.repository;
 
 import com.octane.station.domain.Pump;
+import com.octane.station.domain.PumpStatus;
 import com.octane.station.domain.repository.PumpRepository;
 import org.springframework.stereotype.Repository;
 
@@ -29,6 +30,14 @@ public class PumpRepositoryImpl implements PumpRepository {
 
     @Override
     public List<Pump> findByStationId(UUID stationId) {
+        return jpaRepository.findByStation_Id(stationId);
+    }
+
+    @Override
+    public List<Pump> findByStationId(UUID stationId, PumpStatus status) {
+        if (status != null) {
+            return jpaRepository.findByStation_IdAndStatus(stationId, status);
+        }
         return jpaRepository.findByStation_Id(stationId);
     }
 

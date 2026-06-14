@@ -10,5 +10,6 @@ public interface NozzleRepository {
     Nozzle save(Nozzle nozzle);
     Optional<Nozzle> findById(UUID id);
     List<Nozzle> findByPumpId(UUID pumpId);
+    List<Nozzle> findByPumpId(UUID pumpId, boolean active);
     boolean existsByPumpIdAndNumber(UUID pumpId, int number);
 }

@@ -19,4 +19,11 @@ public class ListNozzlesByPumpUseCase {
     public List<Nozzle> execute(UUID pumpId) {
         return nozzleRepository.findByPumpId(pumpId);
     }
+
+    public List<Nozzle> execute(UUID pumpId, Boolean active) {
+        if (active != null) {
+            return nozzleRepository.findByPumpId(pumpId, active);
+        }
+        return nozzleRepository.findByPumpId(pumpId);
+    }
 }

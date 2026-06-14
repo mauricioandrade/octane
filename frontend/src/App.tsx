@@ -20,6 +20,8 @@ import { FrotaRelatorioPage } from '@/pages/FrotaRelatorioPage'
 import { OrdensServicoPage } from '@/pages/OrdensServicoPage'
 import { OrdemServicoDetailPage } from '@/pages/OrdemServicoDetailPage'
 import { VehicleHistoryPage } from '@/pages/VehicleHistoryPage'
+import { ComissaoRegrasPage } from '@/pages/ComissaoRegrasPage'
+import { ComissaoEntradasPage } from '@/pages/ComissaoEntradasPage'
 
 function ProtectedApp() {
   const { authState } = useAuth()
@@ -60,6 +62,8 @@ function ProtectedApp() {
           <Route path="/os/historico" element={<VehicleHistoryPage />} />
           <Route path="/os/:id" element={<OrdemServicoDetailPage />} />
           <Route path="/os" element={<OrdensServicoPage />} />
+          <Route path="/comissao/regras" element={<ComissaoRegrasPage />} />
+          <Route path="/comissao/entradas" element={<ComissaoEntradasPage />} />
         </Route>
       </Routes>
     </StationProvider>

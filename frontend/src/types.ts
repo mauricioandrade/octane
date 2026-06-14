@@ -315,3 +315,40 @@ export type AddServiceOrderItemRequest = {
   quantity: number
   unitPrice: number
 }
+
+// ── Comissão ──────────────────────────────────────────────────────────────────
+
+export type CommissionRule = {
+  id: string
+  stationId: string
+  employeeName: string
+  rate: number          // ex: 0.0200 = 2%
+  active: boolean
+  createdAt: string
+}
+
+export type CommissionEntry = {
+  id: string
+  shiftId: string
+  employeeName: string
+  stationId: string
+  stationName: string
+  baseAmount: number
+  rate: number
+  commission: number
+  paid: boolean
+  paidAt: string | null
+  createdAt: string
+}
+
+export type CreateCommissionRuleRequest = {
+  stationId: string
+  employeeName: string
+  rate: number
+}
+
+export type UpdateCommissionRuleRequest = {
+  employeeName?: string
+  rate?: number
+  active?: boolean
+}

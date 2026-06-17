@@ -33,7 +33,7 @@ Credenciais padrão: `admin / octane123` (configurável via `ADMIN_USERNAME` / `
 | Método | Rota | Descrição |
 |--------|------|-----------|
 | POST | `/api/shifts` | Abre turno no posto |
-| PUT | `/api/shifts/{id}/close` | Fecha turno com reconciliação de encerrantes |
+| PUT | `/api/shifts/{id}/close` | Fecha turno com reconciliação de encerrantes + calcula comissão automaticamente |
 | GET | `/api/shifts/{id}/reconciliation` | Exibe divergências por bico (LMC) |
 | POST | `/api/fuelings` | Registra abastecimento |
 | DELETE | `/api/fuelings/{id}` | Cancela abastecimento |
@@ -54,6 +54,54 @@ Credenciais padrão: `admin / octane123` (configurável via `ADMIN_USERNAME` / `
 | GET | `/api/prices/current` | Preços vigentes por combustível |
 | POST | `/api/prices` | Define novo preço com histórico |
 | GET | `/api/prices/history` | Histórico de alterações |
+
+### 🚗 Controle de Frota (V14 — Migrations V12-V14)
+Clientes PJ com limite mensal, veículos com restrição de combustível, motoristas identificados por CPF, PIN ou RFID.
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET/POST | `/api/fleet/clients` | Lista e cadastra clientes de frota |
+| GET/PUT | `/api/fleet/clients/{id}` | Detalha e atualiza cliente |
+| GET/POST | `/api/fleet/vehicles` | Lista e cadastra veículos |
+| GET/PUT | `/api/fleet/vehicles/{id}` | Detalha e atualiza veículo |
+| GET/POST | `/api/fleet/drivers` | Lista e cadastra motoristas |
+| GET/PUT | `/api/fleet/drivers/{id}` | Detalha e atualiza motorista |
+| POST | `/api/fleet/drivers/identify` | Identifica motorista (CPF/PIN/RFID) |
+| GET/POST | `/api/fleet/fuelings` | Lista e registra abastecimentos de frota |
+| GET | `/api/fleet/clients/{clientId}/fuelings` | Abastecimentos por cliente |
+| GET | `/api/fleet/reports/consumption` | Relatório de consumo por cliente |
+| GET | `/api/fleet/reports/consumption/export` | Exporta relatório em CSV |
+
+Frontend: `/frota/clientes`, `/frota/clientes/:id`, `/frota/veiculos`, `/frota/motoristas`, `/frota/relatorio`
+
+### 🔧 Ordem de Serviço — OS (Migrations V15-V17)
+OS digital com placa, quilometragem, itens (peças/serviços), histórico por veículo e cancelamento rastreado.
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET/POST | `/api/service-orders` | Lista e cria ordens de serviço |
+| GET | `/api/service-orders/{id}` | Detalha OS |
+| POST | `/api/service-orders/{id}/items` | Adiciona item (peça ou serviço) |
+| PUT | `/api/service-orders/{id}/close` | Fecha OS |
+| PUT | `/api/service-orders/{id}/cancel` | Cancela OS (registra `cancelledAt`) |
+| GET | `/api/service-orders/vehicle/{plate}/history` | Histórico por placa |
+
+Frontend: `/os`, `/os/:id`, `/os/historico`
+
+### 💼 Comissão de Funcionários (Migrations V18-V19)
+Regras de comissão por funcionário (taxa % sobre o total do turno), cálculo automático ao fechar turno, controle de pagamento.
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET/POST | `/api/commission/rules` | Lista e cria regras de comissão |
+| PUT | `/api/commission/rules/{id}` | Atualiza regra |
+| PATCH | `/api/commission/rules/{id}/status` | Ativa/desativa regra |
+| POST | `/api/commission/calculate/{shiftId}` | Calcula comissão de um turno |
+| GET | `/api/commission/entries` | Lista entradas (filtros: paid, from, to) |
+| GET | `/api/commission/shifts/{shiftId}/entry` | Comissão de um turno específico |
+| POST | `/api/commission/entries/{id}/pay` | Marca comissão como paga |
+
+Frontend: `/comissao/regras`, `/comissao/entradas`
 
 ### Infra
 | Método | Rota | Descrição |
@@ -142,6 +190,32 @@ Refs: [RotaExata – integração com postos](https://www.rotaexata.com.br/blog/
 Convenção de commits: [docs/commit-conventions.md](docs/commit-conventions.md)
 
 ```bash
-./mvnw test          # roda os 120 testes unitários do backend
+./mvnw test          # roda os 162 testes unitários do backend
 npm run typecheck    # verificação de tipos do frontend (pasta frontend/)
 ```
+
+---
+
+## Estado atual do desenvolvimento
+
+### Feito
+
+- [x] Cadastros base (postos, bombas, bicos, combustíveis)
+- [x] Preços com histórico
+- [x] Pista: abertura de turno, abastecimento, leitura de encerrante, fechamento com reconciliação ANP
+- [x] Dark mode, autenticação, layout responsivo mobile
+- [x] Exportação CSV (relatório de frota)
+- [x] Controle de Frota — backend + frontend completo (Migrations V12-V14)
+- [x] Ordem de Serviço — backend + frontend completo (Migrations V15-V17)
+- [x] Comissão de Funcionários — backend + frontend completo (Migrations V18-V19)
+
+### Pendente / Próximos módulos
+
+- [ ] **Review dos 3 módulos novos** — revisar Frota, OS e Comissão em conjunto para consistência e bugs remanescentes
+- [ ] **Testes de integração** — subir banco real e verificar se as migrations V12-V19 rodam sem erro
+- [ ] **Loja de Conveniência (PDV)** — estoque, lote, validade, frente de caixa
+- [ ] **Medição de Tanques** — telemetria, estoque físico vs. teórico, alertas de divergência (> 0,6%)
+- [ ] **SPED Fiscal / LMC eletrônico** — exportação no formato ANP
+- [ ] **Conciliação de Recebíveis** — importação de extrato de adquirentes (Cielo, Rede, Stone)
+- [ ] **Preço Dinâmico** — propagação para bombas e painéis LED
+- [ ] **Notificações proativas** — SMS/WhatsApp para intervalo de troca de óleo por km/meses

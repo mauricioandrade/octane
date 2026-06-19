@@ -33,11 +33,11 @@ Credenciais padrão: `admin / octane123` (configurável via `ADMIN_USERNAME` / `
 | Método | Rota | Descrição |
 |--------|------|-----------|
 | POST | `/api/shifts` | Abre turno no posto |
-| PUT | `/api/shifts/{id}/close` | Fecha turno com reconciliação de encerrantes + calcula comissão automaticamente |
+| POST | `/api/shifts/{id}/close` | Fecha turno com reconciliação de encerrantes + calcula comissão automaticamente |
 | GET | `/api/shifts/{id}/reconciliation` | Exibe divergências por bico (LMC) |
-| POST | `/api/fuelings` | Registra abastecimento |
-| DELETE | `/api/fuelings/{id}` | Cancela abastecimento |
-| POST | `/api/readings` | Registra leitura de encerrante (abertura/fechamento) |
+| POST | `/api/shifts/{shiftId}/fuelings` | Registra abastecimento |
+| POST | `/api/shifts/{shiftId}/fuelings/{fuelingId}/cancel` | Cancela abastecimento |
+| POST | `/api/shifts/{id}/readings` | Registra leitura de encerrante (abertura/fechamento) |
 
 ### 🏪 Cadastros Base
 | Método | Rota | Descrição |
@@ -62,15 +62,17 @@ Clientes PJ com limite mensal, veículos com restrição de combustível, motori
 |--------|------|-----------|
 | GET/POST | `/api/fleet/clients` | Lista e cadastra clientes de frota |
 | GET/PUT | `/api/fleet/clients/{id}` | Detalha e atualiza cliente |
-| GET/POST | `/api/fleet/vehicles` | Lista e cadastra veículos |
+| POST | `/api/fleet/vehicles` | Cadastra veículo |
+| GET | `/api/fleet/clients/{clientId}/vehicles` | Lista veículos por cliente |
 | GET/PUT | `/api/fleet/vehicles/{id}` | Detalha e atualiza veículo |
-| GET/POST | `/api/fleet/drivers` | Lista e cadastra motoristas |
+| POST | `/api/fleet/drivers` | Cadastra motorista |
+| GET | `/api/fleet/clients/{clientId}/drivers` | Lista motoristas por cliente |
 | GET/PUT | `/api/fleet/drivers/{id}` | Detalha e atualiza motorista |
 | POST | `/api/fleet/drivers/identify` | Identifica motorista (CPF/PIN/RFID) |
 | GET/POST | `/api/fleet/fuelings` | Lista e registra abastecimentos de frota |
 | GET | `/api/fleet/clients/{clientId}/fuelings` | Abastecimentos por cliente |
 | GET | `/api/fleet/reports/consumption` | Relatório de consumo por cliente |
-| GET | `/api/fleet/reports/consumption/export` | Exporta relatório em CSV |
+| GET | `/api/fleet/reports/consumption/csv` | Exporta relatório em CSV |
 
 Frontend: `/frota/clientes`, `/frota/clientes/:id`, `/frota/veiculos`, `/frota/motoristas`, `/frota/relatorio`
 
@@ -79,12 +81,13 @@ OS digital com placa, quilometragem, itens (peças/serviços), histórico por ve
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| GET/POST | `/api/service-orders` | Lista e cria ordens de serviço |
+| POST | `/api/service-orders` | Cria ordem de serviço |
+| GET | `/api/stations/{stationId}/service-orders` | Lista OS por posto (filtros: status, from, to) |
 | GET | `/api/service-orders/{id}` | Detalha OS |
 | POST | `/api/service-orders/{id}/items` | Adiciona item (peça ou serviço) |
-| PUT | `/api/service-orders/{id}/close` | Fecha OS |
-| PUT | `/api/service-orders/{id}/cancel` | Cancela OS (registra `cancelledAt`) |
-| GET | `/api/service-orders/vehicle/{plate}/history` | Histórico por placa |
+| POST | `/api/service-orders/{id}/close` | Fecha OS |
+| POST | `/api/service-orders/{id}/cancel` | Cancela OS (registra `cancelledAt`) |
+| GET | `/api/service-orders/by-plate/{plate}` | Histórico por placa |
 
 Frontend: `/os`, `/os/:id`, `/os/historico`
 

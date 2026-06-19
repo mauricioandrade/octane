@@ -5,11 +5,7 @@ import com.octane.fleet.domain.repository.FleetClientRepository;
 import com.octane.fleet.domain.repository.FleetDriverRepository;
 import com.octane.fleet.domain.repository.FleetFuelingRepository;
 import com.octane.fleet.domain.repository.FleetVehicleRepository;
-import com.octane.fleet.usecase.FleetDriverResponse;
 import com.octane.fleet.usecase.FleetFuelingResponse;
-import com.octane.fleet.usecase.FleetVehicleResponse;
-import com.octane.fleet.usecase.driver.CreateFleetDriverUseCase;
-import com.octane.fleet.usecase.vehicle.CreateFleetVehicleUseCase;
 import com.octane.fueling.usecase.fueling.RegisterFuelingRequest;
 import com.octane.fueling.usecase.fueling.RegisterFuelingUseCase;
 import com.octane.shared.exception.BusinessException;
@@ -63,7 +59,13 @@ public class RegisterFleetFuelingUseCase {
             throw new BusinessException("Veículo inativo");
         }
 
-        if (!vehicle.getClient().getId().equals(driver.getClient().getId())) {
+        var client = vehicle.getClient();
+
+        if (!client.isActive()) {
+            throw new BusinessException("Cliente inativo");
+        }
+
+        if (!client.getId().equals(driver.getClient().getId())) {
             throw new BusinessException("Veículo não pertence ao cliente do motorista");
         }
 
@@ -76,7 +78,6 @@ public class RegisterFleetFuelingUseCase {
         }
 
         // Check monthly limit before registering fueling (when totalAmount is informed)
-        var client = vehicle.getClient();
         if (client.getMonthlyLimit() != null && request.totalAmount() != null) {
             var currentSpend = fleetClientRepository.sumCurrentMonthSpend(client.getId());
             if (currentSpend.add(request.totalAmount()).compareTo(client.getMonthlyLimit()) > 0) {
@@ -109,22 +110,6 @@ public class RegisterFleetFuelingUseCase {
                 request.odometer(), previousOdometer, odometerAlert, LocalDateTime.now());
         fleetFueling = fleetFuelingRepository.save(fleetFueling);
 
-        FleetDriverResponse driverResponse = CreateFleetDriverUseCase.toResponse(driver);
-        FleetVehicleResponse vehicleResponse = CreateFleetVehicleUseCase.toResponse(vehicle);
-
-        return new FleetFuelingResponse(
-                fleetFueling.getId(),
-                fueling.getId(),
-                driverResponse,
-                vehicleResponse,
-                fueling.getLiters(),
-                fueling.getUnitPrice(),
-                fueling.getTotalAmount(),
-                fueling.getPaymentMethod().name(),
-                fleetFueling.getOdometer(),
-                fleetFueling.getPreviousOdometer(),
-                fleetFueling.isOdometerAlert(),
-                fueling.getFueledAt()
-        );
+        return FleetFuelingResponse.from(fleetFueling);
     }
 }

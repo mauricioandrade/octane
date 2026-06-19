@@ -4,6 +4,7 @@ import com.octane.fleet.domain.FleetClient;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,4 +14,5 @@ public interface FleetClientRepository {
     List<FleetClient> findByStationId(UUID stationId, Boolean active);
     Optional<FleetClient> findByCnpjAndStationId(String cnpj, UUID stationId);
     BigDecimal sumCurrentMonthSpend(UUID clientId);
+    Map<UUID, BigDecimal> sumCurrentMonthSpendByClientIds(List<UUID> clientIds);
 }

@@ -20,7 +20,7 @@ public class UpdateCommissionRuleUseCase {
     @Transactional
     public CommissionRuleResponse execute(UUID id, UpdateCommissionRuleRequest request) {
         var rule = commissionRuleRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("CommissionRule not found: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Regra de comissão não encontrada: " + id));
 
         if (request.employeeName() != null) {
             rule.setEmployeeName(request.employeeName());

@@ -22,7 +22,7 @@ public class UpdatePumpUseCase {
     @Transactional
     public Pump execute(UUID id, UpdatePumpRequest request) {
         var pump = pumpRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Pump not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("Bomba não encontrada: " + id));
 
         if (request.number() != pump.getNumber()
                 && pumpRepository.existsByStationIdAndNumber(pump.getStation().getId(), request.number())) {

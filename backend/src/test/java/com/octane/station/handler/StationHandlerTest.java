@@ -114,11 +114,11 @@ class StationHandlerTest {
     @Test
     void getStationById_returns404_whenNotFound() throws Exception {
         var id = UUID.randomUUID();
-        when(findStationUseCase.execute(id)).thenThrow(new EntityNotFoundException("Station not found: " + id));
+        when(findStationUseCase.execute(id)).thenThrow(new EntityNotFoundException("Posto não encontrado: " + id));
 
         mockMvc.perform(get("/api/stations/" + id))
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message").value("Station not found: " + id));
+            .andExpect(jsonPath("$.message").value("Posto não encontrado: " + id));
     }
 
     @Test

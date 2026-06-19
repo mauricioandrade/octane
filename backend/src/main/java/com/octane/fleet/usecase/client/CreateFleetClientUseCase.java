@@ -37,20 +37,6 @@ public class CreateFleetClientUseCase {
                 request.tradeName(), request.monthlyLimit(), true, now);
         client = fleetClientRepository.save(client);
 
-        return toResponse(client, java.math.BigDecimal.ZERO);
-    }
-
-    public static FleetClientResponse toResponse(FleetClient client, java.math.BigDecimal currentMonthSpend) {
-        return new FleetClientResponse(
-                client.getId(),
-                client.getStation().getId(),
-                client.getCnpj(),
-                client.getCompanyName(),
-                client.getTradeName(),
-                client.getMonthlyLimit(),
-                currentMonthSpend,
-                client.isActive(),
-                client.getCreatedAt()
-        );
+        return FleetClientResponse.from(client, java.math.BigDecimal.ZERO);
     }
 }

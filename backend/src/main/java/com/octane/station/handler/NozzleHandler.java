@@ -1,5 +1,6 @@
 package com.octane.station.handler;
 
+import com.octane.station.usecase.nozzle.NozzleResponse;
 import com.octane.station.usecase.nozzle.UpdateNozzleRequest;
 import com.octane.station.usecase.nozzle.UpdateNozzleStatusRequest;
 import com.octane.station.usecase.nozzle.UpdateNozzleStatusUseCase;

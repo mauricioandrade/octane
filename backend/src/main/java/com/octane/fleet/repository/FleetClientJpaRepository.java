@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+interface ClientSpendProjection {
+    UUID getClientId();
+    BigDecimal getSpend();
+}
+
 interface FleetClientJpaRepository extends JpaRepository<FleetClient, UUID> {
 
     List<FleetClient> findByStation_Id(UUID stationId);
@@ -24,4 +29,13 @@ interface FleetClientJpaRepository extends JpaRepository<FleetClient, UUID> {
            "AND FUNCTION('DATE_TRUNC', 'month', f.fueledAt) = FUNCTION('DATE_TRUNC', 'month', CURRENT_TIMESTAMP) " +
            "AND f.status = com.octane.fueling.domain.FuelingStatus.ACTIVE")
     BigDecimal sumCurrentMonthSpend(@Param("clientId") UUID clientId);
+
+    @Query("SELECT ff.vehicle.client.id AS clientId, COALESCE(SUM(f.totalAmount), 0) AS spend " +
+           "FROM FleetFueling ff " +
+           "JOIN ff.fueling f " +
+           "WHERE ff.vehicle.client.id IN :clientIds " +
+           "AND FUNCTION('DATE_TRUNC', 'month', f.fueledAt) = FUNCTION('DATE_TRUNC', 'month', CURRENT_TIMESTAMP) " +
+           "AND f.status = com.octane.fueling.domain.FuelingStatus.ACTIVE " +
+           "GROUP BY ff.vehicle.client.id")
+    List<ClientSpendProjection> sumCurrentMonthSpendByClientIds(@Param("clientIds") List<UUID> clientIds);
 }

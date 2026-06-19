@@ -18,7 +18,7 @@ public class ListFleetVehiclesUseCase {
 
     public List<FleetVehicleResponse> execute(UUID clientId, Boolean active) {
         return fleetVehicleRepository.findByClientId(clientId, active).stream()
-                .map(CreateFleetVehicleUseCase::toResponse)
+                .map(FleetVehicleResponse::from)
                 .toList();
     }
 }

@@ -32,6 +32,6 @@ public class UpdateFleetDriverUseCase {
         if (request.active() != null) driver.setActive(request.active());
 
         driver = fleetDriverRepository.save(driver);
-        return CreateFleetDriverUseCase.toResponse(driver);
+        return FleetDriverResponse.from(driver);
     }
 }

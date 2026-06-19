@@ -22,7 +22,7 @@ public class GetFleetConsumptionReportUseCase {
 
     public FleetConsumptionReport execute(UUID stationId, UUID clientId, UUID vehicleId,
                                           UUID driverId, LocalDate from, LocalDate to) {
-        var fuelings = fleetFuelingRepository.findByFilters(stationId, clientId, vehicleId, driverId, from, to);
+        var fuelings = fleetFuelingRepository.findAllByFilters(stationId, clientId, vehicleId, driverId, from, to);
 
         var lines = fuelings.stream().map(this::toLine).toList();
 

@@ -5,9 +5,12 @@ import com.octane.fleet.domain.repository.FleetClientRepository;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 public class FleetClientRepositoryImpl implements FleetClientRepository {
@@ -44,5 +47,16 @@ public class FleetClientRepositoryImpl implements FleetClientRepository {
     @Override
     public BigDecimal sumCurrentMonthSpend(UUID clientId) {
         return jpaRepository.sumCurrentMonthSpend(clientId);
+    }
+
+    @Override
+    public Map<UUID, BigDecimal> sumCurrentMonthSpendByClientIds(List<UUID> clientIds) {
+        if (clientIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return jpaRepository.sumCurrentMonthSpendByClientIds(clientIds).stream()
+                .collect(Collectors.toMap(
+                        ClientSpendProjection::getClientId,
+                        ClientSpendProjection::getSpend));
     }
 }

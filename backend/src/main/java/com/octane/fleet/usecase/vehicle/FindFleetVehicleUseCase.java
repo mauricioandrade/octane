@@ -19,6 +19,6 @@ public class FindFleetVehicleUseCase {
     public FleetVehicleResponse execute(UUID id) {
         var vehicle = fleetVehicleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Veículo não encontrado: " + id));
-        return CreateFleetVehicleUseCase.toResponse(vehicle);
+        return FleetVehicleResponse.from(vehicle);
     }
 }

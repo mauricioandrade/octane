@@ -25,7 +25,7 @@ public class ListFuelingsByShiftUseCase {
 
     public ShiftSummaryResponse execute(UUID shiftId) {
         shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new EntityNotFoundException("Shift not found: " + shiftId));
+                .orElseThrow(() -> new EntityNotFoundException("Turno não encontrado: " + shiftId));
 
         List<Fueling> fuelings = fuelingRepository.findByShiftId(shiftId).stream()
                 .filter(f -> f.getStatus() == FuelingStatus.ACTIVE)

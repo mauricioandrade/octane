@@ -2,9 +2,13 @@ package com.octane.commission.repository;
 
 import com.octane.commission.domain.CommissionRule;
 import com.octane.commission.domain.repository.CommissionRuleRepository;
+import com.octane.shared.pagination.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,11 +32,15 @@ public class CommissionRuleRepositoryImpl implements CommissionRuleRepository {
     }
 
     @Override
-    public List<CommissionRule> findByStationId(UUID stationId, Boolean active) {
+    public PageResponse<CommissionRule> findByStationId(UUID stationId, Boolean active, int page, int size) {
+        Specification<CommissionRule> spec =
+                (root, query, cb) -> cb.equal(root.get("station").get("id"), stationId);
         if (active != null) {
-            return jpaRepository.findByStation_IdAndActive(stationId, active);
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("active"), active));
         }
-        return jpaRepository.findByStation_Id(stationId);
+        Page<CommissionRule> result = jpaRepository.findAll(spec,
+                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+        return PageResponse.of(result.getContent(), page, size, result.getTotalElements());
     }
 
     @Override

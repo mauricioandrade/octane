@@ -1,4 +1,4 @@
-package com.octane.station.handler;
+package com.octane.station.usecase.nozzle;
 
 import com.octane.station.domain.Nozzle;
 

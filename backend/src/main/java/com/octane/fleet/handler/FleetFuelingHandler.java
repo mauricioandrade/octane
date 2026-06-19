@@ -5,6 +5,7 @@ import com.octane.fleet.usecase.fueling.FindFleetFuelingUseCase;
 import com.octane.fleet.usecase.fueling.ListFleetFuelingsUseCase;
 import com.octane.fleet.usecase.fueling.RegisterFleetFuelingRequest;
 import com.octane.fleet.usecase.fueling.RegisterFleetFuelingUseCase;
+import com.octane.shared.pagination.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -47,13 +47,15 @@ public class FleetFuelingHandler {
     }
 
     @GetMapping("/api/fleet/clients/{clientId}/fuelings")
-    public List<FleetFuelingResponse> listByClient(
+    public PageResponse<FleetFuelingResponse> listByClient(
             @PathVariable UUID clientId,
             @RequestParam UUID stationId,
             @RequestParam(required = false) UUID vehicleId,
             @RequestParam(required = false) UUID driverId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return listFleetFuelingsUseCase.execute(stationId, clientId, vehicleId, driverId, from, to);
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return listFleetFuelingsUseCase.execute(stationId, clientId, vehicleId, driverId, from, to, page, size);
     }
 }

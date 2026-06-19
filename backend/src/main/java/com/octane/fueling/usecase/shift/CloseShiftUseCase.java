@@ -16,6 +16,8 @@ import com.octane.shared.exception.BusinessException;
 import com.octane.shared.exception.EntityNotFoundException;
 import com.octane.station.domain.repository.NozzleRepository;
 import com.octane.station.domain.repository.PumpRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class CloseShiftUseCase {
+
+    private static final Logger log = LoggerFactory.getLogger(CloseShiftUseCase.class);
 
     private final ShiftRepository shiftRepository;
     private final NozzleReadingRepository nozzleReadingRepository;
@@ -56,7 +60,7 @@ public class CloseShiftUseCase {
     @Transactional
     public Shift execute(UUID shiftId) {
         var shift = shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new EntityNotFoundException("Shift not found: " + shiftId));
+                .orElseThrow(() -> new EntityNotFoundException("Turno não encontrado: " + shiftId));
 
         if (shift.getStatus() != ShiftStatus.OPEN) {
             throw new BusinessException("Turno já está fechado");
@@ -117,7 +121,7 @@ public class CloseShiftUseCase {
         try {
             calculateCommissionUseCase.execute(saved.getId());
         } catch (Exception e) {
-            // comissão é opcional — não propaga erro
+            log.warn("Falha ao calcular comissão do turno {}: {}", saved.getId(), e.getMessage());
         }
 
         return saved;

@@ -47,19 +47,6 @@ public class CreateFleetVehicleUseCase {
         var vehicle = new FleetVehicle(null, client, request.plate(), request.model(),
                 fuel, true, LocalDateTime.now());
         vehicle = fleetVehicleRepository.save(vehicle);
-        return toResponse(vehicle);
-    }
-
-    public static FleetVehicleResponse toResponse(FleetVehicle vehicle) {
-        return new FleetVehicleResponse(
-                vehicle.getId(),
-                vehicle.getClient().getId(),
-                vehicle.getPlate(),
-                vehicle.getModel(),
-                vehicle.getAllowedFuel().getId(),
-                vehicle.getAllowedFuel().getName(),
-                vehicle.isActive(),
-                vehicle.getCreatedAt()
-        );
+        return FleetVehicleResponse.from(vehicle);
     }
 }

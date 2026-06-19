@@ -31,14 +31,14 @@ public class SetFuelPriceUseCase {
     @Transactional
     public FuelPrice execute(UUID stationId, SetFuelPriceRequest request) {
         var station = stationRepository.findById(stationId)
-            .orElseThrow(() -> new EntityNotFoundException("Station not found: " + stationId));
+            .orElseThrow(() -> new EntityNotFoundException("Posto não encontrado: " + stationId));
 
         if (!station.isActive()) {
             throw new BusinessException("Posto inativo: não é possível cadastrar preço");
         }
 
         var fuel = fuelRepository.findById(request.fuelId())
-            .orElseThrow(() -> new EntityNotFoundException("Fuel not found: " + request.fuelId()));
+            .orElseThrow(() -> new EntityNotFoundException("Combustível não encontrado: " + request.fuelId()));
 
         if (!fuel.isActive()) {
             throw new BusinessException("Combustível inativo: " + fuel.getName());

@@ -25,10 +25,10 @@ public class UpdateNozzleUseCase {
     @Transactional
     public Nozzle execute(UUID id, UpdateNozzleRequest request) {
         var nozzle = nozzleRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Nozzle not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("Bico não encontrado: " + id));
 
         var fuel = fuelRepository.findById(request.fuelId())
-            .orElseThrow(() -> new EntityNotFoundException("Fuel not found: " + request.fuelId()));
+            .orElseThrow(() -> new EntityNotFoundException("Combustível não encontrado: " + request.fuelId()));
 
         if (!fuel.isActive()) {
             throw new BusinessException("Combustível inativo: " + fuel.getName());

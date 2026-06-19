@@ -24,10 +24,10 @@ public class CancelFuelingUseCase {
     @Transactional
     public Fueling execute(UUID shiftId, UUID fuelingId) {
         var fueling = fuelingRepository.findById(fuelingId)
-            .orElseThrow(() -> new EntityNotFoundException("Fueling not found: " + fuelingId));
+            .orElseThrow(() -> new EntityNotFoundException("Abastecimento não encontrado: " + fuelingId));
 
         if (!fueling.getShift().getId().equals(shiftId)) {
-            throw new EntityNotFoundException("Fueling not found in shift: " + fuelingId);
+            throw new EntityNotFoundException("Abastecimento não encontrado no turno: " + fuelingId);
         }
 
         if (fueling.getStatus() == FuelingStatus.CANCELED) {

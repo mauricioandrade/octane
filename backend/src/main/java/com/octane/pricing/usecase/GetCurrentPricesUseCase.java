@@ -23,7 +23,7 @@ public class GetCurrentPricesUseCase {
 
     public List<FuelPrice> execute(UUID stationId) {
         stationRepository.findById(stationId)
-            .orElseThrow(() -> new EntityNotFoundException("Station not found: " + stationId));
+            .orElseThrow(() -> new EntityNotFoundException("Posto não encontrado: " + stationId));
         return fuelPriceRepository.findCurrentByStation(stationId);
     }
 }

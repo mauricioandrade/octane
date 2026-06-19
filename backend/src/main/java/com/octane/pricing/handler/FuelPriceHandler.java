@@ -1,5 +1,6 @@
 package com.octane.pricing.handler;
 
+import com.octane.pricing.usecase.FuelPriceResponse;
 import com.octane.pricing.usecase.GetCurrentPricesUseCase;
 import com.octane.pricing.usecase.ListPriceHistoryUseCase;
 import com.octane.pricing.usecase.SetFuelPriceRequest;

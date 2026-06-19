@@ -8,5 +8,6 @@ import java.util.UUID;
 
 interface ServiceOrderItemJpaRepository extends JpaRepository<ServiceOrderItem, UUID> {
     List<ServiceOrderItem> findByServiceOrder_Id(UUID serviceOrderId);
+    List<ServiceOrderItem> findByServiceOrder_IdIn(List<UUID> serviceOrderIds);
     void deleteByServiceOrder_Id(UUID serviceOrderId);
 }

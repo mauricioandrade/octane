@@ -1,5 +1,6 @@
 package com.octane.station.handler;
 
+import com.octane.station.usecase.fuel.FuelResponse;
 import com.octane.station.usecase.fuel.CreateFuelRequest;
 import com.octane.station.usecase.fuel.CreateFuelUseCase;
 import com.octane.station.usecase.fuel.ListFuelsUseCase;

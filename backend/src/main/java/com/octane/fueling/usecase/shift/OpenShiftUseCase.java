@@ -26,7 +26,7 @@ public class OpenShiftUseCase {
     public Shift execute(OpenShiftRequest request) {
         var stationId = request.stationId();
         var station = stationRepository.findById(stationId)
-                .orElseThrow(() -> new EntityNotFoundException("Station not found: " + stationId));
+                .orElseThrow(() -> new EntityNotFoundException("Posto não encontrado: " + stationId));
 
         if (!station.isActive()) {
             throw new BusinessException("Posto inativo: não é possível abrir turno");

@@ -18,6 +18,6 @@ public class FindStationUseCase {
 
     public Station execute(UUID id) {
         return stationRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Station not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("Posto não encontrado: " + id));
     }
 }

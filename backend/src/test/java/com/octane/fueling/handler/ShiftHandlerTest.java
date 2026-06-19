@@ -138,11 +138,11 @@ class ShiftHandlerTest {
     void getShift_returns404_whenNotFound() throws Exception {
         var shiftId = UUID.randomUUID();
         when(findShiftUseCase.execute(shiftId))
-            .thenThrow(new EntityNotFoundException("Shift not found: " + shiftId));
+            .thenThrow(new EntityNotFoundException("Turno não encontrado: " + shiftId));
 
         mockMvc.perform(get("/api/shifts/" + shiftId))
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message").value("Shift not found: " + shiftId));
+            .andExpect(jsonPath("$.message").value("Turno não encontrado: " + shiftId));
     }
 
     @Test

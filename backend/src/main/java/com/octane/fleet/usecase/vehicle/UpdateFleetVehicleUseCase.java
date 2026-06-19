@@ -35,6 +35,6 @@ public class UpdateFleetVehicleUseCase {
         }
 
         vehicle = fleetVehicleRepository.save(vehicle);
-        return CreateFleetVehicleUseCase.toResponse(vehicle);
+        return FleetVehicleResponse.from(vehicle);
     }
 }

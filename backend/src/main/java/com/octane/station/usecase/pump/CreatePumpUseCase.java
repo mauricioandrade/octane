@@ -26,7 +26,7 @@ public class CreatePumpUseCase {
     @Transactional
     public Pump execute(UUID stationId, CreatePumpRequest request) {
         var station = stationRepository.findById(stationId)
-            .orElseThrow(() -> new EntityNotFoundException("Station not found: " + stationId));
+            .orElseThrow(() -> new EntityNotFoundException("Posto não encontrado: " + stationId));
 
         if (pumpRepository.existsByStationIdAndNumber(stationId, request.number())) {
             throw new BusinessException("Bomba número " + request.number() + " já existe neste posto");

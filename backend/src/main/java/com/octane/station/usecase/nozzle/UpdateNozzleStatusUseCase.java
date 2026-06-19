@@ -21,7 +21,7 @@ public class UpdateNozzleStatusUseCase {
     @Transactional
     public Nozzle execute(UUID id, UpdateNozzleStatusRequest request) {
         var nozzle = nozzleRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Nozzle not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("Bico não encontrado: " + id));
 
         var updated = new Nozzle(nozzle.getId(), nozzle.getNumber(), nozzle.getPump(),
             nozzle.getFuel(), request.active(), nozzle.getCreatedAt(), LocalDateTime.now());

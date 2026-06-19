@@ -21,7 +21,7 @@ public class UpdateStationStatusUseCase {
     @Transactional
     public Station execute(UUID id, UpdateStationStatusRequest request) {
         var station = stationRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Station not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("Posto não encontrado: " + id));
 
         var updated = new Station(station.getId(), station.getName(), station.getCnpj(),
             station.getAddress(), station.getCity(), station.getState(), request.active(),

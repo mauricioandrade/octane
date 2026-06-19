@@ -1,4 +1,4 @@
-package com.octane.station.handler;
+package com.octane.station.usecase.fuel;
 
 import com.octane.station.domain.Fuel;
 

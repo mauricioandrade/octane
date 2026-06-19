@@ -20,6 +20,6 @@ public class FindFleetClientUseCase {
         var client = fleetClientRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cliente de frota não encontrado: " + id));
         var spend = fleetClientRepository.sumCurrentMonthSpend(id);
-        return CreateFleetClientUseCase.toResponse(client, spend);
+        return FleetClientResponse.from(client, spend);
     }
 }

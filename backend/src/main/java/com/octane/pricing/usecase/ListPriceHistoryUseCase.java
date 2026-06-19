@@ -23,7 +23,7 @@ public class ListPriceHistoryUseCase {
 
     public List<FuelPrice> execute(UUID stationId, UUID fuelId) {
         stationRepository.findById(stationId)
-            .orElseThrow(() -> new EntityNotFoundException("Station not found: " + stationId));
+            .orElseThrow(() -> new EntityNotFoundException("Posto não encontrado: " + stationId));
         return fuelPriceRepository.findHistory(stationId, fuelId);
     }
 }

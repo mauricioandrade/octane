@@ -26,7 +26,7 @@ public class ListShiftsByStationUseCase {
                                        LocalDateTime from, LocalDateTime to,
                                        int page, int size) {
         stationRepository.findById(stationId)
-                .orElseThrow(() -> new EntityNotFoundException("Station not found: " + stationId));
+                .orElseThrow(() -> new EntityNotFoundException("Posto não encontrado: " + stationId));
         ShiftStatus shiftStatus = status != null ? ShiftStatus.valueOf(status) : null;
         return shiftRepository.findByStationId(stationId, shiftStatus, from, to, page, size);
     }

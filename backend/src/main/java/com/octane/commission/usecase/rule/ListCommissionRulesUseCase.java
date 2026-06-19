@@ -2,9 +2,9 @@ package com.octane.commission.usecase.rule;
 
 import com.octane.commission.domain.repository.CommissionRuleRepository;
 import com.octane.commission.usecase.CommissionRuleResponse;
+import com.octane.shared.pagination.PageResponse;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -16,10 +16,8 @@ public class ListCommissionRulesUseCase {
         this.commissionRuleRepository = commissionRuleRepository;
     }
 
-    public List<CommissionRuleResponse> execute(UUID stationId, Boolean active) {
-        return commissionRuleRepository.findByStationId(stationId, active)
-                .stream()
-                .map(CommissionRuleResponse::from)
-                .toList();
+    public PageResponse<CommissionRuleResponse> execute(UUID stationId, Boolean active, int page, int size) {
+        return commissionRuleRepository.findByStationId(stationId, active, page, size)
+                .map(CommissionRuleResponse::from);
     }
 }

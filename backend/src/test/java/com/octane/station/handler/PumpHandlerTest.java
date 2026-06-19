@@ -125,13 +125,13 @@ class PumpHandlerTest {
         var pumpId = UUID.randomUUID();
         var fuelId = UUID.randomUUID();
         when(createNozzleUseCase.execute(eq(pumpId), any(CreateNozzleRequest.class)))
-            .thenThrow(new com.octane.shared.exception.EntityNotFoundException("Pump not found: " + pumpId));
+            .thenThrow(new com.octane.shared.exception.EntityNotFoundException("Bomba não encontrada: " + pumpId));
 
         mockMvc.perform(post("/api/pumps/" + pumpId + "/nozzles")
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new CreateNozzleRequest(1, fuelId))))
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message").value("Pump not found: " + pumpId));
+            .andExpect(jsonPath("$.message").value("Bomba não encontrada: " + pumpId));
     }
 
     @Test

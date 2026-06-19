@@ -19,6 +19,6 @@ public class FindFleetDriverUseCase {
     public FleetDriverResponse execute(UUID id) {
         var driver = fleetDriverRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Motorista não encontrado: " + id));
-        return CreateFleetDriverUseCase.toResponse(driver);
+        return FleetDriverResponse.from(driver);
     }
 }

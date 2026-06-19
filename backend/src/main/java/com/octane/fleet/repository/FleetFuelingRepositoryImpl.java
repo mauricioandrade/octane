@@ -2,6 +2,10 @@ package com.octane.fleet.repository;
 
 import com.octane.fleet.domain.FleetFueling;
 import com.octane.fleet.domain.repository.FleetFuelingRepository;
+import com.octane.shared.pagination.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -34,8 +38,17 @@ public class FleetFuelingRepositoryImpl implements FleetFuelingRepository {
     }
 
     @Override
-    public List<FleetFueling> findByFilters(UUID stationId, UUID clientId, UUID vehicleId,
-                                             UUID driverId, LocalDate from, LocalDate to) {
-        return jpaRepository.findByFilters(stationId, clientId, vehicleId, driverId, from, to);
+    public PageResponse<FleetFueling> findByFilters(UUID stationId, UUID clientId, UUID vehicleId,
+                                                     UUID driverId, LocalDate from, LocalDate to,
+                                                     int page, int size) {
+        Page<FleetFueling> result = jpaRepository.findByFilters(stationId, clientId, vehicleId, driverId,
+                from, to, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "fueling.fueledAt")));
+        return PageResponse.of(result.getContent(), page, size, result.getTotalElements());
+    }
+
+    @Override
+    public List<FleetFueling> findAllByFilters(UUID stationId, UUID clientId, UUID vehicleId,
+                                                UUID driverId, LocalDate from, LocalDate to) {
+        return jpaRepository.findAllByFilters(stationId, clientId, vehicleId, driverId, from, to);
     }
 }

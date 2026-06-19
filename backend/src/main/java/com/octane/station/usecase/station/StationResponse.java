@@ -1,4 +1,4 @@
-package com.octane.station.handler;
+package com.octane.station.usecase.station;
 
 import com.octane.station.domain.Station;
 

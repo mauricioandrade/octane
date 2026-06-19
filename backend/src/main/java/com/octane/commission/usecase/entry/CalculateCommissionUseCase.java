@@ -39,7 +39,7 @@ public class CalculateCommissionUseCase {
     @Transactional
     public Optional<CommissionEntry> execute(UUID shiftId) {
         var shift = shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new EntityNotFoundException("Shift not found: " + shiftId));
+                .orElseThrow(() -> new EntityNotFoundException("Turno não encontrado: " + shiftId));
 
         if (shift.getStatus() != ShiftStatus.CLOSED) {
             throw new BusinessException("Turno não está fechado");

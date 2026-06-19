@@ -22,7 +22,7 @@ public class MarkCommissionPaidUseCase {
     @Transactional
     public CommissionEntryResponse execute(UUID entryId) {
         var entry = commissionEntryRepository.findById(entryId)
-                .orElseThrow(() -> new EntityNotFoundException("CommissionEntry not found: " + entryId));
+                .orElseThrow(() -> new EntityNotFoundException("Entrada de comissão não encontrada: " + entryId));
 
         if (entry.isPaid()) {
             throw new BusinessException("Comissão já marcada como paga");

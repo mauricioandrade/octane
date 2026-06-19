@@ -18,7 +18,7 @@ public class ListFleetDriversUseCase {
 
     public List<FleetDriverResponse> execute(UUID clientId, Boolean active) {
         return fleetDriverRepository.findByClientId(clientId, active).stream()
-                .map(CreateFleetDriverUseCase::toResponse)
+                .map(FleetDriverResponse::from)
                 .toList();
     }
 }

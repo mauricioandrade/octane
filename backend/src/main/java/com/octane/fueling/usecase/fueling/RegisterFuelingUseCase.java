@@ -42,7 +42,7 @@ public class RegisterFuelingUseCase {
     @Transactional
     public Fueling execute(UUID shiftId, RegisterFuelingRequest request) {
         var shift = shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new EntityNotFoundException("Shift not found: " + shiftId));
+                .orElseThrow(() -> new EntityNotFoundException("Turno não encontrado: " + shiftId));
 
         if (shift.getStatus() != ShiftStatus.OPEN) {
             throw new BusinessException("Turno não está aberto");
@@ -50,7 +50,7 @@ public class RegisterFuelingUseCase {
 
         var nozzleId = request.nozzleId();
         var nozzle = nozzleRepository.findById(nozzleId)
-                .orElseThrow(() -> new EntityNotFoundException("Nozzle not found: " + nozzleId));
+                .orElseThrow(() -> new EntityNotFoundException("Bico não encontrado: " + nozzleId));
 
         if (!nozzle.getPump().getStation().getId().equals(shift.getStation().getId())) {
             throw new BusinessException("Bico não pertence ao posto deste turno");

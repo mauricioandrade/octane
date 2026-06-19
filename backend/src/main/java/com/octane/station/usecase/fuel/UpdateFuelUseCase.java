@@ -22,7 +22,7 @@ public class UpdateFuelUseCase {
     @Transactional
     public Fuel execute(UUID id, UpdateFuelRequest request) {
         var fuel = fuelRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Fuel not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("Combustível não encontrado: " + id));
 
         String newName = request.name() != null ? request.name() : fuel.getName();
         FuelUnit newUnit = fuel.getUnit();

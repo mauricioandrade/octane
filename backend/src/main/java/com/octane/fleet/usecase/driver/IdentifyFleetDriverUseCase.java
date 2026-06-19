@@ -7,9 +7,9 @@ import com.octane.fleet.domain.repository.FleetDriverRepository;
 import com.octane.fleet.domain.repository.FleetVehicleRepository;
 import com.octane.fleet.usecase.FleetClientResponse;
 import com.octane.fleet.usecase.FleetDriverIdentificationResponse;
+import com.octane.fleet.usecase.FleetDriverResponse;
 import com.octane.fleet.usecase.FleetVehicleResponse;
-import com.octane.fleet.usecase.client.CreateFleetClientUseCase;
-import com.octane.fleet.usecase.vehicle.CreateFleetVehicleUseCase;
+import com.octane.shared.exception.BusinessException;
 import com.octane.shared.exception.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,17 +43,17 @@ public class IdentifyFleetDriverUseCase {
         };
 
         if (!driver.isActive()) {
-            throw new EntityNotFoundException("Motorista não encontrado");
+            throw new BusinessException("Motorista inativo");
         }
 
         var client = driver.getClient();
         var spend = fleetClientRepository.sumCurrentMonthSpend(client.getId());
 
-        FleetClientResponse clientResponse = CreateFleetClientUseCase.toResponse(client, spend);
-        var driverResponse = CreateFleetDriverUseCase.toResponse(driver);
+        FleetClientResponse clientResponse = FleetClientResponse.from(client, spend);
+        var driverResponse = FleetDriverResponse.from(driver);
         List<FleetVehicleResponse> vehicles = fleetVehicleRepository
                 .findByClientId(client.getId(), true).stream()
-                .map(CreateFleetVehicleUseCase::toResponse)
+                .map(FleetVehicleResponse::from)
                 .toList();
 
         return new FleetDriverIdentificationResponse(driverResponse, clientResponse, vehicles);

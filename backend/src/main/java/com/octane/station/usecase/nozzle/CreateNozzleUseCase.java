@@ -29,10 +29,10 @@ public class CreateNozzleUseCase {
     @Transactional
     public Nozzle execute(UUID pumpId, CreateNozzleRequest request) {
         var pump = pumpRepository.findById(pumpId)
-            .orElseThrow(() -> new EntityNotFoundException("Pump not found: " + pumpId));
+            .orElseThrow(() -> new EntityNotFoundException("Bomba não encontrada: " + pumpId));
 
         var fuel = fuelRepository.findById(request.fuelId())
-            .orElseThrow(() -> new EntityNotFoundException("Fuel not found: " + request.fuelId()));
+            .orElseThrow(() -> new EntityNotFoundException("Combustível não encontrado: " + request.fuelId()));
 
         if (nozzleRepository.existsByPumpIdAndNumber(pumpId, request.number())) {
             throw new BusinessException("Bico número " + request.number() + " já existe nesta bomba");

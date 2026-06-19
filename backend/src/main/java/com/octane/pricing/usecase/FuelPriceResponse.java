@@ -1,4 +1,4 @@
-package com.octane.pricing.handler;
+package com.octane.pricing.usecase;
 
 import com.octane.pricing.domain.FuelPrice;
 

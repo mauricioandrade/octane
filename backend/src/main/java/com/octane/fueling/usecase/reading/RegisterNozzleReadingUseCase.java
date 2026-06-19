@@ -32,7 +32,7 @@ public class RegisterNozzleReadingUseCase {
     @Transactional
     public NozzleReading execute(UUID shiftId, RegisterNozzleReadingRequest request) {
         var shift = shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new EntityNotFoundException("Shift not found: " + shiftId));
+                .orElseThrow(() -> new EntityNotFoundException("Turno não encontrado: " + shiftId));
 
         if (shift.getStatus() != ShiftStatus.OPEN) {
             throw new BusinessException("Turno não está aberto");
@@ -42,7 +42,7 @@ public class RegisterNozzleReadingUseCase {
 
         var nozzleId = request.nozzleId();
         var nozzle = nozzleRepository.findById(nozzleId)
-                .orElseThrow(() -> new EntityNotFoundException("Nozzle not found: " + nozzleId));
+                .orElseThrow(() -> new EntityNotFoundException("Bico não encontrado: " + nozzleId));
 
         if (type == NozzleReadingType.CLOSING) {
             var openingReading = nozzleReadingRepository

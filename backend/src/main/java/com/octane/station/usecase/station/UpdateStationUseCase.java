@@ -22,7 +22,7 @@ public class UpdateStationUseCase {
     @Transactional
     public Station execute(UUID id, UpdateStationRequest request) {
         var station = stationRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Station not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("Posto não encontrado: " + id));
 
         var conflicting = stationRepository.findByCnpj(request.cnpj());
         if (conflicting.isPresent() && !conflicting.get().getId().equals(id)) {

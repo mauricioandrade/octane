@@ -2,11 +2,14 @@ package com.octane.commission.repository;
 
 import com.octane.commission.domain.CommissionEntry;
 import com.octane.commission.domain.repository.CommissionEntryRepository;
+import com.octane.shared.pagination.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,7 +38,9 @@ public class CommissionEntryRepositoryImpl implements CommissionEntryRepository 
     }
 
     @Override
-    public List<CommissionEntry> findByStationId(UUID stationId, Boolean paid, LocalDate from, LocalDate to) {
+    public PageResponse<CommissionEntry> findByStationId(UUID stationId, Boolean paid,
+                                                          LocalDate from, LocalDate to,
+                                                          int page, int size) {
         Specification<CommissionEntry> spec =
                 (root, query, cb) -> cb.equal(root.get("station").get("id"), stationId);
 
@@ -50,6 +55,8 @@ public class CommissionEntryRepositoryImpl implements CommissionEntryRepository 
             spec = spec.and((root, query, cb) ->
                     cb.lessThan(root.get("createdAt"), to.plusDays(1).atStartOfDay()));
         }
-        return jpaRepository.findAll(spec);
+        Page<CommissionEntry> result = jpaRepository.findAll(spec,
+                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+        return PageResponse.of(result.getContent(), page, size, result.getTotalElements());
     }
 }

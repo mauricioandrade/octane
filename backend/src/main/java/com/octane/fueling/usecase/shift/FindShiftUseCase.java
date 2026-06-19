@@ -18,6 +18,6 @@ public class FindShiftUseCase {
 
     public Shift execute(UUID id) {
         return shiftRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Shift not found: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Turno não encontrado: " + id));
     }
 }

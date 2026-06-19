@@ -23,12 +23,12 @@ public class UpdateFleetClientUseCase {
                 .orElseThrow(() -> new EntityNotFoundException("Cliente de frota não encontrado: " + id));
 
         if (request.companyName() != null) client.setCompanyName(request.companyName());
-        if (request.tradeName() != null) client.setTradeName(request.tradeName());
-        if (request.monthlyLimit() != null) client.setMonthlyLimit(request.monthlyLimit());
+        client.setTradeName(request.tradeName());
+        client.setMonthlyLimit(request.monthlyLimit());
         if (request.active() != null) client.setActive(request.active());
 
         client = fleetClientRepository.save(client);
         var spend = fleetClientRepository.sumCurrentMonthSpend(client.getId());
-        return CreateFleetClientUseCase.toResponse(client, spend);
+        return FleetClientResponse.from(client, spend);
     }
 }

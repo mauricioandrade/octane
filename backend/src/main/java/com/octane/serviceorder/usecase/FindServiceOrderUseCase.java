@@ -4,10 +4,12 @@ import com.octane.serviceorder.domain.repository.ServiceOrderItemRepository;
 import com.octane.serviceorder.domain.repository.ServiceOrderRepository;
 import com.octane.shared.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class FindServiceOrderUseCase {
 
     private final ServiceOrderRepository serviceOrderRepository;

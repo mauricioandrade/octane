@@ -45,19 +45,6 @@ public class CreateFleetDriverUseCase {
         var driver = new FleetDriver(null, client, request.name(), request.cpf(),
                 pinHash, request.rfidTag(), true, LocalDateTime.now());
         driver = fleetDriverRepository.save(driver);
-        return toResponse(driver);
-    }
-
-    public static FleetDriverResponse toResponse(FleetDriver driver) {
-        return new FleetDriverResponse(
-                driver.getId(),
-                driver.getClient().getId(),
-                driver.getName(),
-                driver.getCpf(),
-                driver.getPinHash() != null,
-                driver.getRfidTag() != null,
-                driver.isActive(),
-                driver.getCreatedAt()
-        );
+        return FleetDriverResponse.from(driver);
     }
 }

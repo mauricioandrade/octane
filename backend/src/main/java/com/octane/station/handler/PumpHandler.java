@@ -1,8 +1,10 @@
 package com.octane.station.handler;
 
+import com.octane.station.usecase.nozzle.NozzleResponse;
 import com.octane.station.usecase.nozzle.CreateNozzleRequest;
 import com.octane.station.usecase.nozzle.CreateNozzleUseCase;
 import com.octane.station.usecase.nozzle.ListNozzlesByPumpUseCase;
+import com.octane.station.usecase.pump.PumpResponse;
 import com.octane.station.usecase.pump.UpdatePumpRequest;
 import com.octane.station.usecase.pump.UpdatePumpStatusRequest;
 import com.octane.station.usecase.pump.UpdatePumpStatusUseCase;

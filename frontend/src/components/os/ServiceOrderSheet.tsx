@@ -21,7 +21,7 @@ const schema = z.object({
   odometer: z
     .number({ error: 'Hodômetro obrigatório' })
     .positive('Hodômetro deve ser maior que zero'),
-  customerName: z.string().max(150).optional(),
+  customerName: z.string().max(100).optional(),
   customerPhone: z.string().max(20).optional(),
   notes: z.string().max(500).optional(),
 })

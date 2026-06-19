@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -10,6 +11,7 @@ import { getVehicleHistory } from '@/api/service-orders'
 import { formatBRL } from '@/lib/utils'
 
 export function VehicleHistoryPage() {
+  const navigate = useNavigate()
   const [plateInput, setPlateInput] = useState('')
   const [searchPlate, setSearchPlate] = useState('')
 
@@ -107,7 +109,11 @@ export function VehicleHistoryPage() {
                 </thead>
                 <tbody>
                   {orders.map((order) => (
-                    <tr key={order.id} className="border-b last:border-0">
+                    <tr
+                      key={order.id}
+                      className="cursor-pointer border-b last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800"
+                      onClick={() => navigate(`/os/${order.id}`)}
+                    >
                       <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
                         {order.stationName}
                       </td>

@@ -34,15 +34,18 @@ export function ComissaoRegrasPage() {
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editingRule, setEditingRule] = useState<CommissionRule | undefined>(undefined)
   const [activeFilter, setActiveFilter] = useState<ActiveFilter>('all')
+  const [page, setPage] = useState(0)
 
   const activeParam =
     activeFilter === 'active' ? true : activeFilter === 'inactive' ? false : undefined
 
-  const { data: rules = [], isLoading } = useQuery({
-    queryKey: ['commission-rules', station?.id, activeFilter],
-    queryFn: () => listCommissionRules(station!.id, activeParam),
+  const { data, isLoading } = useQuery({
+    queryKey: ['commission-rules', station?.id, activeFilter, page],
+    queryFn: () => listCommissionRules(station!.id, activeParam, page),
     enabled: !!station,
   })
+
+  const rules = data?.content ?? []
 
   const toggleMutation = useMutation({
     mutationFn: ({ id, active }: { id: string; active: boolean }) =>
@@ -83,7 +86,7 @@ export function ComissaoRegrasPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Select
             value={activeFilter}
-            onValueChange={(v) => setActiveFilter(v as ActiveFilter)}
+            onValueChange={(v) => { setActiveFilter(v as ActiveFilter); setPage(0) }}
           >
             <SelectTrigger className="h-8 w-36 text-xs">
               <SelectValue />
@@ -188,6 +191,32 @@ export function ComissaoRegrasPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {data && data.totalPages > 1 && (
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-xs text-slate-400">
+              {data.totalElements} regras · página {data.page + 1} de {data.totalPages}
+            </span>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={data.page === 0}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                ← Anterior
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={data.page >= data.totalPages - 1}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                Próxima →
+              </Button>
+            </div>
           </div>
         )}
       </div>

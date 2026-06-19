@@ -21,6 +21,7 @@ type PaidFilter = 'all' | 'pending' | 'paid'
 
 export function ComissaoEntradasPage() {
   const { station } = useActiveStation()
+  const [page, setPage] = useState(0)
   const [paidFilter, setPaidFilter] = useState<PaidFilter>('all')
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
@@ -28,16 +29,19 @@ export function ComissaoEntradasPage() {
   const paidParam =
     paidFilter === 'pending' ? false : paidFilter === 'paid' ? true : undefined
 
-  const { data: entries = [], isLoading, refetch, isFetching } = useQuery({
-    queryKey: ['commission-entries', station?.id, paidFilter, fromDate, toDate],
+  const { data, isLoading, refetch, isFetching } = useQuery({
+    queryKey: ['commission-entries', station?.id, paidFilter, fromDate, toDate, page],
     queryFn: () =>
       listCommissionEntries(station!.id, {
         paid: paidParam,
-        from: fromDate ? `${fromDate}T00:00:00` : undefined,
-        to: toDate ? `${toDate}T23:59:59` : undefined,
+        from: fromDate || undefined,
+        to: toDate || undefined,
+        page,
       }),
     enabled: !!station,
   })
+
+  const entries = data?.content ?? []
 
   const totalPending = entries
     .filter((e) => !e.paid)
@@ -80,7 +84,7 @@ export function ComissaoEntradasPage() {
         <div className="flex flex-wrap items-center gap-3">
           <Select
             value={paidFilter}
-            onValueChange={(v) => setPaidFilter(v as PaidFilter)}
+            onValueChange={(v) => { setPaidFilter(v as PaidFilter); setPage(0) }}
           >
             <SelectTrigger className="h-8 w-36 text-xs">
               <SelectValue />
@@ -96,14 +100,14 @@ export function ComissaoEntradasPage() {
             <Input
               type="date"
               value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
+              onChange={(e) => { setFromDate(e.target.value); setPage(0) }}
               className="h-8 w-36 text-xs"
             />
             <span className="text-slate-400 text-xs">até</span>
             <Input
               type="date"
               value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
+              onChange={(e) => { setToDate(e.target.value); setPage(0) }}
               className="h-8 w-36 text-xs"
             />
           </div>
@@ -112,7 +116,7 @@ export function ComissaoEntradasPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => { setPaidFilter('all'); setFromDate(''); setToDate('') }}
+              onClick={() => { setPaidFilter('all'); setFromDate(''); setToDate(''); setPage(0) }}
               className="text-xs text-slate-400"
             >
               Limpar filtros
@@ -147,6 +151,32 @@ export function ComissaoEntradasPage() {
             {entries.map((entry) => (
               <CommissionEntryCard key={entry.id} entry={entry} stationId={station.id} />
             ))}
+          </div>
+        )}
+
+        {data && data.totalPages > 1 && (
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-xs text-slate-400">
+              {data.totalElements} entradas · página {data.page + 1} de {data.totalPages}
+            </span>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={data.page === 0}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                ← Anterior
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={data.page >= data.totalPages - 1}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                Próxima →
+              </Button>
+            </div>
           </div>
         )}
       </div>

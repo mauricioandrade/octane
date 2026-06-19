@@ -30,7 +30,7 @@ function firstDayOfMonth() {
 export function FrotaRelatorioPage() {
   const { station } = useActiveStation()
 
-  const [clientId, setClientId] = useState<string>('')
+  const [clientId, setClientId] = useState<string>('todos')
   const [from, setFrom] = useState(firstDayOfMonth())
   const [to, setTo] = useState(today())
   const [enabled, setEnabled] = useState(false)
@@ -46,7 +46,7 @@ export function FrotaRelatorioPage() {
     queryFn: () =>
       getFleetConsumptionReport({
         stationId: station!.id,
-        clientId: clientId || undefined,
+        clientId: clientId === 'todos' ? undefined : clientId,
         from,
         to,
       }),
@@ -61,7 +61,7 @@ export function FrotaRelatorioPage() {
     if (!station) return
     const url = downloadFleetCsv({
       stationId: station.id,
-      clientId: clientId || undefined,
+      clientId: clientId === 'todos' ? undefined : clientId,
       from,
       to,
     })
@@ -93,7 +93,7 @@ export function FrotaRelatorioPage() {
                 <SelectValue placeholder="Todos os clientes" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os clientes</SelectItem>
+                <SelectItem value="todos">Todos os clientes</SelectItem>
                 {clients.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.companyName}

@@ -4,16 +4,22 @@ import type {
   CommissionEntry,
   CreateCommissionRuleRequest,
   UpdateCommissionRuleRequest,
+  Page,
 } from '@/types'
 
 export function createCommissionRule(req: CreateCommissionRuleRequest): Promise<CommissionRule> {
   return api.post<CommissionRule>('/commission/rules', req)
 }
 
-export function listCommissionRules(stationId: string, active?: boolean): Promise<CommissionRule[]> {
-  const qs = new URLSearchParams({ stationId })
+export function listCommissionRules(
+  stationId: string,
+  active?: boolean,
+  page = 0,
+  size = 20,
+): Promise<Page<CommissionRule>> {
+  const qs = new URLSearchParams({ stationId, page: String(page), size: String(size) })
   if (active !== undefined) qs.set('active', String(active))
-  return api.get<CommissionRule[]>(`/commission/rules?${qs}`)
+  return api.get<Page<CommissionRule>>(`/commission/rules?${qs}`)
 }
 
 export function updateCommissionRule(
@@ -33,17 +39,22 @@ export function listCommissionEntries(
     paid?: boolean
     from?: string
     to?: string
+    page?: number
+    size?: number
   },
-): Promise<CommissionEntry[]> {
+): Promise<Page<CommissionEntry>> {
   const qs = new URLSearchParams({ stationId })
   if (params?.paid !== undefined) qs.set('paid', String(params.paid))
   if (params?.from) qs.set('from', params.from)
   if (params?.to) qs.set('to', params.to)
-  return api.get<CommissionEntry[]>(`/commission/entries?${qs}`)
+  qs.set('page', String(params?.page ?? 0))
+  qs.set('size', String(params?.size ?? 20))
+  return api.get<Page<CommissionEntry>>(`/commission/entries?${qs}`)
 }
 
-export function getShiftCommissionEntry(shiftId: string): Promise<CommissionEntry | null> {
-  return api.get<CommissionEntry>(`/commission/shifts/${shiftId}/entry`).catch(() => null)
+export async function getShiftCommissionEntry(shiftId: string): Promise<CommissionEntry | null> {
+  const result = await api.get<CommissionEntry>(`/commission/shifts/${shiftId}/entry`)
+  return result ?? null
 }
 
 export function markCommissionPaid(id: string): Promise<CommissionEntry> {

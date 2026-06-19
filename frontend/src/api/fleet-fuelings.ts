@@ -1,5 +1,5 @@
 import { api } from '@/lib/api-client'
-import type { FleetFueling } from '@/types'
+import type { FleetFueling, Page } from '@/types'
 
 export function registerFleetFueling(req: {
   shiftId: string
@@ -23,10 +23,19 @@ export function getFleetFuelingsByClient(
     to?: string
     vehicleId?: string
     driverId?: string
+    page?: number
+    size?: number
   },
-): Promise<FleetFueling[]> {
-  const allParams = { stationId, ...(params ?? {}) }
-  const entries = Object.entries(allParams).filter(([, v]) => v) as [string, string][]
-  const q = entries.length ? '?' + new URLSearchParams(entries) : ''
-  return api.get<FleetFueling[]>(`/fleet/clients/${clientId}/fuelings${q}`)
+): Promise<Page<FleetFueling>> {
+  const allParams: Record<string, string> = {
+    stationId,
+    page: String(params?.page ?? 0),
+    size: String(params?.size ?? 20),
+  }
+  if (params?.from) allParams.from = params.from
+  if (params?.to) allParams.to = params.to
+  if (params?.vehicleId) allParams.vehicleId = params.vehicleId
+  if (params?.driverId) allParams.driverId = params.driverId
+  const q = '?' + new URLSearchParams(allParams)
+  return api.get<Page<FleetFueling>>(`/fleet/clients/${clientId}/fuelings${q}`)
 }

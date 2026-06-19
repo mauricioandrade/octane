@@ -31,6 +31,7 @@ export function FrotaClienteDetailPage() {
 
   const [driverSheetOpen, setDriverSheetOpen] = useState(false)
   const [editDriver, setEditDriver] = useState<FleetDriver | undefined>()
+  const [fuelingsPage, setFuelingsPage] = useState(0)
 
   const { data: client, isLoading: clientLoading } = useQuery({
     queryKey: ['fleet-client', clientId],
@@ -50,11 +51,13 @@ export function FrotaClienteDetailPage() {
     enabled: !!clientId,
   })
 
-  const { data: fuelings = [], isLoading: fuelingsLoading } = useQuery({
-    queryKey: ['fleet-fuelings', clientId, station?.id],
-    queryFn: () => getFleetFuelingsByClient(clientId!, station!.id, {}),
+  const { data: fuelingsData, isLoading: fuelingsLoading } = useQuery({
+    queryKey: ['fleet-fuelings', clientId, station?.id, fuelingsPage],
+    queryFn: () => getFleetFuelingsByClient(clientId!, station!.id, { page: fuelingsPage }),
     enabled: activeTab === 'historico' && !!clientId && !!station,
   })
+
+  const fuelings = fuelingsData?.content ?? []
 
   if (clientLoading) {
     return (
@@ -315,6 +318,32 @@ export function FrotaClienteDetailPage() {
                     )}
                   </div>
                 ))}
+              </div>
+            )}
+
+            {fuelingsData && fuelingsData.totalPages > 1 && (
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-xs text-slate-400">
+                  {fuelingsData.totalElements} abastecimentos · página {fuelingsData.page + 1} de {fuelingsData.totalPages}
+                </span>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={fuelingsData.page === 0}
+                    onClick={() => setFuelingsPage((p) => p - 1)}
+                  >
+                    ← Anterior
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={fuelingsData.page >= fuelingsData.totalPages - 1}
+                    onClick={() => setFuelingsPage((p) => p + 1)}
+                  >
+                    Próxima →
+                  </Button>
+                </div>
               </div>
             )}
           </>

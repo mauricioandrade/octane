@@ -258,6 +258,8 @@ export interface FleetConsumptionReport {
 
 export interface FleetConsumptionLine {
   fueledAt: string
+  clientName: string
+  clientCnpj: string
   driverName: string
   driverCpf: string
   vehiclePlate: string

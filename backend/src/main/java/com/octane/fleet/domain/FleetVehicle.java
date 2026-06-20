@@ -2,11 +2,13 @@ package com.octane.fleet.domain;
 
 import com.octane.station.domain.Fuel;
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "fleet_vehicles")
+@SQLRestriction("deleted_at IS NULL")
 public class FleetVehicle {
 
     @Id
@@ -33,6 +35,9 @@ public class FleetVehicle {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     public FleetVehicle() {}
 
     public FleetVehicle(UUID id, FleetClient client, String plate, String model,
@@ -57,4 +62,6 @@ public class FleetVehicle {
     public void setModel(String model) { this.model = model; }
     public void setAllowedFuel(Fuel allowedFuel) { this.allowedFuel = allowedFuel; }
     public void setActive(boolean active) { this.active = active; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

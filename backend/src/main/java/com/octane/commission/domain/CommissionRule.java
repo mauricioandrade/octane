@@ -2,6 +2,7 @@ package com.octane.commission.domain;
 
 import com.octane.station.domain.Station;
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "commission_rules")
+@SQLRestriction("deleted_at IS NULL")
 public class CommissionRule {
 
     @Id
@@ -30,6 +32,9 @@ public class CommissionRule {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     public CommissionRule() {}
 
@@ -53,4 +58,6 @@ public class CommissionRule {
     public void setRate(BigDecimal rate) { this.rate = rate; }
     public void setActive(boolean active) { this.active = active; }
     public void setEmployeeName(String employeeName) { this.employeeName = employeeName; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

@@ -2,12 +2,14 @@ package com.octane.fleet.domain;
 
 import com.octane.station.domain.Station;
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "fleet_clients")
+@SQLRestriction("deleted_at IS NULL")
 public class FleetClient {
 
     @Id
@@ -35,6 +37,9 @@ public class FleetClient {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     public FleetClient() {}
 
@@ -64,4 +69,6 @@ public class FleetClient {
     public void setTradeName(String tradeName) { this.tradeName = tradeName; }
     public void setMonthlyLimit(BigDecimal monthlyLimit) { this.monthlyLimit = monthlyLimit; }
     public void setActive(boolean active) { this.active = active; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

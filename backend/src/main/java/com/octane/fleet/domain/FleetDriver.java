@@ -1,11 +1,13 @@
 package com.octane.fleet.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "fleet_drivers")
+@SQLRestriction("deleted_at IS NULL")
 public class FleetDriver {
 
     @Id
@@ -33,6 +35,9 @@ public class FleetDriver {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     public FleetDriver() {}
 
@@ -62,4 +67,6 @@ public class FleetDriver {
     public void setPinHash(String pinHash) { this.pinHash = pinHash; }
     public void setRfidTag(String rfidTag) { this.rfidTag = rfidTag; }
     public void setActive(boolean active) { this.active = active; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

@@ -9,12 +9,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "nozzles")
+@SQLRestriction("deleted_at IS NULL")
 public class Nozzle {
 
     @Id
@@ -41,6 +43,9 @@ public class Nozzle {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     public Nozzle() {}
 
     public Nozzle(UUID id, int number, Pump pump, Fuel fuel, boolean active,
@@ -66,4 +71,6 @@ public class Nozzle {
     public boolean isActive() { return active; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

@@ -8,12 +8,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "fuels")
+@SQLRestriction("deleted_at IS NULL")
 public class Fuel {
 
     @Id
@@ -33,6 +35,9 @@ public class Fuel {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     public Fuel() {}
 
     public Fuel(UUID id, String name, FuelUnit unit, boolean active, LocalDateTime createdAt) {
@@ -48,4 +53,6 @@ public class Fuel {
     public FuelUnit getUnit() { return unit; }
     public boolean isActive() { return active; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

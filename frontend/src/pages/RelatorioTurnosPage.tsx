@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Download } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { TopBar } from '@/components/layout/TopBar'
 import { useActiveStation } from '@/hooks/useActiveStation'
@@ -54,6 +56,15 @@ export function RelatorioTurnosPage() {
             <label className="text-[10px] uppercase text-slate-400">Até</label>
             <Input type="date" value={to} onChange={e => setTo(e.target.value)} className="w-40" />
           </div>
+          {data && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.open(`/api/reports/shifts/csv?stationId=${station.id}&from=${from}&to=${to}`, '_blank')}
+            >
+              <Download size={14} className="mr-1" /> Exportar CSV
+            </Button>
+          )}
         </div>
 
         {isLoading ? (

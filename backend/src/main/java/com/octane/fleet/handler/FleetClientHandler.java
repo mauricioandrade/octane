@@ -5,10 +5,12 @@ import com.octane.fleet.usecase.client.CreateFleetClientRequest;
 import com.octane.fleet.usecase.client.CreateFleetClientUseCase;
 import com.octane.fleet.usecase.client.FindFleetClientUseCase;
 import com.octane.fleet.usecase.client.ListFleetClientsUseCase;
+import com.octane.fleet.usecase.client.DeleteFleetClientUseCase;
 import com.octane.fleet.usecase.client.UpdateFleetClientRequest;
 import com.octane.fleet.usecase.client.UpdateFleetClientUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,15 +34,18 @@ public class FleetClientHandler {
     private final UpdateFleetClientUseCase updateFleetClientUseCase;
     private final FindFleetClientUseCase findFleetClientUseCase;
     private final ListFleetClientsUseCase listFleetClientsUseCase;
+    private final DeleteFleetClientUseCase deleteFleetClientUseCase;
 
     public FleetClientHandler(CreateFleetClientUseCase createFleetClientUseCase,
                               UpdateFleetClientUseCase updateFleetClientUseCase,
                               FindFleetClientUseCase findFleetClientUseCase,
-                              ListFleetClientsUseCase listFleetClientsUseCase) {
+                              ListFleetClientsUseCase listFleetClientsUseCase,
+                              DeleteFleetClientUseCase deleteFleetClientUseCase) {
         this.createFleetClientUseCase = createFleetClientUseCase;
         this.updateFleetClientUseCase = updateFleetClientUseCase;
         this.findFleetClientUseCase = findFleetClientUseCase;
         this.listFleetClientsUseCase = listFleetClientsUseCase;
+        this.deleteFleetClientUseCase = deleteFleetClientUseCase;
     }
 
     @PostMapping
@@ -71,5 +76,11 @@ public class FleetClientHandler {
                                             @RequestBody Map<String, Boolean> body) {
         var request = new UpdateFleetClientRequest(null, null, null, body.get("active"));
         return updateFleetClientUseCase.execute(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id) {
+        deleteFleetClientUseCase.execute(id);
     }
 }

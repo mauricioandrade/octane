@@ -3,14 +3,18 @@ package com.octane.station.handler;
 import com.octane.station.usecase.nozzle.NozzleResponse;
 import com.octane.station.usecase.nozzle.UpdateNozzleRequest;
 import com.octane.station.usecase.nozzle.UpdateNozzleStatusRequest;
+import com.octane.station.usecase.nozzle.DeleteNozzleUseCase;
 import com.octane.station.usecase.nozzle.UpdateNozzleStatusUseCase;
 import com.octane.station.usecase.nozzle.UpdateNozzleUseCase;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -21,11 +25,14 @@ public class NozzleHandler {
 
     private final UpdateNozzleUseCase updateNozzleUseCase;
     private final UpdateNozzleStatusUseCase updateNozzleStatusUseCase;
+    private final DeleteNozzleUseCase deleteNozzleUseCase;
 
     public NozzleHandler(UpdateNozzleUseCase updateNozzleUseCase,
-                         UpdateNozzleStatusUseCase updateNozzleStatusUseCase) {
+                         UpdateNozzleStatusUseCase updateNozzleStatusUseCase,
+                         DeleteNozzleUseCase deleteNozzleUseCase) {
         this.updateNozzleUseCase = updateNozzleUseCase;
         this.updateNozzleStatusUseCase = updateNozzleStatusUseCase;
+        this.deleteNozzleUseCase = deleteNozzleUseCase;
     }
 
     @PutMapping("/{id}")
@@ -36,5 +43,11 @@ public class NozzleHandler {
     @PatchMapping("/{id}/status")
     public NozzleResponse updateStatus(@PathVariable UUID id, @RequestBody UpdateNozzleStatusRequest request) {
         return NozzleResponse.from(updateNozzleStatusUseCase.execute(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id) {
+        deleteNozzleUseCase.execute(id);
     }
 }

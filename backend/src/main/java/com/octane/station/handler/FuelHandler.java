@@ -6,10 +6,12 @@ import com.octane.station.usecase.fuel.CreateFuelUseCase;
 import com.octane.station.usecase.fuel.ListFuelsUseCase;
 import com.octane.station.usecase.fuel.UpdateFuelRequest;
 import com.octane.station.usecase.fuel.UpdateFuelStatusRequest;
+import com.octane.station.usecase.fuel.DeleteFuelUseCase;
 import com.octane.station.usecase.fuel.UpdateFuelStatusUseCase;
 import com.octane.station.usecase.fuel.UpdateFuelUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,15 +33,18 @@ public class FuelHandler {
     private final UpdateFuelStatusUseCase updateFuelStatusUseCase;
     private final CreateFuelUseCase createFuelUseCase;
     private final UpdateFuelUseCase updateFuelUseCase;
+    private final DeleteFuelUseCase deleteFuelUseCase;
 
     public FuelHandler(ListFuelsUseCase listFuelsUseCase,
                        UpdateFuelStatusUseCase updateFuelStatusUseCase,
                        CreateFuelUseCase createFuelUseCase,
-                       UpdateFuelUseCase updateFuelUseCase) {
+                       UpdateFuelUseCase updateFuelUseCase,
+                       DeleteFuelUseCase deleteFuelUseCase) {
         this.listFuelsUseCase = listFuelsUseCase;
         this.updateFuelStatusUseCase = updateFuelStatusUseCase;
         this.createFuelUseCase = createFuelUseCase;
         this.updateFuelUseCase = updateFuelUseCase;
+        this.deleteFuelUseCase = deleteFuelUseCase;
     }
 
     @GetMapping
@@ -63,5 +68,11 @@ public class FuelHandler {
     @PatchMapping("/{id}/status")
     public FuelResponse updateStatus(@PathVariable UUID id, @RequestBody UpdateFuelStatusRequest request) {
         return FuelResponse.from(updateFuelStatusUseCase.execute(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id) {
+        deleteFuelUseCase.execute(id);
     }
 }

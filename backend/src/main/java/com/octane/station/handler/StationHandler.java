@@ -10,11 +10,13 @@ import com.octane.station.usecase.station.CreateStationUseCase;
 import com.octane.station.usecase.station.FindStationUseCase;
 import com.octane.station.usecase.station.ListStationsUseCase;
 import com.octane.station.usecase.station.UpdateStationRequest;
+import com.octane.station.usecase.station.DeleteStationUseCase;
 import com.octane.station.usecase.station.UpdateStationStatusRequest;
 import com.octane.station.usecase.station.UpdateStationStatusUseCase;
 import com.octane.station.usecase.station.UpdateStationUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +42,7 @@ public class StationHandler {
     private final ListPumpsByStationUseCase listPumpsByStationUseCase;
     private final UpdateStationUseCase updateStationUseCase;
     private final UpdateStationStatusUseCase updateStationStatusUseCase;
+    private final DeleteStationUseCase deleteStationUseCase;
 
     public StationHandler(
         CreateStationUseCase createStationUseCase,
@@ -48,7 +51,8 @@ public class StationHandler {
         CreatePumpUseCase createPumpUseCase,
         ListPumpsByStationUseCase listPumpsByStationUseCase,
         UpdateStationUseCase updateStationUseCase,
-        UpdateStationStatusUseCase updateStationStatusUseCase
+        UpdateStationStatusUseCase updateStationStatusUseCase,
+        DeleteStationUseCase deleteStationUseCase
     ) {
         this.createStationUseCase = createStationUseCase;
         this.findStationUseCase = findStationUseCase;
@@ -57,6 +61,7 @@ public class StationHandler {
         this.listPumpsByStationUseCase = listPumpsByStationUseCase;
         this.updateStationUseCase = updateStationUseCase;
         this.updateStationStatusUseCase = updateStationStatusUseCase;
+        this.deleteStationUseCase = deleteStationUseCase;
     }
 
     @PostMapping
@@ -99,5 +104,11 @@ public class StationHandler {
         return listPumpsByStationUseCase.execute(id, status).stream()
             .map(PumpResponse::from)
             .toList();
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id) {
+        deleteStationUseCase.execute(id);
     }
 }

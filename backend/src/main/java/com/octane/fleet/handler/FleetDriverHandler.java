@@ -8,10 +8,12 @@ import com.octane.fleet.usecase.driver.FindFleetDriverUseCase;
 import com.octane.fleet.usecase.driver.IdentifyFleetDriverRequest;
 import com.octane.fleet.usecase.driver.IdentifyFleetDriverUseCase;
 import com.octane.fleet.usecase.driver.ListFleetDriversUseCase;
+import com.octane.fleet.usecase.driver.DeleteFleetDriverUseCase;
 import com.octane.fleet.usecase.driver.UpdateFleetDriverRequest;
 import com.octane.fleet.usecase.driver.UpdateFleetDriverUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,17 +36,20 @@ public class FleetDriverHandler {
     private final FindFleetDriverUseCase findFleetDriverUseCase;
     private final ListFleetDriversUseCase listFleetDriversUseCase;
     private final IdentifyFleetDriverUseCase identifyFleetDriverUseCase;
+    private final DeleteFleetDriverUseCase deleteFleetDriverUseCase;
 
     public FleetDriverHandler(CreateFleetDriverUseCase createFleetDriverUseCase,
                               UpdateFleetDriverUseCase updateFleetDriverUseCase,
                               FindFleetDriverUseCase findFleetDriverUseCase,
                               ListFleetDriversUseCase listFleetDriversUseCase,
-                              IdentifyFleetDriverUseCase identifyFleetDriverUseCase) {
+                              IdentifyFleetDriverUseCase identifyFleetDriverUseCase,
+                              DeleteFleetDriverUseCase deleteFleetDriverUseCase) {
         this.createFleetDriverUseCase = createFleetDriverUseCase;
         this.updateFleetDriverUseCase = updateFleetDriverUseCase;
         this.findFleetDriverUseCase = findFleetDriverUseCase;
         this.listFleetDriversUseCase = listFleetDriversUseCase;
         this.identifyFleetDriverUseCase = identifyFleetDriverUseCase;
+        this.deleteFleetDriverUseCase = deleteFleetDriverUseCase;
     }
 
     @PostMapping("/api/fleet/drivers")
@@ -79,5 +84,11 @@ public class FleetDriverHandler {
     @PostMapping("/api/fleet/drivers/identify")
     public FleetDriverIdentificationResponse identify(@Valid @RequestBody IdentifyFleetDriverRequest request) {
         return identifyFleetDriverUseCase.execute(request);
+    }
+
+    @DeleteMapping("/api/fleet/drivers/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id) {
+        deleteFleetDriverUseCase.execute(id);
     }
 }

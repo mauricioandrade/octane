@@ -5,10 +5,12 @@ import com.octane.commission.usecase.rule.CreateCommissionRuleRequest;
 import com.octane.commission.usecase.rule.CreateCommissionRuleUseCase;
 import com.octane.commission.usecase.rule.ListCommissionRulesUseCase;
 import com.octane.commission.usecase.rule.UpdateCommissionRuleRequest;
+import com.octane.commission.usecase.rule.DeleteCommissionRuleUseCase;
 import com.octane.commission.usecase.rule.UpdateCommissionRuleUseCase;
 import com.octane.shared.pagination.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,13 +32,16 @@ public class CommissionRuleHandler {
     private final CreateCommissionRuleUseCase createCommissionRuleUseCase;
     private final ListCommissionRulesUseCase listCommissionRulesUseCase;
     private final UpdateCommissionRuleUseCase updateCommissionRuleUseCase;
+    private final DeleteCommissionRuleUseCase deleteCommissionRuleUseCase;
 
     public CommissionRuleHandler(CreateCommissionRuleUseCase createCommissionRuleUseCase,
                                   ListCommissionRulesUseCase listCommissionRulesUseCase,
-                                  UpdateCommissionRuleUseCase updateCommissionRuleUseCase) {
+                                  UpdateCommissionRuleUseCase updateCommissionRuleUseCase,
+                                  DeleteCommissionRuleUseCase deleteCommissionRuleUseCase) {
         this.createCommissionRuleUseCase = createCommissionRuleUseCase;
         this.listCommissionRulesUseCase = listCommissionRulesUseCase;
         this.updateCommissionRuleUseCase = updateCommissionRuleUseCase;
+        this.deleteCommissionRuleUseCase = deleteCommissionRuleUseCase;
     }
 
     @PostMapping
@@ -69,5 +74,11 @@ public class CommissionRuleHandler {
         }
         var request = new UpdateCommissionRuleRequest(null, null, active);
         return updateCommissionRuleUseCase.execute(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id) {
+        deleteCommissionRuleUseCase.execute(id);
     }
 }

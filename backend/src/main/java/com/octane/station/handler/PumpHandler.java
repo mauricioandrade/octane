@@ -7,10 +7,12 @@ import com.octane.station.usecase.nozzle.ListNozzlesByPumpUseCase;
 import com.octane.station.usecase.pump.PumpResponse;
 import com.octane.station.usecase.pump.UpdatePumpRequest;
 import com.octane.station.usecase.pump.UpdatePumpStatusRequest;
+import com.octane.station.usecase.pump.DeletePumpUseCase;
 import com.octane.station.usecase.pump.UpdatePumpStatusUseCase;
 import com.octane.station.usecase.pump.UpdatePumpUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,15 +35,18 @@ public class PumpHandler {
     private final ListNozzlesByPumpUseCase listNozzlesByPumpUseCase;
     private final UpdatePumpUseCase updatePumpUseCase;
     private final UpdatePumpStatusUseCase updatePumpStatusUseCase;
+    private final DeletePumpUseCase deletePumpUseCase;
 
     public PumpHandler(CreateNozzleUseCase createNozzleUseCase,
                        ListNozzlesByPumpUseCase listNozzlesByPumpUseCase,
                        UpdatePumpUseCase updatePumpUseCase,
-                       UpdatePumpStatusUseCase updatePumpStatusUseCase) {
+                       UpdatePumpStatusUseCase updatePumpStatusUseCase,
+                       DeletePumpUseCase deletePumpUseCase) {
         this.createNozzleUseCase = createNozzleUseCase;
         this.listNozzlesByPumpUseCase = listNozzlesByPumpUseCase;
         this.updatePumpUseCase = updatePumpUseCase;
         this.updatePumpStatusUseCase = updatePumpStatusUseCase;
+        this.deletePumpUseCase = deletePumpUseCase;
     }
 
     @PutMapping("/{id}")
@@ -66,5 +71,11 @@ public class PumpHandler {
         return listNozzlesByPumpUseCase.execute(id, active).stream()
             .map(NozzleResponse::from)
             .toList();
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id) {
+        deletePumpUseCase.execute(id);
     }
 }

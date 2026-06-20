@@ -5,10 +5,12 @@ import com.octane.fleet.usecase.vehicle.CreateFleetVehicleRequest;
 import com.octane.fleet.usecase.vehicle.CreateFleetVehicleUseCase;
 import com.octane.fleet.usecase.vehicle.FindFleetVehicleUseCase;
 import com.octane.fleet.usecase.vehicle.ListFleetVehiclesUseCase;
+import com.octane.fleet.usecase.vehicle.DeleteFleetVehicleUseCase;
 import com.octane.fleet.usecase.vehicle.UpdateFleetVehicleRequest;
 import com.octane.fleet.usecase.vehicle.UpdateFleetVehicleUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,15 +32,18 @@ public class FleetVehicleHandler {
     private final UpdateFleetVehicleUseCase updateFleetVehicleUseCase;
     private final FindFleetVehicleUseCase findFleetVehicleUseCase;
     private final ListFleetVehiclesUseCase listFleetVehiclesUseCase;
+    private final DeleteFleetVehicleUseCase deleteFleetVehicleUseCase;
 
     public FleetVehicleHandler(CreateFleetVehicleUseCase createFleetVehicleUseCase,
                                UpdateFleetVehicleUseCase updateFleetVehicleUseCase,
                                FindFleetVehicleUseCase findFleetVehicleUseCase,
-                               ListFleetVehiclesUseCase listFleetVehiclesUseCase) {
+                               ListFleetVehiclesUseCase listFleetVehiclesUseCase,
+                               DeleteFleetVehicleUseCase deleteFleetVehicleUseCase) {
         this.createFleetVehicleUseCase = createFleetVehicleUseCase;
         this.updateFleetVehicleUseCase = updateFleetVehicleUseCase;
         this.findFleetVehicleUseCase = findFleetVehicleUseCase;
         this.listFleetVehiclesUseCase = listFleetVehiclesUseCase;
+        this.deleteFleetVehicleUseCase = deleteFleetVehicleUseCase;
     }
 
     @PostMapping("/api/fleet/vehicles")
@@ -68,5 +73,11 @@ public class FleetVehicleHandler {
     public FleetVehicleResponse updateStatus(@PathVariable UUID id,
                                               @RequestBody Map<String, Boolean> body) {
         return updateFleetVehicleUseCase.execute(id, new UpdateFleetVehicleRequest(null, null, body.get("active")));
+    }
+
+    @DeleteMapping("/api/fleet/vehicles/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id) {
+        deleteFleetVehicleUseCase.execute(id);
     }
 }

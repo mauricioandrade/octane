@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Fuel, DollarSign, Store, ClipboardList, ChevronDown, Moon, Sun, ChevronsUpDown, X, LogOut, Truck, Wrench, BadgePercent } from 'lucide-react'
+import { Fuel, DollarSign, Store, ClipboardList, ChevronDown, Moon, Sun, ChevronsUpDown, X, LogOut, Truck, Wrench, BadgePercent, Users } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,7 +47,8 @@ export function Sidebar() {
   const [comissoesOpen, setComissoesOpen] = useState(false)
   const [theme, setThemeState] = useState<Theme>(getTheme)
   const { isOpen, close } = useSidebar()
-  const { logout } = useAuth()
+  const { authState, logout } = useAuth()
+  const user = authState.status === 'authenticated' ? authState.user : null
 
   const { data: activeStations = [] } = useQuery({
     queryKey: ['stations', 'active'],
@@ -213,6 +214,19 @@ export function Sidebar() {
             ))}
           </div>
         )}
+
+        {user?.role === 'ADMIN' && (
+          <NavLink
+            to="/usuarios"
+            onClick={close}
+            className={({ isActive }) =>
+              cn('flex items-center gap-2 rounded-md px-3 py-2 text-sm',
+                isActive ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800')
+            }
+          >
+            <Users size={15} /> Usuários
+          </NavLink>
+        )}
       </nav>
 
       <div className="border-t p-2 flex flex-col gap-2">
@@ -254,6 +268,13 @@ export function Sidebar() {
             )}
           </button>
         </div>
+
+        {user && (
+          <div className="rounded-md border bg-slate-50 dark:bg-slate-800 dark:border-slate-700 px-3 py-2">
+            <p className="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">{user.name}</p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500">{user.role === 'ADMIN' ? 'Administrador' : user.role === 'MANAGER' ? 'Gerente' : 'Frentista'}</p>
+          </div>
+        )}
 
         <button
           onClick={() => logout()}

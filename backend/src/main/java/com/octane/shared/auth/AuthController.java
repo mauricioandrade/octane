@@ -1,5 +1,7 @@
 package com.octane.shared.auth;
 
+import com.octane.user.domain.User;
+import com.octane.user.domain.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,13 +25,16 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
 
-    public AuthController(AuthenticationManager authenticationManager) {
+    public AuthController(AuthenticationManager authenticationManager,
+                          UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
+    public AuthUserResponse login(@Valid @RequestBody LoginRequest request, HttpSession session) {
         try {
             Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password())
@@ -39,7 +44,8 @@ public class AuthController {
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                 SecurityContextHolder.getContext()
             );
-            return Map.of("username", auth.getName());
+            User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+            return AuthUserResponse.from(user);
         } catch (BadCredentialsException ex) {
             throw new com.octane.shared.exception.BusinessException("Usuário ou senha inválidos");
         }
@@ -53,8 +59,9 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public Map<String, String> me() {
+    public AuthUserResponse me() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return Map.of("username", username);
+        User user = userRepository.findByUsername(username).orElseThrow();
+        return AuthUserResponse.from(user);
     }
 }

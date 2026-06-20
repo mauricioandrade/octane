@@ -1,3 +1,37 @@
+// ── User ─────────────────────────────────────────────────────────────────────
+
+export type UserRole = 'ADMIN' | 'MANAGER' | 'ATTENDANT'
+
+export const USER_ROLE_LABELS: Record<UserRole, string> = {
+  ADMIN: 'Administrador',
+  MANAGER: 'Gerente',
+  ATTENDANT: 'Frentista',
+}
+
+export interface AppUser {
+  id: string
+  username: string
+  name: string
+  role: UserRole
+  active: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateUserRequest = {
+  username: string
+  password: string
+  name: string
+  role: UserRole
+}
+
+export type UpdateUserRequest = {
+  name?: string
+  role?: UserRole
+  active?: boolean
+  password?: string
+}
+
 // ── Station ──────────────────────────────────────────────────────────────────
 
 export type Station = {

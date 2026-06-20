@@ -22,6 +22,7 @@ import { OrdemServicoDetailPage } from '@/pages/OrdemServicoDetailPage'
 import { VehicleHistoryPage } from '@/pages/VehicleHistoryPage'
 import { ComissaoRegrasPage } from '@/pages/ComissaoRegrasPage'
 import { ComissaoEntradasPage } from '@/pages/ComissaoEntradasPage'
+import { UsuariosPage } from '@/pages/UsuariosPage'
 
 function ProtectedApp() {
   const { authState } = useAuth()
@@ -64,6 +65,7 @@ function ProtectedApp() {
           <Route path="/os" element={<OrdensServicoPage />} />
           <Route path="/comissao/regras" element={<ComissaoRegrasPage />} />
           <Route path="/comissao/entradas" element={<ComissaoEntradasPage />} />
+          <Route path="/usuarios" element={<UsuariosPage />} />
         </Route>
       </Routes>
     </StationProvider>

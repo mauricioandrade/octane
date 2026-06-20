@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME:-octane_db}
+      POSTGRES_USER: ${DB_USER:-octane}
+      POSTGRES_PASSWORD: ${DB_PASS:-octane}
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    depends_on:
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-octane_db}
+      DB_USER: ${DB_USER:-octane}
+      DB_PASS: ${DB_PASS:-octane}
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "${PORT:-80}:80"
+    restart: unless-stopped
+
+volumes:
+  pgdata:

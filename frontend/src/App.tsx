@@ -26,6 +26,8 @@ import { UsuariosPage } from '@/pages/UsuariosPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { RelatorioVendasPage } from '@/pages/RelatorioVendasPage'
 import { RelatorioTurnosPage } from '@/pages/RelatorioTurnosPage'
+import { CaixaPage } from '@/pages/CaixaPage'
+import { EstoquePage } from '@/pages/EstoquePage'
 
 function ProtectedApp() {
   const { authState } = useAuth()
@@ -72,6 +74,8 @@ function ProtectedApp() {
           <Route path="/usuarios" element={<UsuariosPage />} />
           <Route path="/relatorios/vendas" element={<RelatorioVendasPage />} />
           <Route path="/relatorios/turnos" element={<RelatorioTurnosPage />} />
+          <Route path="/caixa" element={<CaixaPage />} />
+          <Route path="/estoque" element={<EstoquePage />} />
         </Route>
       </Routes>
     </StationProvider>

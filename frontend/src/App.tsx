@@ -27,6 +27,7 @@ import { DashboardPage } from '@/pages/DashboardPage'
 import { RelatorioVendasPage } from '@/pages/RelatorioVendasPage'
 import { RelatorioTurnosPage } from '@/pages/RelatorioTurnosPage'
 import { CaixaPage } from '@/pages/CaixaPage'
+import { CaixaHistoricoPage } from '@/pages/CaixaHistoricoPage'
 import { EstoquePage } from '@/pages/EstoquePage'
 
 function ProtectedApp() {
@@ -75,6 +76,7 @@ function ProtectedApp() {
           <Route path="/relatorios/vendas" element={<RelatorioVendasPage />} />
           <Route path="/relatorios/turnos" element={<RelatorioTurnosPage />} />
           <Route path="/caixa" element={<CaixaPage />} />
+          <Route path="/caixa/historico" element={<CaixaHistoricoPage />} />
           <Route path="/estoque" element={<EstoquePage />} />
         </Route>
       </Routes>

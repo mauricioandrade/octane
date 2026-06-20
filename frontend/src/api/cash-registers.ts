@@ -46,3 +46,11 @@ export function addCashMovement(id: string, req: {
 export function getCashRegisterSummary(id: string): Promise<CashRegisterSummary> {
   return api.get<CashRegisterSummary>(`/cash-registers/${id}`)
 }
+
+export function listCashRegisters(
+  stationId: string,
+  page = 0,
+  size = 20,
+): Promise<import('@/types').Page<CashRegisterData>> {
+  return api.get(`/cash-registers?stationId=${stationId}&page=${page}&size=${size}`)
+}

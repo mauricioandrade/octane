@@ -1,6 +1,7 @@
 package com.octane.financial.handler;
 
 import com.octane.financial.usecase.*;
+import com.octane.shared.pagination.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,15 +16,18 @@ public class CashRegisterHandler {
     private final CloseCashRegisterUseCase closeCashRegisterUseCase;
     private final AddCashMovementUseCase addCashMovementUseCase;
     private final GetCashRegisterSummaryUseCase getCashRegisterSummaryUseCase;
+    private final ListCashRegistersUseCase listCashRegistersUseCase;
 
     public CashRegisterHandler(OpenCashRegisterUseCase openCashRegisterUseCase,
                                 CloseCashRegisterUseCase closeCashRegisterUseCase,
                                 AddCashMovementUseCase addCashMovementUseCase,
-                                GetCashRegisterSummaryUseCase getCashRegisterSummaryUseCase) {
+                                GetCashRegisterSummaryUseCase getCashRegisterSummaryUseCase,
+                                ListCashRegistersUseCase listCashRegistersUseCase) {
         this.openCashRegisterUseCase = openCashRegisterUseCase;
         this.closeCashRegisterUseCase = closeCashRegisterUseCase;
         this.addCashMovementUseCase = addCashMovementUseCase;
         this.getCashRegisterSummaryUseCase = getCashRegisterSummaryUseCase;
+        this.listCashRegistersUseCase = listCashRegistersUseCase;
     }
 
     @PostMapping
@@ -48,5 +52,13 @@ public class CashRegisterHandler {
     @GetMapping("/{id}")
     public GetCashRegisterSummaryUseCase.SummaryResponse find(@PathVariable UUID id) {
         return getCashRegisterSummaryUseCase.execute(id);
+    }
+
+    @GetMapping
+    public PageResponse<CashRegisterResponse> list(
+            @RequestParam UUID stationId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return listCashRegistersUseCase.execute(stationId, page, size);
     }
 }

@@ -39,6 +39,11 @@ const comissoesItems = [
   { to: '/comissao/entradas', label: 'Entradas' },
 ]
 
+const caixaItems = [
+  { to: '/caixa', label: 'Caixa Atual' },
+  { to: '/caixa/historico', label: 'Histórico' },
+]
+
 const relatoriosItems = [
   { to: '/relatorios/vendas', label: 'Vendas' },
   { to: '/relatorios/turnos', label: 'Turnos' },
@@ -50,6 +55,7 @@ export function Sidebar() {
   const [frotaOpen, setFrotaOpen] = useState(false)
   const [servicosOpen, setServicosOpen] = useState(false)
   const [comissoesOpen, setComissoesOpen] = useState(false)
+  const [caixaOpen, setCaixaOpen] = useState(false)
   const [relatoriosOpen, setRelatoriosOpen] = useState(false)
   const [theme, setThemeState] = useState<Theme>(getTheme)
   const { isOpen, close } = useSidebar()
@@ -156,16 +162,31 @@ export function Sidebar() {
           <ClipboardList size={15} /> Histórico
         </NavLink>
 
-        <NavLink
-          to="/caixa"
-          onClick={close}
-          className={({ isActive }) =>
-            cn('flex items-center gap-2 rounded-md px-3 py-2 text-sm',
-              isActive ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800')
-          }
+        <button
+          onClick={() => setCaixaOpen((v) => !v)}
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
         >
           <Wallet size={15} /> Caixa
-        </NavLink>
+          <ChevronDown size={12} className={cn('ml-auto transition-transform', caixaOpen && 'rotate-180')} />
+        </button>
+        {caixaOpen && (
+          <div className="ml-6 flex flex-col gap-0.5">
+            {caixaItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/caixa'}
+                onClick={close}
+                className={({ isActive }) =>
+                  cn('rounded px-3 py-1.5 text-xs',
+                    isActive ? 'font-semibold text-orange-600' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300')
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+        )}
 
         <NavLink
           to="/estoque"

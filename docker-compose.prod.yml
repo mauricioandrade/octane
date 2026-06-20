@@ -7,12 +7,18 @@ services:
       POSTGRES_DB: ${DB_NAME:-octane_db}
       POSTGRES_USER: ${DB_USER:-octane}
       POSTGRES_PASSWORD: ${DB_PASS:-octane}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-octane}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   backend:
     build: ./backend
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: local
       DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-octane_db}

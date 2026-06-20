@@ -33,3 +33,7 @@ export function updateFleetVehicle(
 export function patchFleetVehicleStatus(id: string, active: boolean): Promise<FleetVehicle> {
   return api.patch<FleetVehicle>(`/fleet/vehicles/${id}/status`, { active })
 }
+
+export function deleteFleetVehicle(id: string): Promise<void> {
+  return api.delete<void>(`/fleet/vehicles/${id}`)
+}

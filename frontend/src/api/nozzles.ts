@@ -17,3 +17,7 @@ export function updateNozzle(id: string, req: CreateNozzleRequest): Promise<Nozz
 export function patchNozzleStatus(id: string, active: boolean): Promise<Nozzle> {
   return api.patch<Nozzle>(`/nozzles/${id}/status`, { active })
 }
+
+export function deleteNozzle(id: string): Promise<void> {
+  return api.delete<void>(`/nozzles/${id}`)
+}

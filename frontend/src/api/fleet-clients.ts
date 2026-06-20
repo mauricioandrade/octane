@@ -36,3 +36,7 @@ export function updateFleetClient(
 export function patchFleetClientStatus(id: string, active: boolean): Promise<FleetClient> {
   return api.patch<FleetClient>(`/fleet/clients/${id}/status`, { active })
 }
+
+export function deleteFleetClient(id: string): Promise<void> {
+  return api.delete<void>(`/fleet/clients/${id}`)
+}

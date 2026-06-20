@@ -17,3 +17,7 @@ export function createFuel(req: { name: string; unit: string }): Promise<Fuel> {
 export function updateFuel(id: string, req: { name: string; unit: string }): Promise<Fuel> {
   return api.put<Fuel>(`/fuels/${id}`, req)
 }
+
+export function deleteFuel(id: string): Promise<void> {
+  return api.delete<void>(`/fuels/${id}`)
+}

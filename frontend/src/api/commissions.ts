@@ -60,3 +60,7 @@ export async function getShiftCommissionEntry(shiftId: string): Promise<Commissi
 export function markCommissionPaid(id: string): Promise<CommissionEntry> {
   return api.post<CommissionEntry>(`/commission/entries/${id}/pay`)
 }
+
+export function deleteCommissionRule(id: string): Promise<void> {
+  return api.delete<void>(`/commission/rules/${id}`)
+}

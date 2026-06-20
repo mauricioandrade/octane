@@ -17,3 +17,7 @@ export function updatePump(id: string, req: CreatePumpRequest): Promise<Pump> {
 export function patchPumpStatus(id: string, status: PumpStatus): Promise<Pump> {
   return api.patch<Pump>(`/pumps/${id}/status`, { status })
 }
+
+export function deletePump(id: string): Promise<void> {
+  return api.delete<void>(`/pumps/${id}`)
+}

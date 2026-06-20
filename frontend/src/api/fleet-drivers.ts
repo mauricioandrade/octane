@@ -41,3 +41,7 @@ export function identifyFleetDriver(req: {
 }): Promise<FleetDriverIdentification> {
   return api.post<FleetDriverIdentification>('/fleet/drivers/identify', req)
 }
+
+export function deleteFleetDriver(id: string): Promise<void> {
+  return api.delete<void>(`/fleet/drivers/${id}`)
+}

@@ -21,3 +21,7 @@ export function updateStation(id: string, req: CreateStationRequest): Promise<St
 export function patchStationStatus(id: string, active: boolean): Promise<Station> {
   return api.patch<Station>(`/stations/${id}/status`, { active })
 }
+
+export function deleteStation(id: string): Promise<void> {
+  return api.delete<void>(`/stations/${id}`)
+}

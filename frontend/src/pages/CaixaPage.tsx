@@ -10,8 +10,8 @@ import { TopBar } from '@/components/layout/TopBar'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useActiveStation } from '@/hooks/useActiveStation'
-import { openCashRegister, closeCashRegister, addCashMovement, getCashRegisterSummary } from '@/api/cash-registers'
-import type { CashRegisterSummary } from '@/api/cash-registers'
+import { openCashRegister, closeCashRegister, addCashMovement, getCashRegisterSummary, listCashRegisters } from '@/api/cash-registers'
+import type { CashRegisterSummary, CashRegisterData } from '@/api/cash-registers'
 import { formatBRL } from '@/lib/utils'
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -38,14 +38,10 @@ export function CaixaPage() {
   const { data: summary, isLoading } = useQuery<CashRegisterSummary | null>({
     queryKey: ['cash-register', station?.id],
     queryFn: async () => {
-      try {
-        const res = await fetch(`/api/cash-registers?stationId=${station!.id}&status=OPEN&size=1`, { credentials: 'include' })
-        if (!res.ok) return null
-        const list = await res.json()
-        if (!list || (Array.isArray(list) && list.length === 0)) return null
-        const register = Array.isArray(list) ? list[0] : list
-        return getCashRegisterSummary(register.id)
-      } catch { return null }
+      const page = await listCashRegisters(station!.id, 0, 50)
+      const openRegister = page.content.find((r: CashRegisterData) => r.status === 'OPEN')
+      if (!openRegister) return null
+      return getCashRegisterSummary(openRegister.id)
     },
     enabled: !!station,
   })

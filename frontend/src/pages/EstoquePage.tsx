@@ -24,7 +24,7 @@ function TankCard({ tank, onDelivery, onAdjust }: {
   const isLow = tank.belowMinimum
 
   return (
-    <div className={`rounded-lg border p-4 ${isLow ? 'border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950/30' : 'bg-white dark:bg-slate-900'}`}>
+    <div className={`rounded-lg border p-4 ${isLow ? 'border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950/30' : 'bg-white dark:bg-slate-900 dark:border-slate-700'}`}>
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-slate-800 dark:text-slate-200">{tank.name}</h3>
         <span className="text-xs text-slate-400">{tank.fuelName}</span>

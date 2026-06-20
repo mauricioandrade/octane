@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Fuel, DollarSign, Wrench, Truck } from 'lucide-react'
+import { Fuel, DollarSign, Wrench, Truck, Droplets } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TopBar } from '@/components/layout/TopBar'
 import { useActiveStation } from '@/hooks/useActiveStation'
@@ -62,7 +62,7 @@ export function DashboardPage() {
         title="Dashboard"
         actions={
           data.activeShift ? (
-            <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+            <span className="rounded-full bg-green-100 dark:bg-green-900/30 px-3 py-1 text-xs font-semibold text-green-700 dark:text-green-400">
               ● Turno aberto · {data.activeShift.employeeName}
             </span>
           ) : (
@@ -76,7 +76,7 @@ export function DashboardPage() {
       <div className="flex flex-1 flex-col gap-6 overflow-auto p-6">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <KpiCard label="Receita hoje" value={formatBRL(data.totalRevenue)} icon={<DollarSign size={18} />} />
-          <KpiCard label="Litros hoje" value={formatLiters(data.totalLiters)} icon={<Fuel size={18} />} />
+          <KpiCard label="Litros hoje" value={formatLiters(data.totalLiters)} icon={<Droplets size={18} />} />
           <KpiCard label="Abastecimentos" value={String(data.fuelingCount)} icon={<Fuel size={18} />} />
           <KpiCard label="OS abertas" value={String(data.openServiceOrders)} icon={<Wrench size={18} />} />
         </div>

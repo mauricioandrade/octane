@@ -59,7 +59,7 @@ export function RelatorioVendasPage() {
           </div>
         ) : data ? (
           <>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div className="rounded-lg border bg-white dark:bg-slate-900 p-4">
                 <p className="text-[10px] uppercase text-slate-400">Receita total</p>
                 <p className="mt-1 text-xl font-bold text-slate-900 dark:text-slate-100">{formatBRL(data.totalRevenue)}</p>

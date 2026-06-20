@@ -25,22 +25,22 @@ import type { AppUser, UserRole } from '@/types'
 import { USER_ROLE_LABELS } from '@/types'
 
 const createSchema = z.object({
-  name: z.string().min(1, 'Obrigatorio'),
+  name: z.string().min(1, 'Obrigatório'),
   username: z
     .string()
-    .min(3, 'Minimo 3 caracteres')
+    .min(3, 'Mínimo 3 caracteres')
     .max(50)
-    .regex(/^[a-zA-Z0-9_]+$/, 'Apenas letras, numeros e _'),
-  password: z.string().min(6, 'Minimo 6 caracteres'),
+    .regex(/^[a-zA-Z0-9_]+$/, 'Apenas letras, números e _'),
+  password: z.string().min(6, 'Mínimo 6 caracteres'),
   role: z.enum(['ADMIN', 'MANAGER', 'ATTENDANT']),
 })
 
 const editSchema = z.object({
-  name: z.string().min(1, 'Obrigatorio'),
+  name: z.string().min(1, 'Obrigatório'),
   username: z.string(),
   password: z.string().optional().refine(
     (v) => !v || v.length === 0 || v.length >= 6,
-    { message: 'Minimo 6 caracteres' },
+    { message: 'Mínimo 6 caracteres' },
   ),
   role: z.enum(['ADMIN', 'MANAGER', 'ATTENDANT']),
   active: z.boolean(),
@@ -114,12 +114,12 @@ export function UserSheet({ open, onOpenChange, user }: Props) {
       })
     },
     onSuccess: () => {
-      toast.success(isEdit ? 'Usuario atualizado!' : 'Usuario criado!')
+      toast.success(isEdit ? 'Usuário atualizado!' : 'Usuário criado!')
       qc.invalidateQueries({ queryKey: ['users'] })
       onOpenChange(false)
     },
     onError: () => {
-      toast.error('Erro ao salvar usuario')
+      toast.error('Erro ao salvar usuário')
     },
   })
 
@@ -127,20 +127,20 @@ export function UserSheet({ open, onOpenChange, user }: Props) {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[380px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{isEdit ? 'Editar usuario' : 'Novo usuario'}</SheetTitle>
+          <SheetTitle>{isEdit ? 'Editar usuário' : 'Novo usuário'}</SheetTitle>
         </SheetHeader>
 
         <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="mt-4 flex flex-col gap-4">
           <div>
             <Label>Nome</Label>
-            <Input placeholder="Ex: Joao Silva" {...register('name')} />
+            <Input placeholder="Ex: João Silva" {...register('name')} />
             {errors.name && (
               <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
             )}
           </div>
 
           <div>
-            <Label>Usuario</Label>
+            <Label>Usuário</Label>
             <Input
               placeholder="Ex: joao_silva"
               disabled={isEdit}
@@ -155,7 +155,7 @@ export function UserSheet({ open, onOpenChange, user }: Props) {
             <Label>{isEdit ? 'Nova senha (deixe vazio para manter)' : 'Senha'}</Label>
             <Input
               type="password"
-              placeholder={isEdit ? 'Deixe vazio para manter' : 'Minimo 6 caracteres'}
+              placeholder={isEdit ? 'Deixe vazio para manter' : 'Mínimo 6 caracteres'}
               {...register('password')}
             />
             {errors.password && (
@@ -205,7 +205,7 @@ export function UserSheet({ open, onOpenChange, user }: Props) {
             disabled={mutation.isPending}
             className="mt-2 bg-orange-600 hover:bg-orange-700"
           >
-            {mutation.isPending ? 'Salvando...' : isEdit ? 'Salvar alteracoes' : 'Criar usuario'}
+            {mutation.isPending ? 'Salvando...' : isEdit ? 'Salvar alterações' : 'Criar usuário'}
           </Button>
         </form>
       </SheetContent>

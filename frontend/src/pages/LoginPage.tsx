@@ -27,7 +27,7 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 dark:bg-slate-950">
-      <div className="w-full max-w-sm rounded-xl border bg-white dark:bg-slate-900 p-8 shadow-sm">
+      <div className="w-full max-w-sm rounded-xl border bg-white dark:bg-slate-900 dark:border-slate-700 p-8 shadow-sm">
         <div className="mb-6 flex items-center gap-2">
           <Fuel size={24} className="text-orange-600" />
           <span className="text-xl font-extrabold tracking-tight text-orange-600">Octane</span>

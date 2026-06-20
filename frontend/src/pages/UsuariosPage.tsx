@@ -4,12 +4,12 @@ import { Plus, Pencil } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { TopBar } from '@/components/layout/TopBar'
-import { UserSheet } from '@/components/usuarios/UserSheet'
+import { UserSheet } from '@/components/usuários/UserSheet'
 import { getUsers } from '@/api/users'
 import { USER_ROLE_LABELS } from '@/types'
 import type { AppUser } from '@/types'
 
-export function UsuariosPage() {
+export function UsuáriosPage() {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['users'],
     queryFn: getUsers,
@@ -30,13 +30,13 @@ export function UsuariosPage() {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <TopBar title="Usuarios" subtitle="Gerenciamento de usuarios do sistema" />
+      <TopBar title="Usuários" subtitle="Gerenciamento de usuários do sistema" />
 
       <div className="flex-1 overflow-auto p-6">
         <div className="mb-4 flex justify-end">
           <Button size="sm" className="bg-orange-600 hover:bg-orange-700" onClick={openCreate}>
             <Plus size={14} className="mr-1" />
-            Novo usuario
+            Novo usuário
           </Button>
         </div>
 
@@ -47,7 +47,7 @@ export function UsuariosPage() {
             <Skeleton className="h-10 w-full" />
           </div>
         ) : users.length === 0 ? (
-          <p className="text-sm text-slate-400">Nenhum usuario cadastrado.</p>
+          <p className="text-sm text-slate-400">Nenhum usuário cadastrado.</p>
         ) : (
           <div className="overflow-hidden rounded-lg border bg-white dark:bg-slate-900">
             <table className="w-full text-sm">
@@ -66,7 +66,7 @@ export function UsuariosPage() {
                     Status
                   </th>
                   <th className="px-4 py-2 text-center text-xs font-semibold uppercase text-slate-400 dark:text-slate-500">
-                    Acoes
+                    Ações
                   </th>
                 </tr>
               </thead>

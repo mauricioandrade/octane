@@ -23,6 +23,9 @@ import { VehicleHistoryPage } from '@/pages/VehicleHistoryPage'
 import { ComissaoRegrasPage } from '@/pages/ComissaoRegrasPage'
 import { ComissaoEntradasPage } from '@/pages/ComissaoEntradasPage'
 import { UsuariosPage } from '@/pages/UsuariosPage'
+import { DashboardPage } from '@/pages/DashboardPage'
+import { RelatorioVendasPage } from '@/pages/RelatorioVendasPage'
+import { RelatorioTurnosPage } from '@/pages/RelatorioTurnosPage'
 
 function ProtectedApp() {
   const { authState } = useAuth()
@@ -43,7 +46,8 @@ function ProtectedApp() {
     <StationProvider>
       <Routes>
         <Route element={<AppShell />}>
-          <Route index element={<Navigate to="/pista" replace />} />
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/pista" element={<PistaPage />} />
           <Route path="/precos" element={<PrecosPage />} />
           <Route path="/cadastros" element={<CadastrosPage />}>
@@ -66,6 +70,8 @@ function ProtectedApp() {
           <Route path="/comissao/regras" element={<ComissaoRegrasPage />} />
           <Route path="/comissao/entradas" element={<ComissaoEntradasPage />} />
           <Route path="/usuarios" element={<UsuariosPage />} />
+          <Route path="/relatorios/vendas" element={<RelatorioVendasPage />} />
+          <Route path="/relatorios/turnos" element={<RelatorioTurnosPage />} />
         </Route>
       </Routes>
     </StationProvider>

@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Fuel, DollarSign, Store, ClipboardList, ChevronDown, Moon, Sun, ChevronsUpDown, X, LogOut, Truck, Wrench, BadgePercent, Users } from 'lucide-react'
+import { Fuel, DollarSign, Store, ClipboardList, ChevronDown, Moon, Sun, ChevronsUpDown, X, LogOut, Truck, Wrench, BadgePercent, Users, LayoutDashboard, BarChart3 } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,12 +39,18 @@ const comissoesItems = [
   { to: '/comissao/entradas', label: 'Entradas' },
 ]
 
+const relatoriosItems = [
+  { to: '/relatorios/vendas', label: 'Vendas' },
+  { to: '/relatorios/turnos', label: 'Turnos' },
+]
+
 export function Sidebar() {
   const { station, setStation } = useActiveStation()
   const [cadastrosOpen, setCadastrosOpen] = useState(false)
   const [frotaOpen, setFrotaOpen] = useState(false)
   const [servicosOpen, setServicosOpen] = useState(false)
   const [comissoesOpen, setComissoesOpen] = useState(false)
+  const [relatoriosOpen, setRelatoriosOpen] = useState(false)
   const [theme, setThemeState] = useState<Theme>(getTheme)
   const { isOpen, close } = useSidebar()
   const { authState, logout } = useAuth()
@@ -81,6 +87,17 @@ export function Sidebar() {
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5 p-2">
+        <NavLink
+          to="/dashboard"
+          onClick={close}
+          className={({ isActive }) =>
+            cn('flex items-center gap-2 rounded-md px-3 py-2 text-sm',
+              isActive ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800')
+          }
+        >
+          <LayoutDashboard size={15} /> Dashboard
+        </NavLink>
+
         <NavLink
           to="/pista"
           onClick={close}
@@ -200,6 +217,31 @@ export function Sidebar() {
         {comissoesOpen && (
           <div className="ml-6 flex flex-col gap-0.5">
             {comissoesItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={close}
+                className={({ isActive }) =>
+                  cn('rounded px-3 py-1.5 text-xs',
+                    isActive ? 'font-semibold text-orange-600' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300')
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+        )}
+
+        <button
+          onClick={() => setRelatoriosOpen((v) => !v)}
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+        >
+          <BarChart3 size={15} /> Relatórios
+          <ChevronDown size={12} className={cn('ml-auto transition-transform', relatoriosOpen && 'rotate-180')} />
+        </button>
+        {relatoriosOpen && (
+          <div className="ml-6 flex flex-col gap-0.5">
+            {relatoriosItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}

@@ -13,6 +13,7 @@ public interface TankRepository {
     Tank save(Tank tank);
     Optional<Tank> findById(UUID id);
     List<Tank> findByStationId(UUID stationId);
+    Optional<Tank> findByStationIdAndFuelId(UUID stationId, UUID fuelId);
     TankMovement saveMovement(TankMovement movement);
     Page<TankMovement> findMovementsByTankId(UUID tankId, Pageable pageable);
 }

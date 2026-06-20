@@ -5,6 +5,7 @@ import com.octane.fueling.domain.Shift;
 import com.octane.fueling.domain.ShiftStatus;
 import com.octane.fueling.domain.repository.FuelingRepository;
 import com.octane.fueling.domain.repository.ShiftRepository;
+import com.octane.inventory.domain.repository.TankRepository;
 import com.octane.pricing.domain.FuelPrice;
 import com.octane.pricing.domain.repository.FuelPriceRepository;
 import com.octane.shared.exception.BusinessException;
@@ -48,6 +49,9 @@ class RegisterFuelingUseCaseTest {
 
     @Mock
     private FuelPriceRepository fuelPriceRepository;
+
+    @Mock
+    private TankRepository tankRepository;
 
     @InjectMocks
     private RegisterFuelingUseCase sut;

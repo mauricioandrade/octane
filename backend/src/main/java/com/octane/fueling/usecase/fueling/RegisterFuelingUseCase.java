@@ -6,11 +6,16 @@ import com.octane.fueling.domain.PaymentMethod;
 import com.octane.fueling.domain.ShiftStatus;
 import com.octane.fueling.domain.repository.FuelingRepository;
 import com.octane.fueling.domain.repository.ShiftRepository;
+import com.octane.inventory.domain.TankMovement;
+import com.octane.inventory.domain.TankMovementType;
+import com.octane.inventory.domain.repository.TankRepository;
 import com.octane.pricing.domain.repository.FuelPriceRepository;
 import com.octane.shared.exception.BusinessException;
 import com.octane.shared.exception.EntityNotFoundException;
 import com.octane.station.domain.PumpStatus;
 import com.octane.station.domain.repository.NozzleRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,20 +28,24 @@ import java.util.UUID;
 public class RegisterFuelingUseCase {
 
     private static final BigDecimal TOLERANCE = new BigDecimal("0.01");
+    private static final Logger log = LoggerFactory.getLogger(RegisterFuelingUseCase.class);
 
     private final ShiftRepository shiftRepository;
     private final FuelingRepository fuelingRepository;
     private final NozzleRepository nozzleRepository;
     private final FuelPriceRepository fuelPriceRepository;
+    private final TankRepository tankRepository;
 
     public RegisterFuelingUseCase(ShiftRepository shiftRepository,
                                   FuelingRepository fuelingRepository,
                                   NozzleRepository nozzleRepository,
-                                  FuelPriceRepository fuelPriceRepository) {
+                                  FuelPriceRepository fuelPriceRepository,
+                                  TankRepository tankRepository) {
         this.shiftRepository = shiftRepository;
         this.fuelingRepository = fuelingRepository;
         this.nozzleRepository = nozzleRepository;
         this.fuelPriceRepository = fuelPriceRepository;
+        this.tankRepository = tankRepository;
     }
 
     @Transactional
@@ -100,6 +109,31 @@ public class RegisterFuelingUseCase {
                 request.vehiclePlate(), request.notes(),
                 now, now
         );
-        return fuelingRepository.save(fueling);
+        var saved = fuelingRepository.save(fueling);
+        decrementTank(stationId, fuelId, liters, saved.getId());
+        return saved;
+    }
+
+    private void decrementTank(UUID stationId, UUID fuelId, BigDecimal liters, UUID fuelingId) {
+        try {
+            tankRepository.findByStationIdAndFuelId(stationId, fuelId).ifPresent(tank -> {
+                var previousLevel = tank.getCurrentLevel();
+                var newLevel = previousLevel.subtract(liters).max(BigDecimal.ZERO);
+                tank.setCurrentLevel(newLevel);
+                tankRepository.save(tank);
+
+                var movement = new TankMovement();
+                movement.setTank(tank);
+                movement.setType(TankMovementType.SALE);
+                movement.setVolumeLiters(liters);
+                movement.setPreviousLevel(previousLevel);
+                movement.setNewLevel(newLevel);
+                movement.setReferenceId(fuelingId);
+                movement.setCreatedAt(LocalDateTime.now());
+                tankRepository.saveMovement(movement);
+            });
+        } catch (Exception e) {
+            log.warn("Falha ao decrementar tanque para abastecimento {}: {}", fuelingId, e.getMessage());
+        }
     }
 }

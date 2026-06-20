@@ -25,6 +25,9 @@ public class TankRepositoryImpl implements TankRepository {
     @Override public Tank save(Tank tank) { return tankJpa.save(tank); }
     @Override public Optional<Tank> findById(UUID id) { return tankJpa.findById(id); }
     @Override public List<Tank> findByStationId(UUID stationId) { return tankJpa.findByStation_IdOrderByNameAsc(stationId); }
+    @Override public Optional<Tank> findByStationIdAndFuelId(UUID stationId, UUID fuelId) {
+        return tankJpa.findFirstByStation_IdAndFuel_IdAndActiveTrue(stationId, fuelId);
+    }
     @Override public TankMovement saveMovement(TankMovement m) { return movementJpa.save(m); }
     @Override public Page<TankMovement> findMovementsByTankId(UUID tankId, Pageable p) {
         return movementJpa.findByTank_IdOrderByCreatedAtDesc(tankId, p);

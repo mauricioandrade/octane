@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Fuel, DollarSign, Store, ClipboardList, ChevronDown, Moon, Sun, ChevronsUpDown, X, LogOut, Truck, Wrench, BadgePercent, Users, LayoutDashboard, BarChart3, Wallet, Container } from 'lucide-react'
+import { Fuel, DollarSign, Store, ClipboardList, ChevronDown, Moon, Sun, ChevronsUpDown, X, LogOut, Truck, Wrench, BadgePercent, Users, LayoutDashboard, BarChart3, Wallet, Container, Shield } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -301,16 +301,28 @@ export function Sidebar() {
         )}
 
         {user?.role === 'ADMIN' && (
-          <NavLink
-            to="/usuarios"
-            onClick={close}
-            className={({ isActive }) =>
-              cn('flex items-center gap-2 rounded-md px-3 py-2 text-sm',
-                isActive ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800')
-            }
-          >
-            <Users size={15} /> Usuários
-          </NavLink>
+          <>
+            <NavLink
+              to="/usuarios"
+              onClick={close}
+              className={({ isActive }) =>
+                cn('flex items-center gap-2 rounded-md px-3 py-2 text-sm',
+                  isActive ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800')
+              }
+            >
+              <Users size={15} /> Usuários
+            </NavLink>
+            <NavLink
+              to="/audit"
+              onClick={close}
+              className={({ isActive }) =>
+                cn('flex items-center gap-2 rounded-md px-3 py-2 text-sm',
+                  isActive ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800')
+              }
+            >
+              <Shield size={15} /> Audit Log
+            </NavLink>
+          </>
         )}
       </nav>
 

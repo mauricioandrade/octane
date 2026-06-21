@@ -4,6 +4,7 @@ export interface AuthUser {
   username: string
   name: string
   role: 'ADMIN' | 'MANAGER' | 'ATTENDANT'
+  stationIds: string[]
 }
 
 export function loginUser(username: string, password: string): Promise<AuthUser> {

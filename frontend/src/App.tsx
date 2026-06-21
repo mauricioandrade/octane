@@ -29,6 +29,7 @@ import { RelatorioTurnosPage } from '@/pages/RelatorioTurnosPage'
 import { CaixaPage } from '@/pages/CaixaPage'
 import { CaixaHistoricoPage } from '@/pages/CaixaHistoricoPage'
 import { EstoquePage } from '@/pages/EstoquePage'
+import { AuditLogPage } from '@/pages/AuditLogPage'
 
 function ProtectedApp() {
   const { authState } = useAuth()
@@ -78,6 +79,7 @@ function ProtectedApp() {
           <Route path="/caixa" element={<CaixaPage />} />
           <Route path="/caixa/historico" element={<CaixaHistoricoPage />} />
           <Route path="/estoque" element={<EstoquePage />} />
+          <Route path="/audit" element={<AuditLogPage />} />
         </Route>
       </Routes>
     </StationProvider>

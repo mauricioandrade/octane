@@ -16,3 +16,11 @@ export function createUser(req: CreateUserRequest): Promise<AppUser> {
 export function updateUser(id: string, req: UpdateUserRequest): Promise<AppUser> {
   return api.put<AppUser>(`/users/${id}`, req)
 }
+
+export function getUserStations(userId: string): Promise<string[]> {
+  return api.get<string[]>(`/users/${userId}/stations`)
+}
+
+export function updateUserStations(userId: string, stationIds: string[]): Promise<string[]> {
+  return api.put<string[]>(`/users/${userId}/stations`, { stationIds })
+}

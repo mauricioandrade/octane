@@ -1,8 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   Sheet,
@@ -20,7 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { createUser, updateUser } from '@/api/users'
+import { createUser, updateUser, getUserStations, updateUserStations } from '@/api/users'
+import { getStations } from '@/api/stations'
 import type { AppUser, UserRole } from '@/types'
 import { USER_ROLE_LABELS } from '@/types'
 
@@ -58,6 +59,7 @@ type Props = {
 export function UserSheet({ open, onOpenChange, user }: Props) {
   const qc = useQueryClient()
   const isEdit = !!user
+  const [selectedStations, setSelectedStations] = useState<Set<string>>(new Set())
 
   const {
     register,
@@ -72,6 +74,18 @@ export function UserSheet({ open, onOpenChange, user }: Props) {
 
   const currentRole = watch('role')
   const currentActive = isEdit ? watch('active' as keyof EditFormData) : undefined
+
+  const { data: allStations = [] } = useQuery({
+    queryKey: ['stations', 'all'],
+    queryFn: () => getStations(),
+    enabled: open,
+  })
+
+  const { data: userStationIds } = useQuery({
+    queryKey: ['user-stations', user?.id],
+    queryFn: () => getUserStations(user!.id),
+    enabled: open && isEdit,
+  })
 
   useEffect(() => {
     if (open) {
@@ -90,38 +104,60 @@ export function UserSheet({ open, onOpenChange, user }: Props) {
           password: '',
           role: 'ATTENDANT',
         } as CreateFormData)
+        setSelectedStations(new Set())
       }
     }
   }, [open, user, reset])
 
+  useEffect(() => {
+    if (userStationIds) {
+      setSelectedStations(new Set(userStationIds))
+    }
+  }, [userStationIds])
+
   const mutation = useMutation({
-    mutationFn: (data: CreateFormData | EditFormData) => {
+    mutationFn: async (data: CreateFormData | EditFormData) => {
       if (isEdit) {
         const editData = data as EditFormData
-        return updateUser(user.id, {
+        await updateUser(user.id, {
           name: editData.name,
           role: editData.role as UserRole,
           active: editData.active,
           password: editData.password && editData.password.length > 0 ? editData.password : undefined,
         })
+        await updateUserStations(user.id, Array.from(selectedStations))
+      } else {
+        const createData = data as CreateFormData
+        await createUser({
+          username: createData.username,
+          password: createData.password,
+          name: createData.name,
+          role: createData.role as UserRole,
+        })
       }
-      const createData = data as CreateFormData
-      return createUser({
-        username: createData.username,
-        password: createData.password,
-        name: createData.name,
-        role: createData.role as UserRole,
-      })
     },
     onSuccess: () => {
       toast.success(isEdit ? 'Usuário atualizado!' : 'Usuário criado!')
       qc.invalidateQueries({ queryKey: ['users'] })
+      qc.invalidateQueries({ queryKey: ['user-stations'] })
       onOpenChange(false)
     },
     onError: () => {
       toast.error('Erro ao salvar usuário')
     },
   })
+
+  function toggleStation(stationId: string) {
+    setSelectedStations((prev) => {
+      const next = new Set(prev)
+      if (next.has(stationId)) {
+        next.delete(stationId)
+      } else {
+        next.add(stationId)
+      }
+      return next
+    })
+  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -197,6 +233,38 @@ export function UserSheet({ open, onOpenChange, user }: Props) {
               <Label htmlFor="user-active" className="cursor-pointer">
                 Ativo
               </Label>
+            </div>
+          )}
+
+          {isEdit && (
+            <div>
+              <Label>Postos</Label>
+              <div className="mt-1 max-h-40 overflow-y-auto rounded-md border p-2 dark:border-slate-700">
+                {allStations.length === 0 ? (
+                  <p className="text-xs text-slate-400">Nenhum posto cadastrado.</p>
+                ) : (
+                  allStations.map((s) => (
+                    <label
+                      key={s.id}
+                      className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedStations.has(s.id)}
+                        onChange={() => toggleStation(s.id)}
+                        className="h-4 w-4 rounded border-slate-300"
+                      />
+                      <span className="text-slate-700 dark:text-slate-300">{s.name}</span>
+                      {!s.active && (
+                        <span className="text-[10px] text-slate-400">(Inativo)</span>
+                      )}
+                    </label>
+                  ))
+                )}
+              </div>
+              <p className="mt-1 text-[10px] text-slate-400">
+                {selectedStations.size} posto{selectedStations.size !== 1 ? 's' : ''} selecionado{selectedStations.size !== 1 ? 's' : ''}
+              </p>
             </div>
           )}
 

@@ -12,4 +12,5 @@ public interface StationRepository {
     Optional<Station> findByCnpj(String cnpj);
     List<Station> findAll();
     List<Station> findAll(Boolean active);
+    List<Station> findAllById(Iterable<UUID> ids);
 }

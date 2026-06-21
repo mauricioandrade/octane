@@ -1,7 +1,10 @@
 package com.octane.user.domain;
 
+import com.octane.station.domain.Station;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -34,6 +37,14 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @ManyToMany
+    @JoinTable(
+        name = "user_stations",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "station_id")
+    )
+    private Set<Station> stations = new HashSet<>();
+
     public User() {}
 
     public User(UUID id, String username, String passwordHash, String name,
@@ -63,4 +74,6 @@ public class User {
     public void setRole(UserRole role) { this.role = role; }
     public void setActive(boolean active) { this.active = active; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public Set<Station> getStations() { return stations; }
+    public void setStations(Set<Station> stations) { this.stations = stations; }
 }

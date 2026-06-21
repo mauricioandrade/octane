@@ -44,4 +44,9 @@ public class StationRepositoryImpl implements StationRepository {
         }
         return jpaRepository.findAll();
     }
+
+    @Override
+    public List<Station> findAllById(Iterable<UUID> ids) {
+        return jpaRepository.findAllById(ids);
+    }
 }

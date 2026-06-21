@@ -3,8 +3,11 @@ package com.octane.user.handler;
 import com.octane.user.usecase.CreateUserRequest;
 import com.octane.user.usecase.CreateUserUseCase;
 import com.octane.user.usecase.FindUserUseCase;
+import com.octane.user.usecase.ListUserStationsUseCase;
 import com.octane.user.usecase.ListUsersUseCase;
 import com.octane.user.usecase.UpdateUserRequest;
+import com.octane.user.usecase.UpdateUserStationsRequest;
+import com.octane.user.usecase.UpdateUserStationsUseCase;
 import com.octane.user.usecase.UpdateUserUseCase;
 import com.octane.user.usecase.UserResponse;
 import jakarta.validation.Valid;
@@ -29,15 +32,21 @@ public class UserHandler {
     private final UpdateUserUseCase updateUserUseCase;
     private final ListUsersUseCase listUsersUseCase;
     private final FindUserUseCase findUserUseCase;
+    private final ListUserStationsUseCase listUserStationsUseCase;
+    private final UpdateUserStationsUseCase updateUserStationsUseCase;
 
     public UserHandler(CreateUserUseCase createUserUseCase,
                        UpdateUserUseCase updateUserUseCase,
                        ListUsersUseCase listUsersUseCase,
-                       FindUserUseCase findUserUseCase) {
+                       FindUserUseCase findUserUseCase,
+                       ListUserStationsUseCase listUserStationsUseCase,
+                       UpdateUserStationsUseCase updateUserStationsUseCase) {
         this.createUserUseCase = createUserUseCase;
         this.updateUserUseCase = updateUserUseCase;
         this.listUsersUseCase = listUsersUseCase;
         this.findUserUseCase = findUserUseCase;
+        this.listUserStationsUseCase = listUserStationsUseCase;
+        this.updateUserStationsUseCase = updateUserStationsUseCase;
     }
 
     @PostMapping
@@ -60,5 +69,16 @@ public class UserHandler {
     @GetMapping("/{id}")
     public UserResponse find(@PathVariable UUID id) {
         return findUserUseCase.execute(id);
+    }
+
+    @GetMapping("/{id}/stations")
+    public List<UUID> listStations(@PathVariable UUID id) {
+        return listUserStationsUseCase.execute(id);
+    }
+
+    @PutMapping("/{id}/stations")
+    public List<UUID> updateStations(@PathVariable UUID id,
+                                     @Valid @RequestBody UpdateUserStationsRequest request) {
+        return updateUserStationsUseCase.execute(id, request);
     }
 }

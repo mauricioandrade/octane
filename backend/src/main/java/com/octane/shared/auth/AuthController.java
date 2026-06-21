@@ -26,11 +26,14 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final AuthenticatedUserService authenticatedUserService;
 
     public AuthController(AuthenticationManager authenticationManager,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          AuthenticatedUserService authenticatedUserService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+        this.authenticatedUserService = authenticatedUserService;
     }
 
     @PostMapping("/login")
@@ -45,7 +48,8 @@ public class AuthController {
                 SecurityContextHolder.getContext()
             );
             User user = userRepository.findByUsername(auth.getName()).orElseThrow();
-            return AuthUserResponse.from(user);
+            var stationIds = userRepository.findStationIdsByUserId(user.getId());
+            return AuthUserResponse.from(user, stationIds);
         } catch (BadCredentialsException ex) {
             throw new com.octane.shared.exception.BusinessException("Usuário ou senha inválidos");
         }
@@ -60,8 +64,8 @@ public class AuthController {
 
     @GetMapping("/me")
     public AuthUserResponse me() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username).orElseThrow();
-        return AuthUserResponse.from(user);
+        var currentUser = authenticatedUserService.getCurrentUser();
+        var user = userRepository.findByUsername(currentUser.username()).orElseThrow();
+        return AuthUserResponse.from(user, currentUser.stationIds());
     }
 }

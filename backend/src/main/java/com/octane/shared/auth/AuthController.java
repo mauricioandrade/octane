@@ -1,5 +1,6 @@
 package com.octane.shared.auth;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.user.domain.User;
 import com.octane.user.domain.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
@@ -27,13 +28,16 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final AuthenticatedUserService authenticatedUserService;
+    private final AuditService auditService;
 
     public AuthController(AuthenticationManager authenticationManager,
                           UserRepository userRepository,
-                          AuthenticatedUserService authenticatedUserService) {
+                          AuthenticatedUserService authenticatedUserService,
+                          AuditService auditService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.authenticatedUserService = authenticatedUserService;
+        this.auditService = auditService;
     }
 
     @PostMapping("/login")
@@ -49,6 +53,7 @@ public class AuthController {
             );
             User user = userRepository.findByUsername(auth.getName()).orElseThrow();
             var stationIds = userRepository.findStationIdsByUserId(user.getId());
+            auditService.log("LOGIN", "User", user.getId(), null);
             return AuthUserResponse.from(user, stationIds);
         } catch (BadCredentialsException ex) {
             throw new com.octane.shared.exception.BusinessException("Usuário ou senha inválidos");
@@ -58,6 +63,7 @@ public class AuthController {
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(HttpSession session) {
+        auditService.log("LOGOUT", "User", null, null);
         session.invalidate();
         SecurityContextHolder.clearContext();
     }

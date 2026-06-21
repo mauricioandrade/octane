@@ -30,6 +30,7 @@ import { CaixaPage } from '@/pages/CaixaPage'
 import { CaixaHistoricoPage } from '@/pages/CaixaHistoricoPage'
 import { EstoquePage } from '@/pages/EstoquePage'
 import { AuditLogPage } from '@/pages/AuditLogPage'
+import { RequireRole } from '@/components/layout/RequireRole'
 
 function ProtectedApp() {
   const { authState } = useAuth()
@@ -73,13 +74,13 @@ function ProtectedApp() {
           <Route path="/os" element={<OrdensServicoPage />} />
           <Route path="/comissao/regras" element={<ComissaoRegrasPage />} />
           <Route path="/comissao/entradas" element={<ComissaoEntradasPage />} />
-          <Route path="/usuarios" element={<UsuariosPage />} />
+          <Route path="/usuarios" element={<RequireRole roles={['ADMIN']}><UsuariosPage /></RequireRole>} />
           <Route path="/relatorios/vendas" element={<RelatorioVendasPage />} />
           <Route path="/relatorios/turnos" element={<RelatorioTurnosPage />} />
           <Route path="/caixa" element={<CaixaPage />} />
           <Route path="/caixa/historico" element={<CaixaHistoricoPage />} />
           <Route path="/estoque" element={<EstoquePage />} />
-          <Route path="/audit" element={<AuditLogPage />} />
+          <Route path="/audit" element={<RequireRole roles={['ADMIN']}><AuditLogPage /></RequireRole>} />
         </Route>
       </Routes>
     </StationProvider>

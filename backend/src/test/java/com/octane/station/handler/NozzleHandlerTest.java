@@ -9,6 +9,7 @@ import com.octane.station.domain.PumpStatus;
 import com.octane.station.domain.Station;
 import com.octane.station.usecase.nozzle.UpdateNozzleRequest;
 import com.octane.station.usecase.nozzle.UpdateNozzleStatusRequest;
+import com.octane.station.usecase.nozzle.DeleteNozzleUseCase;
 import com.octane.station.usecase.nozzle.UpdateNozzleStatusUseCase;
 import com.octane.station.usecase.nozzle.UpdateNozzleUseCase;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import com.octane.audit.usecase.AuditService;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -32,6 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(NozzleHandler.class)
 class NozzleHandlerTest {
 
+    @MockitoBean
+    private AuditService auditService;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -42,6 +47,9 @@ class NozzleHandlerTest {
 
     @MockitoBean
     private UpdateNozzleStatusUseCase updateNozzleStatusUseCase;
+
+    @MockitoBean
+    private DeleteNozzleUseCase deleteNozzleUseCase;
 
     private Nozzle buildNozzle(UUID id, boolean active) {
         var station = new Station(UUID.randomUUID(), "Posto X", "12.345.678/0001-90",

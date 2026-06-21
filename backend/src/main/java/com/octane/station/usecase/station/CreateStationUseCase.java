@@ -1,5 +1,6 @@
 package com.octane.station.usecase.station;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.shared.exception.BusinessException;
 import com.octane.station.domain.Station;
 import com.octane.station.domain.repository.StationRepository;
@@ -12,9 +13,11 @@ import java.time.LocalDateTime;
 public class CreateStationUseCase {
 
     private final StationRepository stationRepository;
+    private final AuditService auditService;
 
-    public CreateStationUseCase(StationRepository stationRepository) {
+    public CreateStationUseCase(StationRepository stationRepository, AuditService auditService) {
         this.stationRepository = stationRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -25,6 +28,8 @@ public class CreateStationUseCase {
         var now = LocalDateTime.now();
         var station = new Station(null, request.name(), request.cnpj(),
             request.address(), request.city(), request.state(), true, now, now);
-        return stationRepository.save(station);
+        var saved = stationRepository.save(station);
+        auditService.log("CREATE", "Station", saved.getId(), saved.getName());
+        return saved;
     }
 }

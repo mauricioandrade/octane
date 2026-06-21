@@ -1,5 +1,6 @@
 package com.octane.fleet.usecase.client;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.fleet.domain.repository.FleetClientRepository;
 import com.octane.fleet.usecase.FleetClientResponse;
 import com.octane.shared.exception.EntityNotFoundException;
@@ -12,9 +13,12 @@ import java.util.UUID;
 public class UpdateFleetClientUseCase {
 
     private final FleetClientRepository fleetClientRepository;
+    private final AuditService auditService;
 
-    public UpdateFleetClientUseCase(FleetClientRepository fleetClientRepository) {
+    public UpdateFleetClientUseCase(FleetClientRepository fleetClientRepository,
+                                    AuditService auditService) {
         this.fleetClientRepository = fleetClientRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -28,6 +32,7 @@ public class UpdateFleetClientUseCase {
         if (request.active() != null) client.setActive(request.active());
 
         client = fleetClientRepository.save(client);
+        auditService.log("UPDATE", "FleetClient", client.getId(), client.getCompanyName());
         var spend = fleetClientRepository.sumCurrentMonthSpend(client.getId());
         return FleetClientResponse.from(client, spend);
     }

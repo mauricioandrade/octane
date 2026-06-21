@@ -1,5 +1,6 @@
 package com.octane.fleet.usecase.driver;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.fleet.domain.repository.FleetDriverRepository;
 import com.octane.fleet.usecase.FleetDriverResponse;
 import com.octane.shared.exception.EntityNotFoundException;
@@ -14,11 +15,14 @@ public class UpdateFleetDriverUseCase {
 
     private final FleetDriverRepository fleetDriverRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditService auditService;
 
     public UpdateFleetDriverUseCase(FleetDriverRepository fleetDriverRepository,
-                                    PasswordEncoder passwordEncoder) {
+                                    PasswordEncoder passwordEncoder,
+                                    AuditService auditService) {
         this.fleetDriverRepository = fleetDriverRepository;
         this.passwordEncoder = passwordEncoder;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -32,6 +36,7 @@ public class UpdateFleetDriverUseCase {
         if (request.active() != null) driver.setActive(request.active());
 
         driver = fleetDriverRepository.save(driver);
+        auditService.log("UPDATE", "FleetDriver", driver.getId(), driver.getName());
         return FleetDriverResponse.from(driver);
     }
 }

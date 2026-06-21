@@ -6,6 +6,7 @@ import com.octane.fleet.usecase.client.CreateFleetClientRequest;
 import com.octane.fleet.usecase.client.CreateFleetClientUseCase;
 import com.octane.fleet.usecase.client.FindFleetClientUseCase;
 import com.octane.fleet.usecase.client.ListFleetClientsUseCase;
+import com.octane.fleet.usecase.client.DeleteFleetClientUseCase;
 import com.octane.fleet.usecase.client.UpdateFleetClientRequest;
 import com.octane.fleet.usecase.client.UpdateFleetClientUseCase;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import com.octane.audit.usecase.AuditService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,6 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(FleetClientHandler.class)
 class FleetClientHandlerTest {
+
+    @MockitoBean
+    private AuditService auditService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -46,6 +51,9 @@ class FleetClientHandlerTest {
 
     @MockitoBean
     private ListFleetClientsUseCase listFleetClientsUseCase;
+
+    @MockitoBean
+    private DeleteFleetClientUseCase deleteFleetClientUseCase;
 
     private FleetClientResponse buildResponse() {
         return new FleetClientResponse(UUID.randomUUID(), UUID.randomUUID(),

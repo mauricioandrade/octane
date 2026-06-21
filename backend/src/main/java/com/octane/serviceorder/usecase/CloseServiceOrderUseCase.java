@@ -1,5 +1,6 @@
 package com.octane.serviceorder.usecase;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.serviceorder.domain.ServiceOrderStatus;
 import com.octane.serviceorder.domain.repository.ServiceOrderItemRepository;
 import com.octane.serviceorder.domain.repository.ServiceOrderRepository;
@@ -16,11 +17,14 @@ public class CloseServiceOrderUseCase {
 
     private final ServiceOrderRepository serviceOrderRepository;
     private final ServiceOrderItemRepository serviceOrderItemRepository;
+    private final AuditService auditService;
 
     public CloseServiceOrderUseCase(ServiceOrderRepository serviceOrderRepository,
-                                    ServiceOrderItemRepository serviceOrderItemRepository) {
+                                    ServiceOrderItemRepository serviceOrderItemRepository,
+                                    AuditService auditService) {
         this.serviceOrderRepository = serviceOrderRepository;
         this.serviceOrderItemRepository = serviceOrderItemRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -36,6 +40,7 @@ public class CloseServiceOrderUseCase {
         order.setClosedAt(LocalDateTime.now());
         var saved = serviceOrderRepository.save(order);
 
+        auditService.log("CLOSE", "ServiceOrder", saved.getId(), saved.getPlate());
         var items = serviceOrderItemRepository.findByServiceOrderId(orderId);
         return ServiceOrderResponse.from(saved, items);
     }

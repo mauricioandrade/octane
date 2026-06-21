@@ -11,6 +11,7 @@ import com.octane.station.domain.repository.StationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import com.octane.audit.usecase.AuditService;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -38,6 +39,9 @@ class CreateTankUseCaseTest {
     @Mock
     private FuelRepository fuelRepository;
 
+    @Mock
+    private AuditService auditService;
+
     @InjectMocks
     private CreateTankUseCase sut;
 
@@ -47,7 +51,7 @@ class CreateTankUseCaseTest {
         var fuelId = UUID.randomUUID();
         var station = new Station(stationId, "Posto X", "12.345.678/0001-90", "Rua A", "SP", "SP",
                 true, LocalDateTime.now(), LocalDateTime.now());
-        var fuel = new Fuel(fuelId, "Gasolina", FuelUnit.LITERS, true, LocalDateTime.now());
+        var fuel = new Fuel(fuelId, "Gasolina", FuelUnit.LITER, true, LocalDateTime.now());
         var request = new CreateTankUseCase.Request(stationId, fuelId, "Tanque 1",
                 new BigDecimal("30000"), new BigDecimal("5000"));
 

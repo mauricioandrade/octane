@@ -1,5 +1,6 @@
 package com.octane.serviceorder.usecase;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.serviceorder.domain.ServiceOrder;
 import com.octane.serviceorder.domain.ServiceOrderStatus;
 import com.octane.serviceorder.domain.repository.ServiceOrderItemRepository;
@@ -19,13 +20,16 @@ public class CreateServiceOrderUseCase {
     private final ServiceOrderRepository serviceOrderRepository;
     private final ServiceOrderItemRepository serviceOrderItemRepository;
     private final StationRepository stationRepository;
+    private final AuditService auditService;
 
     public CreateServiceOrderUseCase(ServiceOrderRepository serviceOrderRepository,
                                      ServiceOrderItemRepository serviceOrderItemRepository,
-                                     StationRepository stationRepository) {
+                                     StationRepository stationRepository,
+                                     AuditService auditService) {
         this.serviceOrderRepository = serviceOrderRepository;
         this.serviceOrderItemRepository = serviceOrderItemRepository;
         this.stationRepository = stationRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -44,6 +48,7 @@ public class CreateServiceOrderUseCase {
                 ServiceOrderStatus.OPEN, request.notes(), now, null, now);
 
         var saved = serviceOrderRepository.save(order);
+        auditService.log("CREATE", "ServiceOrder", saved.getId(), saved.getPlate());
         return ServiceOrderResponse.from(saved, List.of());
     }
 }

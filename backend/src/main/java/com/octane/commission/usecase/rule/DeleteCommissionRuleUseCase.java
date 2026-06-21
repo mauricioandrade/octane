@@ -1,5 +1,6 @@
 package com.octane.commission.usecase.rule;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.commission.domain.repository.CommissionRuleRepository;
 import com.octane.shared.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -12,9 +13,12 @@ import java.util.UUID;
 public class DeleteCommissionRuleUseCase {
 
     private final CommissionRuleRepository commissionRuleRepository;
+    private final AuditService auditService;
 
-    public DeleteCommissionRuleUseCase(CommissionRuleRepository commissionRuleRepository) {
+    public DeleteCommissionRuleUseCase(CommissionRuleRepository commissionRuleRepository,
+                                       AuditService auditService) {
         this.commissionRuleRepository = commissionRuleRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -23,5 +27,6 @@ public class DeleteCommissionRuleUseCase {
             .orElseThrow(() -> new EntityNotFoundException("Regra de comissão não encontrada"));
         rule.setDeletedAt(LocalDateTime.now());
         commissionRuleRepository.save(rule);
+        auditService.log("DELETE", "CommissionRule", id, null);
     }
 }

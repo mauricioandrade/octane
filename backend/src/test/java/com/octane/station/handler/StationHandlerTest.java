@@ -14,6 +14,7 @@ import com.octane.station.usecase.station.FindStationUseCase;
 import com.octane.station.usecase.station.ListStationsUseCase;
 import com.octane.station.usecase.station.UpdateStationRequest;
 import com.octane.station.usecase.station.UpdateStationStatusRequest;
+import com.octane.station.usecase.station.DeleteStationUseCase;
 import com.octane.station.usecase.station.UpdateStationStatusUseCase;
 import com.octane.station.usecase.station.UpdateStationUseCase;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import com.octane.audit.usecase.AuditService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +42,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(StationHandler.class)
 class StationHandlerTest {
+
+    @MockitoBean
+    private AuditService auditService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -66,6 +71,9 @@ class StationHandlerTest {
 
     @MockitoBean
     private UpdateStationStatusUseCase updateStationStatusUseCase;
+
+    @MockitoBean
+    private DeleteStationUseCase deleteStationUseCase;
 
     private Station buildStation(UUID id) {
         return new Station(id, "Posto X", "12.345.678/0001-90", "Rua A, 1",

@@ -8,6 +8,7 @@ import com.octane.station.domain.Station;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import com.octane.audit.usecase.AuditService;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -26,6 +27,9 @@ class DeleteCommissionRuleUseCaseTest {
 
     @Mock
     private CommissionRuleRepository commissionRuleRepository;
+
+    @Mock
+    private AuditService auditService;
 
     @InjectMocks
     private DeleteCommissionRuleUseCase sut;

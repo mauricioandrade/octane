@@ -1,5 +1,6 @@
 package com.octane.fleet.usecase.client;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.fleet.domain.repository.FleetClientRepository;
 import com.octane.shared.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -12,9 +13,12 @@ import java.util.UUID;
 public class DeleteFleetClientUseCase {
 
     private final FleetClientRepository fleetClientRepository;
+    private final AuditService auditService;
 
-    public DeleteFleetClientUseCase(FleetClientRepository fleetClientRepository) {
+    public DeleteFleetClientUseCase(FleetClientRepository fleetClientRepository,
+                                    AuditService auditService) {
         this.fleetClientRepository = fleetClientRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -23,5 +27,6 @@ public class DeleteFleetClientUseCase {
             .orElseThrow(() -> new EntityNotFoundException("Cliente frota não encontrado"));
         client.setDeletedAt(LocalDateTime.now());
         fleetClientRepository.save(client);
+        auditService.log("DELETE", "FleetClient", id, null);
     }
 }

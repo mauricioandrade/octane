@@ -9,6 +9,7 @@ import com.octane.station.domain.repository.PumpRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import com.octane.audit.usecase.AuditService;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -29,6 +30,9 @@ class UpdatePumpUseCaseTest {
 
     @Mock
     private PumpRepository pumpRepository;
+
+    @Mock
+    private AuditService auditService;
 
     @InjectMocks
     private UpdatePumpUseCase sut;

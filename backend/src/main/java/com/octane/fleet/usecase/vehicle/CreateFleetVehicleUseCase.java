@@ -1,5 +1,6 @@
 package com.octane.fleet.usecase.vehicle;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.fleet.domain.FleetVehicle;
 import com.octane.fleet.domain.repository.FleetClientRepository;
 import com.octane.fleet.domain.repository.FleetVehicleRepository;
@@ -18,13 +19,16 @@ public class CreateFleetVehicleUseCase {
     private final FleetVehicleRepository fleetVehicleRepository;
     private final FleetClientRepository fleetClientRepository;
     private final FuelRepository fuelRepository;
+    private final AuditService auditService;
 
     public CreateFleetVehicleUseCase(FleetVehicleRepository fleetVehicleRepository,
                                      FleetClientRepository fleetClientRepository,
-                                     FuelRepository fuelRepository) {
+                                     FuelRepository fuelRepository,
+                                     AuditService auditService) {
         this.fleetVehicleRepository = fleetVehicleRepository;
         this.fleetClientRepository = fleetClientRepository;
         this.fuelRepository = fuelRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -47,6 +51,7 @@ public class CreateFleetVehicleUseCase {
         var vehicle = new FleetVehicle(null, client, request.plate(), request.model(),
                 fuel, true, LocalDateTime.now());
         vehicle = fleetVehicleRepository.save(vehicle);
+        auditService.log("CREATE", "FleetVehicle", vehicle.getId(), vehicle.getPlate());
         return FleetVehicleResponse.from(vehicle);
     }
 }

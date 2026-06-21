@@ -1,5 +1,6 @@
 package com.octane.user.usecase;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.shared.exception.BusinessException;
 import com.octane.shared.exception.EntityNotFoundException;
 import com.octane.user.domain.UserRole;
@@ -16,10 +17,13 @@ public class UpdateUserUseCase {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditService auditService;
 
-    public UpdateUserUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UpdateUserUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                             AuditService auditService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -49,6 +53,7 @@ public class UpdateUserUseCase {
 
         user.setUpdatedAt(LocalDateTime.now());
         user = userRepository.save(user);
+        auditService.log("UPDATE", "User", user.getId(), user.getUsername());
 
         return UserResponse.from(user);
     }

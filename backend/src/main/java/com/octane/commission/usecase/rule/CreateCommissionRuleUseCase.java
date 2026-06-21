@@ -1,5 +1,6 @@
 package com.octane.commission.usecase.rule;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.commission.domain.CommissionRule;
 import com.octane.commission.domain.repository.CommissionRuleRepository;
 import com.octane.commission.usecase.CommissionRuleResponse;
@@ -16,11 +17,14 @@ public class CreateCommissionRuleUseCase {
 
     private final CommissionRuleRepository commissionRuleRepository;
     private final StationRepository stationRepository;
+    private final AuditService auditService;
 
     public CreateCommissionRuleUseCase(CommissionRuleRepository commissionRuleRepository,
-                                       StationRepository stationRepository) {
+                                       StationRepository stationRepository,
+                                       AuditService auditService) {
         this.commissionRuleRepository = commissionRuleRepository;
         this.stationRepository = stationRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -45,6 +49,7 @@ public class CreateCommissionRuleUseCase {
         var now = LocalDateTime.now();
         var rule = new CommissionRule(null, station, request.employeeName(), request.rate(), true, now);
         var saved = commissionRuleRepository.save(rule);
+        auditService.log("CREATE", "CommissionRule", saved.getId(), saved.getEmployeeName());
         return CommissionRuleResponse.from(saved);
     }
 }

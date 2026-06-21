@@ -1,5 +1,6 @@
 package com.octane.fleet.usecase.vehicle;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.fleet.domain.repository.FleetVehicleRepository;
 import com.octane.fleet.usecase.FleetVehicleResponse;
 import com.octane.shared.exception.EntityNotFoundException;
@@ -14,11 +15,14 @@ public class UpdateFleetVehicleUseCase {
 
     private final FleetVehicleRepository fleetVehicleRepository;
     private final FuelRepository fuelRepository;
+    private final AuditService auditService;
 
     public UpdateFleetVehicleUseCase(FleetVehicleRepository fleetVehicleRepository,
-                                     FuelRepository fuelRepository) {
+                                     FuelRepository fuelRepository,
+                                     AuditService auditService) {
         this.fleetVehicleRepository = fleetVehicleRepository;
         this.fuelRepository = fuelRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -35,6 +39,7 @@ public class UpdateFleetVehicleUseCase {
         }
 
         vehicle = fleetVehicleRepository.save(vehicle);
+        auditService.log("UPDATE", "FleetVehicle", vehicle.getId(), vehicle.getPlate());
         return FleetVehicleResponse.from(vehicle);
     }
 }

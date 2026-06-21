@@ -1,6 +1,6 @@
 package com.octane.station.usecase.station;
 
-import com.octane.shared.exception.BusinessException;
+import com.octane.audit.usecase.AuditService;
 import com.octane.shared.exception.EntityNotFoundException;
 import com.octane.station.domain.repository.StationRepository;
 import org.springframework.stereotype.Service;
@@ -13,9 +13,11 @@ import java.util.UUID;
 public class DeleteStationUseCase {
 
     private final StationRepository stationRepository;
+    private final AuditService auditService;
 
-    public DeleteStationUseCase(StationRepository stationRepository) {
+    public DeleteStationUseCase(StationRepository stationRepository, AuditService auditService) {
         this.stationRepository = stationRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -24,5 +26,6 @@ public class DeleteStationUseCase {
             .orElseThrow(() -> new EntityNotFoundException("Posto não encontrado"));
         station.setDeletedAt(LocalDateTime.now());
         stationRepository.save(station);
+        auditService.log("DELETE", "Station", id, null);
     }
 }

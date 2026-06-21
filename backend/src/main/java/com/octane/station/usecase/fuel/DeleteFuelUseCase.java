@@ -1,5 +1,6 @@
 package com.octane.station.usecase.fuel;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.shared.exception.EntityNotFoundException;
 import com.octane.station.domain.repository.FuelRepository;
 import org.springframework.stereotype.Service;
@@ -12,9 +13,11 @@ import java.util.UUID;
 public class DeleteFuelUseCase {
 
     private final FuelRepository fuelRepository;
+    private final AuditService auditService;
 
-    public DeleteFuelUseCase(FuelRepository fuelRepository) {
+    public DeleteFuelUseCase(FuelRepository fuelRepository, AuditService auditService) {
         this.fuelRepository = fuelRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -23,5 +26,6 @@ public class DeleteFuelUseCase {
             .orElseThrow(() -> new EntityNotFoundException("Combustível não encontrado"));
         fuel.setDeletedAt(LocalDateTime.now());
         fuelRepository.save(fuel);
+        auditService.log("DELETE", "Fuel", id, null);
     }
 }

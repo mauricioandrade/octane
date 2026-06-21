@@ -1,5 +1,6 @@
 package com.octane.inventory.usecase;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.inventory.domain.Tank;
 import com.octane.inventory.domain.repository.TankRepository;
 import com.octane.shared.exception.EntityNotFoundException;
@@ -21,13 +22,16 @@ public class CreateTankUseCase {
     private final TankRepository tankRepository;
     private final StationRepository stationRepository;
     private final FuelRepository fuelRepository;
+    private final AuditService auditService;
 
     public CreateTankUseCase(TankRepository tankRepository,
                               StationRepository stationRepository,
-                              FuelRepository fuelRepository) {
+                              FuelRepository fuelRepository,
+                              AuditService auditService) {
         this.tankRepository = tankRepository;
         this.stationRepository = stationRepository;
         this.fuelRepository = fuelRepository;
+        this.auditService = auditService;
     }
 
     public record Request(
@@ -51,6 +55,8 @@ public class CreateTankUseCase {
         tank.setMinimumLevel(request.minimumLevel());
         tank.setActive(true);
         tank.setCreatedAt(LocalDateTime.now());
-        return TankResponse.from(tankRepository.save(tank));
+        var saved = tankRepository.save(tank);
+        auditService.log("CREATE", "Tank", saved.getId(), saved.getName());
+        return TankResponse.from(saved);
     }
 }

@@ -1,5 +1,6 @@
 package com.octane.station.usecase.fuel;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.shared.exception.BusinessException;
 import com.octane.station.domain.Fuel;
 import com.octane.station.domain.FuelUnit;
@@ -13,9 +14,11 @@ import java.time.LocalDateTime;
 public class CreateFuelUseCase {
 
     private final FuelRepository fuelRepository;
+    private final AuditService auditService;
 
-    public CreateFuelUseCase(FuelRepository fuelRepository) {
+    public CreateFuelUseCase(FuelRepository fuelRepository, AuditService auditService) {
         this.fuelRepository = fuelRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -32,6 +35,8 @@ public class CreateFuelUseCase {
         }
 
         var fuel = new Fuel(null, request.name(), fuelUnit, true, LocalDateTime.now());
-        return fuelRepository.save(fuel);
+        var saved = fuelRepository.save(fuel);
+        auditService.log("CREATE", "Fuel", saved.getId(), saved.getName());
+        return saved;
     }
 }

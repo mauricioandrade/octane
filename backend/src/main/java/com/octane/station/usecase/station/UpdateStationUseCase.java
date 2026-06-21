@@ -1,5 +1,6 @@
 package com.octane.station.usecase.station;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.shared.exception.BusinessException;
 import com.octane.shared.exception.EntityNotFoundException;
 import com.octane.station.domain.Station;
@@ -14,9 +15,11 @@ import java.util.UUID;
 public class UpdateStationUseCase {
 
     private final StationRepository stationRepository;
+    private final AuditService auditService;
 
-    public UpdateStationUseCase(StationRepository stationRepository) {
+    public UpdateStationUseCase(StationRepository stationRepository, AuditService auditService) {
         this.stationRepository = stationRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -32,6 +35,8 @@ public class UpdateStationUseCase {
         var updated = new Station(station.getId(), request.name(), request.cnpj(),
             request.address(), request.city(), request.state(), station.isActive(),
             station.getCreatedAt(), LocalDateTime.now());
-        return stationRepository.save(updated);
+        var saved = stationRepository.save(updated);
+        auditService.log("UPDATE", "Station", saved.getId(), saved.getName());
+        return saved;
     }
 }

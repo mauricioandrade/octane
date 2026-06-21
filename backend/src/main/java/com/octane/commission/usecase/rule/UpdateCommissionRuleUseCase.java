@@ -1,5 +1,6 @@
 package com.octane.commission.usecase.rule;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.commission.domain.repository.CommissionRuleRepository;
 import com.octane.commission.usecase.CommissionRuleResponse;
 import com.octane.shared.exception.EntityNotFoundException;
@@ -12,9 +13,12 @@ import java.util.UUID;
 public class UpdateCommissionRuleUseCase {
 
     private final CommissionRuleRepository commissionRuleRepository;
+    private final AuditService auditService;
 
-    public UpdateCommissionRuleUseCase(CommissionRuleRepository commissionRuleRepository) {
+    public UpdateCommissionRuleUseCase(CommissionRuleRepository commissionRuleRepository,
+                                       AuditService auditService) {
         this.commissionRuleRepository = commissionRuleRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -33,6 +37,7 @@ public class UpdateCommissionRuleUseCase {
         }
 
         var saved = commissionRuleRepository.save(rule);
+        auditService.log("UPDATE", "CommissionRule", saved.getId(), saved.getEmployeeName());
         return CommissionRuleResponse.from(saved);
     }
 }

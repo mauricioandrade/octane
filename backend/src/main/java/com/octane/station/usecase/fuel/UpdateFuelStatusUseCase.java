@@ -1,5 +1,6 @@
 package com.octane.station.usecase.fuel;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.shared.exception.EntityNotFoundException;
 import com.octane.station.domain.Fuel;
 import com.octane.station.domain.repository.FuelRepository;
@@ -12,9 +13,11 @@ import java.util.UUID;
 public class UpdateFuelStatusUseCase {
 
     private final FuelRepository fuelRepository;
+    private final AuditService auditService;
 
-    public UpdateFuelStatusUseCase(FuelRepository fuelRepository) {
+    public UpdateFuelStatusUseCase(FuelRepository fuelRepository, AuditService auditService) {
         this.fuelRepository = fuelRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -24,6 +27,8 @@ public class UpdateFuelStatusUseCase {
 
         var updated = new Fuel(fuel.getId(), fuel.getName(), fuel.getUnit(),
             request.active(), fuel.getCreatedAt());
-        return fuelRepository.save(updated);
+        var saved = fuelRepository.save(updated);
+        auditService.log("UPDATE", "Fuel", saved.getId(), "status=" + request.active());
+        return saved;
     }
 }

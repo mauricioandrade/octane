@@ -1,5 +1,6 @@
 package com.octane.fueling.usecase.shift;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.commission.usecase.entry.CalculateCommissionUseCase;
 import com.octane.fueling.domain.Fueling;
 import com.octane.fueling.domain.FuelingStatus;
@@ -40,6 +41,7 @@ public class CloseShiftUseCase {
     private final FuelingRepository fuelingRepository;
     private final ShiftReconciliationRepository shiftReconciliationRepository;
     private final CalculateCommissionUseCase calculateCommissionUseCase;
+    private final AuditService auditService;
 
     public CloseShiftUseCase(ShiftRepository shiftRepository,
                              NozzleReadingRepository nozzleReadingRepository,
@@ -47,7 +49,8 @@ public class CloseShiftUseCase {
                              PumpRepository pumpRepository,
                              FuelingRepository fuelingRepository,
                              ShiftReconciliationRepository shiftReconciliationRepository,
-                             CalculateCommissionUseCase calculateCommissionUseCase) {
+                             CalculateCommissionUseCase calculateCommissionUseCase,
+                             AuditService auditService) {
         this.shiftRepository = shiftRepository;
         this.nozzleReadingRepository = nozzleReadingRepository;
         this.nozzleRepository = nozzleRepository;
@@ -55,6 +58,7 @@ public class CloseShiftUseCase {
         this.fuelingRepository = fuelingRepository;
         this.shiftReconciliationRepository = shiftReconciliationRepository;
         this.calculateCommissionUseCase = calculateCommissionUseCase;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -124,6 +128,7 @@ public class CloseShiftUseCase {
             log.warn("Falha ao calcular comissão do turno {}: {}", saved.getId(), e.getMessage());
         }
 
+        auditService.log("CLOSE", "Shift", saved.getId(), saved.getEmployeeName());
         return saved;
     }
 }

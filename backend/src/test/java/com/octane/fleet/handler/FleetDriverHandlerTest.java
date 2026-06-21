@@ -10,6 +10,7 @@ import com.octane.fleet.usecase.driver.CreateFleetDriverUseCase;
 import com.octane.fleet.usecase.driver.FindFleetDriverUseCase;
 import com.octane.fleet.usecase.driver.IdentifyFleetDriverRequest;
 import com.octane.fleet.usecase.driver.IdentifyFleetDriverUseCase;
+import com.octane.fleet.usecase.driver.DeleteFleetDriverUseCase;
 import com.octane.fleet.usecase.driver.ListFleetDriversUseCase;
 import com.octane.fleet.usecase.driver.UpdateFleetDriverUseCase;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import com.octane.audit.usecase.AuditService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -32,6 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(FleetDriverHandler.class)
 class FleetDriverHandlerTest {
+
+    @MockitoBean
+    private AuditService auditService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,6 +57,9 @@ class FleetDriverHandlerTest {
 
     @MockitoBean
     private IdentifyFleetDriverUseCase identifyFleetDriverUseCase;
+
+    @MockitoBean
+    private DeleteFleetDriverUseCase deleteFleetDriverUseCase;
 
     @Test
     void postIdentify_returns200_withValidRequest() throws Exception {

@@ -1,5 +1,6 @@
 package com.octane.fueling.usecase.shift;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.fueling.domain.Shift;
 import com.octane.fueling.domain.ShiftStatus;
 import com.octane.fueling.domain.repository.ShiftRepository;
@@ -16,10 +17,13 @@ public class OpenShiftUseCase {
 
     private final ShiftRepository shiftRepository;
     private final StationRepository stationRepository;
+    private final AuditService auditService;
 
-    public OpenShiftUseCase(ShiftRepository shiftRepository, StationRepository stationRepository) {
+    public OpenShiftUseCase(ShiftRepository shiftRepository, StationRepository stationRepository,
+                            AuditService auditService) {
         this.shiftRepository = shiftRepository;
         this.stationRepository = stationRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -38,6 +42,8 @@ public class OpenShiftUseCase {
 
         var now = LocalDateTime.now();
         var shift = new Shift(null, station, request.employeeName(), ShiftStatus.OPEN, now, null, request.notes(), now);
-        return shiftRepository.save(shift);
+        var saved = shiftRepository.save(shift);
+        auditService.log("OPEN", "Shift", saved.getId(), saved.getEmployeeName());
+        return saved;
     }
 }

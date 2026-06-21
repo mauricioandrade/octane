@@ -11,6 +11,7 @@ import com.octane.station.domain.Station;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import com.octane.audit.usecase.AuditService;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -30,6 +31,9 @@ class DeleteFleetVehicleUseCaseTest {
     @Mock
     private FleetVehicleRepository fleetVehicleRepository;
 
+    @Mock
+    private AuditService auditService;
+
     @InjectMocks
     private DeleteFleetVehicleUseCase sut;
 
@@ -39,7 +43,7 @@ class DeleteFleetVehicleUseCaseTest {
         var now = LocalDateTime.now();
         var station = new Station(UUID.randomUUID(), "P", "00.000.000/0001-00", "A", "C", "SP", true, now, now);
         var client = new FleetClient(UUID.randomUUID(), station, "00.000.000/0001-00", "E", null, BigDecimal.ZERO, true, now);
-        var fuel = new Fuel(UUID.randomUUID(), "Gas", FuelUnit.LITERS, true, now);
+        var fuel = new Fuel(UUID.randomUUID(), "Gas", FuelUnit.LITER, true, now);
         var vehicle = new FleetVehicle(id, client, "ABC-1234", "Modelo", fuel, true, now);
 
         when(fleetVehicleRepository.findById(id)).thenReturn(Optional.of(vehicle));

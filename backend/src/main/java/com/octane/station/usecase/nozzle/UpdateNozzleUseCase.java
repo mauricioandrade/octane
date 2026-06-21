@@ -1,5 +1,6 @@
 package com.octane.station.usecase.nozzle;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.shared.exception.BusinessException;
 import com.octane.shared.exception.EntityNotFoundException;
 import com.octane.station.domain.Nozzle;
@@ -16,10 +17,13 @@ public class UpdateNozzleUseCase {
 
     private final NozzleRepository nozzleRepository;
     private final FuelRepository fuelRepository;
+    private final AuditService auditService;
 
-    public UpdateNozzleUseCase(NozzleRepository nozzleRepository, FuelRepository fuelRepository) {
+    public UpdateNozzleUseCase(NozzleRepository nozzleRepository, FuelRepository fuelRepository,
+                               AuditService auditService) {
         this.nozzleRepository = nozzleRepository;
         this.fuelRepository = fuelRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -41,6 +45,8 @@ public class UpdateNozzleUseCase {
 
         var updated = new Nozzle(nozzle.getId(), request.number(), nozzle.getPump(), fuel,
             nozzle.isActive(), nozzle.getCreatedAt(), LocalDateTime.now());
-        return nozzleRepository.save(updated);
+        var saved = nozzleRepository.save(updated);
+        auditService.log("UPDATE", "Nozzle", saved.getId(), "bico " + saved.getNumber());
+        return saved;
     }
 }

@@ -1,5 +1,6 @@
 package com.octane.station.usecase.pump;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.shared.exception.BusinessException;
 import com.octane.shared.exception.EntityNotFoundException;
 import com.octane.station.domain.Pump;
@@ -17,10 +18,13 @@ public class CreatePumpUseCase {
 
     private final StationRepository stationRepository;
     private final PumpRepository pumpRepository;
+    private final AuditService auditService;
 
-    public CreatePumpUseCase(StationRepository stationRepository, PumpRepository pumpRepository) {
+    public CreatePumpUseCase(StationRepository stationRepository, PumpRepository pumpRepository,
+                             AuditService auditService) {
         this.stationRepository = stationRepository;
         this.pumpRepository = pumpRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -34,6 +38,8 @@ public class CreatePumpUseCase {
 
         var now = LocalDateTime.now();
         var pump = new Pump(null, request.number(), PumpStatus.ACTIVE, station, now, now);
-        return pumpRepository.save(pump);
+        var saved = pumpRepository.save(pump);
+        auditService.log("CREATE", "Pump", saved.getId(), "bomba " + saved.getNumber());
+        return saved;
     }
 }

@@ -1,5 +1,6 @@
 package com.octane.user.usecase;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.shared.exception.BusinessException;
 import com.octane.user.domain.User;
 import com.octane.user.domain.UserRole;
@@ -15,10 +16,13 @@ public class CreateUserUseCase {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditService auditService;
 
-    public CreateUserUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CreateUserUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                             AuditService auditService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -37,6 +41,7 @@ public class CreateUserUseCase {
         var user = new User(null, request.username(), passwordEncoder.encode(request.password()),
                 request.name(), role, true, now, now);
         user = userRepository.save(user);
+        auditService.log("CREATE", "User", user.getId(), user.getUsername());
 
         return UserResponse.from(user);
     }

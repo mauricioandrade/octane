@@ -37,7 +37,7 @@ class RegisterDeliveryUseCaseTest {
         var tank = new Tank();
         tank.setStation(new Station(UUID.randomUUID(), "P", "00.000.000/0001-00", "A", "C", "SP",
                 true, LocalDateTime.now(), LocalDateTime.now()));
-        tank.setFuel(new Fuel(UUID.randomUUID(), "Gasolina", FuelUnit.LITERS, true, LocalDateTime.now()));
+        tank.setFuel(new Fuel(UUID.randomUUID(), "Gasolina", FuelUnit.LITER, true, LocalDateTime.now()));
         tank.setName("Tanque 1");
         tank.setCapacity(new BigDecimal("30000"));
         tank.setCurrentLevel(currentLevel);

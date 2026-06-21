@@ -8,6 +8,7 @@ import com.octane.station.usecase.fuel.CreateFuelUseCase;
 import com.octane.station.usecase.fuel.ListFuelsUseCase;
 import com.octane.station.usecase.fuel.UpdateFuelRequest;
 import com.octane.station.usecase.fuel.UpdateFuelStatusRequest;
+import com.octane.station.usecase.fuel.DeleteFuelUseCase;
 import com.octane.station.usecase.fuel.UpdateFuelStatusUseCase;
 import com.octane.station.usecase.fuel.UpdateFuelUseCase;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import com.octane.audit.usecase.AuditService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,6 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(FuelHandler.class)
 class FuelHandlerTest {
+
+    @MockitoBean
+    private AuditService auditService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -48,6 +53,9 @@ class FuelHandlerTest {
 
     @MockitoBean
     private UpdateFuelUseCase updateFuelUseCase;
+
+    @MockitoBean
+    private DeleteFuelUseCase deleteFuelUseCase;
 
     @Test
     void getFuels_returns200WithList() throws Exception {

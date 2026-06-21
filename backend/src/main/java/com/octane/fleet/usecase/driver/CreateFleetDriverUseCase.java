@@ -1,5 +1,6 @@
 package com.octane.fleet.usecase.driver;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.fleet.domain.FleetDriver;
 import com.octane.fleet.domain.repository.FleetClientRepository;
 import com.octane.fleet.domain.repository.FleetDriverRepository;
@@ -18,13 +19,16 @@ public class CreateFleetDriverUseCase {
     private final FleetDriverRepository fleetDriverRepository;
     private final FleetClientRepository fleetClientRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditService auditService;
 
     public CreateFleetDriverUseCase(FleetDriverRepository fleetDriverRepository,
                                     FleetClientRepository fleetClientRepository,
-                                    PasswordEncoder passwordEncoder) {
+                                    PasswordEncoder passwordEncoder,
+                                    AuditService auditService) {
         this.fleetDriverRepository = fleetDriverRepository;
         this.fleetClientRepository = fleetClientRepository;
         this.passwordEncoder = passwordEncoder;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -45,6 +49,7 @@ public class CreateFleetDriverUseCase {
         var driver = new FleetDriver(null, client, request.name(), request.cpf(),
                 pinHash, request.rfidTag(), true, LocalDateTime.now());
         driver = fleetDriverRepository.save(driver);
+        auditService.log("CREATE", "FleetDriver", driver.getId(), driver.getName());
         return FleetDriverResponse.from(driver);
     }
 }

@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import com.octane.audit.usecase.AuditService;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -62,6 +63,9 @@ class CloseShiftUseCaseTest {
 
     @Mock
     private ShiftReconciliationRepository shiftReconciliationRepository;
+
+    @Mock
+    private AuditService auditService;
 
     @InjectMocks
     private CloseShiftUseCase sut;

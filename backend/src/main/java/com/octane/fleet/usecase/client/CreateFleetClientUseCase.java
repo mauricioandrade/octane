@@ -1,5 +1,6 @@
 package com.octane.fleet.usecase.client;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.fleet.domain.FleetClient;
 import com.octane.fleet.domain.repository.FleetClientRepository;
 import com.octane.fleet.usecase.FleetClientResponse;
@@ -16,11 +17,14 @@ public class CreateFleetClientUseCase {
 
     private final FleetClientRepository fleetClientRepository;
     private final StationRepository stationRepository;
+    private final AuditService auditService;
 
     public CreateFleetClientUseCase(FleetClientRepository fleetClientRepository,
-                                    StationRepository stationRepository) {
+                                    StationRepository stationRepository,
+                                    AuditService auditService) {
         this.fleetClientRepository = fleetClientRepository;
         this.stationRepository = stationRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -36,6 +40,7 @@ public class CreateFleetClientUseCase {
         var client = new FleetClient(null, station, request.cnpj(), request.companyName(),
                 request.tradeName(), request.monthlyLimit(), true, now);
         client = fleetClientRepository.save(client);
+        auditService.log("CREATE", "FleetClient", client.getId(), client.getCompanyName());
 
         return FleetClientResponse.from(client, java.math.BigDecimal.ZERO);
     }

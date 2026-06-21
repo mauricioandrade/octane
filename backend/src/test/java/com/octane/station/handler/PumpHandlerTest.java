@@ -12,6 +12,7 @@ import com.octane.station.usecase.nozzle.CreateNozzleUseCase;
 import com.octane.station.usecase.nozzle.ListNozzlesByPumpUseCase;
 import com.octane.station.usecase.pump.UpdatePumpRequest;
 import com.octane.station.usecase.pump.UpdatePumpStatusRequest;
+import com.octane.station.usecase.pump.DeletePumpUseCase;
 import com.octane.station.usecase.pump.UpdatePumpStatusUseCase;
 import com.octane.station.usecase.pump.UpdatePumpUseCase;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import com.octane.audit.usecase.AuditService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,6 +41,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(PumpHandler.class)
 class PumpHandlerTest {
 
+    @MockitoBean
+    private AuditService auditService;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -53,6 +58,9 @@ class PumpHandlerTest {
 
     @MockitoBean
     private UpdatePumpStatusUseCase updatePumpStatusUseCase;
+
+    @MockitoBean
+    private DeletePumpUseCase deletePumpUseCase;
 
     private Pump buildPump(UUID id, int number, PumpStatus status) {
         var station = new Station(UUID.randomUUID(), "Posto X", "12.345.678/0001-90", "Rua A, 1",

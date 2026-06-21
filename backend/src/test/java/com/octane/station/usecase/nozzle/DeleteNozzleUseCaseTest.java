@@ -11,6 +11,7 @@ import com.octane.station.domain.repository.NozzleRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import com.octane.audit.usecase.AuditService;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -29,6 +30,9 @@ class DeleteNozzleUseCaseTest {
     @Mock
     private NozzleRepository nozzleRepository;
 
+    @Mock
+    private AuditService auditService;
+
     @InjectMocks
     private DeleteNozzleUseCase sut;
 
@@ -39,7 +43,7 @@ class DeleteNozzleUseCaseTest {
         var station = new Station(UUID.randomUUID(), "P", "00.000.000/0001-00", "A", "C", "SP",
                 true, now, now);
         var pump = new Pump(UUID.randomUUID(), 1, PumpStatus.ACTIVE, station, now, now);
-        var fuel = new Fuel(UUID.randomUUID(), "Gas", FuelUnit.LITERS, true, now);
+        var fuel = new Fuel(UUID.randomUUID(), "Gas", FuelUnit.LITER, true, now);
         var nozzle = new Nozzle(id, 1, pump, fuel, true, now, now);
 
         when(nozzleRepository.findById(id)).thenReturn(Optional.of(nozzle));

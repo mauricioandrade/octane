@@ -7,6 +7,7 @@ import com.octane.station.domain.repository.FuelRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import com.octane.audit.usecase.AuditService;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -25,13 +26,16 @@ class DeleteFuelUseCaseTest {
     @Mock
     private FuelRepository fuelRepository;
 
+    @Mock
+    private AuditService auditService;
+
     @InjectMocks
     private DeleteFuelUseCase sut;
 
     @Test
     void execute_setsDeletedAt() {
         var id = UUID.randomUUID();
-        var fuel = new Fuel(id, "Gasolina", FuelUnit.LITERS, true, LocalDateTime.now());
+        var fuel = new Fuel(id, "Gasolina", FuelUnit.LITER, true, LocalDateTime.now());
 
         when(fuelRepository.findById(id)).thenReturn(Optional.of(fuel));
         when(fuelRepository.save(fuel)).thenReturn(fuel);

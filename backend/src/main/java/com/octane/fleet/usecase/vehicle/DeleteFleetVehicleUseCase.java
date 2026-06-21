@@ -1,5 +1,6 @@
 package com.octane.fleet.usecase.vehicle;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.fleet.domain.repository.FleetVehicleRepository;
 import com.octane.shared.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -12,9 +13,12 @@ import java.util.UUID;
 public class DeleteFleetVehicleUseCase {
 
     private final FleetVehicleRepository fleetVehicleRepository;
+    private final AuditService auditService;
 
-    public DeleteFleetVehicleUseCase(FleetVehicleRepository fleetVehicleRepository) {
+    public DeleteFleetVehicleUseCase(FleetVehicleRepository fleetVehicleRepository,
+                                     AuditService auditService) {
         this.fleetVehicleRepository = fleetVehicleRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -23,5 +27,6 @@ public class DeleteFleetVehicleUseCase {
             .orElseThrow(() -> new EntityNotFoundException("Veículo não encontrado"));
         vehicle.setDeletedAt(LocalDateTime.now());
         fleetVehicleRepository.save(vehicle);
+        auditService.log("DELETE", "FleetVehicle", id, null);
     }
 }

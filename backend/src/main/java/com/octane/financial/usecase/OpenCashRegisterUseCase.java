@@ -1,5 +1,6 @@
 package com.octane.financial.usecase;
 
+import com.octane.audit.usecase.AuditService;
 import com.octane.financial.domain.CashRegister;
 import com.octane.financial.domain.CashRegisterStatus;
 import com.octane.financial.domain.repository.CashRegisterRepository;
@@ -20,11 +21,14 @@ public class OpenCashRegisterUseCase {
 
     private final CashRegisterRepository cashRegisterRepository;
     private final StationRepository stationRepository;
+    private final AuditService auditService;
 
     public OpenCashRegisterUseCase(CashRegisterRepository cashRegisterRepository,
-                                    StationRepository stationRepository) {
+                                    StationRepository stationRepository,
+                                    AuditService auditService) {
         this.cashRegisterRepository = cashRegisterRepository;
         this.stationRepository = stationRepository;
+        this.auditService = auditService;
     }
 
     public record Request(@NotNull UUID stationId, @NotNull BigDecimal openingBalance, String notes) {}
@@ -44,6 +48,8 @@ public class OpenCashRegisterUseCase {
         register.setStatus(CashRegisterStatus.OPEN);
         register.setNotes(request.notes());
         register.setCreatedAt(LocalDateTime.now());
-        return cashRegisterRepository.save(register);
+        var saved = cashRegisterRepository.save(register);
+        auditService.log("OPEN", "CashRegister", saved.getId(), null);
+        return saved;
     }
 }

@@ -7,6 +7,7 @@ import com.octane.commission.usecase.rule.ListCommissionRulesUseCase;
 import com.octane.commission.usecase.rule.UpdateCommissionRuleRequest;
 import com.octane.commission.usecase.rule.DeleteCommissionRuleUseCase;
 import com.octane.commission.usecase.rule.UpdateCommissionRuleUseCase;
+import com.octane.shared.auth.AuthenticatedUserService;
 import com.octane.shared.pagination.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -33,15 +34,18 @@ public class CommissionRuleHandler {
     private final ListCommissionRulesUseCase listCommissionRulesUseCase;
     private final UpdateCommissionRuleUseCase updateCommissionRuleUseCase;
     private final DeleteCommissionRuleUseCase deleteCommissionRuleUseCase;
+    private final AuthenticatedUserService authService;
 
     public CommissionRuleHandler(CreateCommissionRuleUseCase createCommissionRuleUseCase,
                                   ListCommissionRulesUseCase listCommissionRulesUseCase,
                                   UpdateCommissionRuleUseCase updateCommissionRuleUseCase,
-                                  DeleteCommissionRuleUseCase deleteCommissionRuleUseCase) {
+                                  DeleteCommissionRuleUseCase deleteCommissionRuleUseCase,
+                                  AuthenticatedUserService authService) {
         this.createCommissionRuleUseCase = createCommissionRuleUseCase;
         this.listCommissionRulesUseCase = listCommissionRulesUseCase;
         this.updateCommissionRuleUseCase = updateCommissionRuleUseCase;
         this.deleteCommissionRuleUseCase = deleteCommissionRuleUseCase;
+        this.authService = authService;
     }
 
     @PostMapping
@@ -56,6 +60,7 @@ public class CommissionRuleHandler {
             @RequestParam(required = false) Boolean active,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
+        authService.validateStationAccess(stationId);
         return listCommissionRulesUseCase.execute(stationId, active, page, size);
     }
 

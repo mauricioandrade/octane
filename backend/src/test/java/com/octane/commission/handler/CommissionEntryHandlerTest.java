@@ -7,6 +7,7 @@ import com.octane.commission.usecase.entry.ListCommissionEntriesUseCase;
 import com.octane.commission.usecase.entry.MarkCommissionPaidUseCase;
 import com.octane.fueling.domain.Shift;
 import com.octane.fueling.domain.ShiftStatus;
+import com.octane.shared.auth.AuthenticatedUserService;
 import com.octane.shared.exception.BusinessException;
 import com.octane.station.domain.Station;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(CommissionEntryHandler.class)
 class CommissionEntryHandlerTest {
+
+    @MockitoBean
+    private AuthenticatedUserService authService;
 
     @Autowired
     private MockMvc mockMvc;

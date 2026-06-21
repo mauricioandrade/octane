@@ -14,6 +14,7 @@ import com.octane.fueling.usecase.shift.ListShiftsByStationUseCase;
 import com.octane.fueling.usecase.shift.OpenShiftRequest;
 import com.octane.fueling.usecase.shift.OpenShiftUseCase;
 import com.octane.fueling.usecase.shift.ShiftReconciliationResponse;
+import com.octane.shared.auth.AuthenticatedUserService;
 import com.octane.shared.exception.EntityNotFoundException;
 import com.octane.shared.pagination.PageResponse;
 import com.octane.station.domain.Fuel;
@@ -44,6 +45,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ShiftHandler.class)
 class ShiftHandlerTest {
+
+    @MockitoBean
+    private AuthenticatedUserService authService;
 
     @Autowired
     private MockMvc mockMvc;

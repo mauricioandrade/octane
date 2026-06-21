@@ -2,6 +2,7 @@ package com.octane.fueling.handler;
 
 import com.octane.fueling.usecase.reading.RegisterNozzleReadingRequest;
 import com.octane.fueling.usecase.reading.RegisterNozzleReadingUseCase;
+import com.octane.shared.auth.AuthenticatedUserService;
 import com.octane.fueling.usecase.shift.CloseShiftUseCase;
 import com.octane.fueling.usecase.shift.FindShiftUseCase;
 import com.octane.fueling.usecase.shift.GetShiftReconciliationUseCase;
@@ -34,6 +35,7 @@ public class ShiftHandler {
     private final ListShiftsByStationUseCase listShiftsByStationUseCase;
     private final RegisterNozzleReadingUseCase registerNozzleReadingUseCase;
     private final GetShiftReconciliationUseCase getShiftReconciliationUseCase;
+    private final AuthenticatedUserService authService;
 
     public ShiftHandler(
         OpenShiftUseCase openShiftUseCase,
@@ -41,7 +43,8 @@ public class ShiftHandler {
         FindShiftUseCase findShiftUseCase,
         ListShiftsByStationUseCase listShiftsByStationUseCase,
         RegisterNozzleReadingUseCase registerNozzleReadingUseCase,
-        GetShiftReconciliationUseCase getShiftReconciliationUseCase
+        GetShiftReconciliationUseCase getShiftReconciliationUseCase,
+        AuthenticatedUserService authService
     ) {
         this.openShiftUseCase = openShiftUseCase;
         this.closeShiftUseCase = closeShiftUseCase;
@@ -49,6 +52,7 @@ public class ShiftHandler {
         this.listShiftsByStationUseCase = listShiftsByStationUseCase;
         this.registerNozzleReadingUseCase = registerNozzleReadingUseCase;
         this.getShiftReconciliationUseCase = getShiftReconciliationUseCase;
+        this.authService = authService;
     }
 
     @GetMapping("/api/shifts/{id}/reconciliation")
@@ -81,6 +85,7 @@ public class ShiftHandler {
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "20") int size
     ) {
+        authService.validateStationAccess(stationId);
         return listShiftsByStationUseCase.execute(stationId, status, from, to, page, size)
             .map(ShiftResponse::from);
     }

@@ -8,6 +8,7 @@ import com.octane.fleet.usecase.client.ListFleetClientsUseCase;
 import com.octane.fleet.usecase.client.DeleteFleetClientUseCase;
 import com.octane.fleet.usecase.client.UpdateFleetClientRequest;
 import com.octane.fleet.usecase.client.UpdateFleetClientUseCase;
+import com.octane.shared.auth.AuthenticatedUserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,17 +36,20 @@ public class FleetClientHandler {
     private final FindFleetClientUseCase findFleetClientUseCase;
     private final ListFleetClientsUseCase listFleetClientsUseCase;
     private final DeleteFleetClientUseCase deleteFleetClientUseCase;
+    private final AuthenticatedUserService authService;
 
     public FleetClientHandler(CreateFleetClientUseCase createFleetClientUseCase,
                               UpdateFleetClientUseCase updateFleetClientUseCase,
                               FindFleetClientUseCase findFleetClientUseCase,
                               ListFleetClientsUseCase listFleetClientsUseCase,
-                              DeleteFleetClientUseCase deleteFleetClientUseCase) {
+                              DeleteFleetClientUseCase deleteFleetClientUseCase,
+                              AuthenticatedUserService authService) {
         this.createFleetClientUseCase = createFleetClientUseCase;
         this.updateFleetClientUseCase = updateFleetClientUseCase;
         this.findFleetClientUseCase = findFleetClientUseCase;
         this.listFleetClientsUseCase = listFleetClientsUseCase;
         this.deleteFleetClientUseCase = deleteFleetClientUseCase;
+        this.authService = authService;
     }
 
     @PostMapping
@@ -57,6 +61,7 @@ public class FleetClientHandler {
     @GetMapping
     public List<FleetClientResponse> list(@RequestParam UUID stationId,
                                           @RequestParam(required = false) Boolean active) {
+        authService.validateStationAccess(stationId);
         return listFleetClientsUseCase.execute(stationId, active);
     }
 

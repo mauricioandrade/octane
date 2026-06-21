@@ -6,6 +6,7 @@ import com.octane.pricing.usecase.GetCurrentPricesUseCase;
 import com.octane.pricing.usecase.ListPriceHistoryUseCase;
 import com.octane.pricing.usecase.SetFuelPriceRequest;
 import com.octane.pricing.usecase.SetFuelPriceUseCase;
+import com.octane.shared.auth.AuthenticatedUserService;
 import com.octane.station.domain.Fuel;
 import com.octane.station.domain.FuelUnit;
 import com.octane.station.domain.Station;
@@ -31,6 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(FuelPriceHandler.class)
 class FuelPriceHandlerTest {
+
+    @MockitoBean
+    private AuthenticatedUserService authService;
 
     @Autowired
     private MockMvc mockMvc;

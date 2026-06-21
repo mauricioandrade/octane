@@ -14,4 +14,8 @@ public record AuthenticatedUser(
     public boolean isAdmin() {
         return role == UserRole.ADMIN;
     }
+
+    public boolean hasAccessToStation(UUID stationId) {
+        return isAdmin() || stationIds.contains(stationId);
+    }
 }

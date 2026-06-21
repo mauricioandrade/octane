@@ -1,5 +1,6 @@
 package com.octane.serviceorder.handler;
 
+import com.octane.shared.auth.AuthenticatedUserService;
 import com.octane.serviceorder.usecase.AddServiceOrderItemRequest;
 import com.octane.serviceorder.usecase.AddServiceOrderItemUseCase;
 import com.octane.serviceorder.usecase.CancelServiceOrderUseCase;
@@ -35,6 +36,7 @@ public class ServiceOrderHandler {
     private final CancelServiceOrderUseCase cancelServiceOrderUseCase;
     private final ListServiceOrdersUseCase listServiceOrdersUseCase;
     private final GetVehicleHistoryUseCase getVehicleHistoryUseCase;
+    private final AuthenticatedUserService authService;
 
     public ServiceOrderHandler(
             CreateServiceOrderUseCase createServiceOrderUseCase,
@@ -43,7 +45,8 @@ public class ServiceOrderHandler {
             CloseServiceOrderUseCase closeServiceOrderUseCase,
             CancelServiceOrderUseCase cancelServiceOrderUseCase,
             ListServiceOrdersUseCase listServiceOrdersUseCase,
-            GetVehicleHistoryUseCase getVehicleHistoryUseCase
+            GetVehicleHistoryUseCase getVehicleHistoryUseCase,
+            AuthenticatedUserService authService
     ) {
         this.createServiceOrderUseCase = createServiceOrderUseCase;
         this.findServiceOrderUseCase = findServiceOrderUseCase;
@@ -52,6 +55,7 @@ public class ServiceOrderHandler {
         this.cancelServiceOrderUseCase = cancelServiceOrderUseCase;
         this.listServiceOrdersUseCase = listServiceOrdersUseCase;
         this.getVehicleHistoryUseCase = getVehicleHistoryUseCase;
+        this.authService = authService;
     }
 
     @PostMapping("/api/service-orders")
@@ -89,6 +93,7 @@ public class ServiceOrderHandler {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
     ) {
+        authService.validateStationAccess(stationId);
         return listServiceOrdersUseCase.execute(stationId, status, from, to);
     }
 

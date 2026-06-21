@@ -5,6 +5,7 @@ import com.octane.pricing.usecase.GetCurrentPricesUseCase;
 import com.octane.pricing.usecase.ListPriceHistoryUseCase;
 import com.octane.pricing.usecase.SetFuelPriceRequest;
 import com.octane.pricing.usecase.SetFuelPriceUseCase;
+import com.octane.shared.auth.AuthenticatedUserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,25 +27,30 @@ public class FuelPriceHandler {
     private final SetFuelPriceUseCase setFuelPriceUseCase;
     private final GetCurrentPricesUseCase getCurrentPricesUseCase;
     private final ListPriceHistoryUseCase listPriceHistoryUseCase;
+    private final AuthenticatedUserService authService;
 
     public FuelPriceHandler(
         SetFuelPriceUseCase setFuelPriceUseCase,
         GetCurrentPricesUseCase getCurrentPricesUseCase,
-        ListPriceHistoryUseCase listPriceHistoryUseCase
+        ListPriceHistoryUseCase listPriceHistoryUseCase,
+        AuthenticatedUserService authService
     ) {
         this.setFuelPriceUseCase = setFuelPriceUseCase;
         this.getCurrentPricesUseCase = getCurrentPricesUseCase;
         this.listPriceHistoryUseCase = listPriceHistoryUseCase;
+        this.authService = authService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public FuelPriceResponse setPrice(@PathVariable UUID stationId, @Valid @RequestBody SetFuelPriceRequest request) {
+        authService.validateStationAccess(stationId);
         return FuelPriceResponse.from(setFuelPriceUseCase.execute(stationId, request));
     }
 
     @GetMapping
     public List<FuelPriceResponse> currentPrices(@PathVariable UUID stationId) {
+        authService.validateStationAccess(stationId);
         return getCurrentPricesUseCase.execute(stationId).stream()
             .map(FuelPriceResponse::from)
             .toList();
@@ -52,6 +58,7 @@ public class FuelPriceHandler {
 
     @GetMapping("/history")
     public List<FuelPriceResponse> history(@PathVariable UUID stationId, @RequestParam UUID fuelId) {
+        authService.validateStationAccess(stationId);
         return listPriceHistoryUseCase.execute(stationId, fuelId).stream()
             .map(FuelPriceResponse::from)
             .toList();

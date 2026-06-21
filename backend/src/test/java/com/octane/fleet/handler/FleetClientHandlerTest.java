@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import com.octane.audit.usecase.AuditService;
+import com.octane.shared.auth.AuthenticatedUserService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,6 +35,9 @@ class FleetClientHandlerTest {
 
     @MockitoBean
     private AuditService auditService;
+
+    @MockitoBean
+    private AuthenticatedUserService authService;
 
     @Autowired
     private MockMvc mockMvc;

@@ -5,6 +5,7 @@ import com.octane.fleet.usecase.fueling.FindFleetFuelingUseCase;
 import com.octane.fleet.usecase.fueling.ListFleetFuelingsUseCase;
 import com.octane.fleet.usecase.fueling.RegisterFleetFuelingRequest;
 import com.octane.fleet.usecase.fueling.RegisterFleetFuelingUseCase;
+import com.octane.shared.auth.AuthenticatedUserService;
 import com.octane.shared.pagination.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,13 +27,16 @@ public class FleetFuelingHandler {
     private final RegisterFleetFuelingUseCase registerFleetFuelingUseCase;
     private final FindFleetFuelingUseCase findFleetFuelingUseCase;
     private final ListFleetFuelingsUseCase listFleetFuelingsUseCase;
+    private final AuthenticatedUserService authService;
 
     public FleetFuelingHandler(RegisterFleetFuelingUseCase registerFleetFuelingUseCase,
                                FindFleetFuelingUseCase findFleetFuelingUseCase,
-                               ListFleetFuelingsUseCase listFleetFuelingsUseCase) {
+                               ListFleetFuelingsUseCase listFleetFuelingsUseCase,
+                               AuthenticatedUserService authService) {
         this.registerFleetFuelingUseCase = registerFleetFuelingUseCase;
         this.findFleetFuelingUseCase = findFleetFuelingUseCase;
         this.listFleetFuelingsUseCase = listFleetFuelingsUseCase;
+        this.authService = authService;
     }
 
     @PostMapping("/api/fleet/fuelings")
@@ -56,6 +60,7 @@ public class FleetFuelingHandler {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
+        authService.validateStationAccess(stationId);
         return listFleetFuelingsUseCase.execute(stationId, clientId, vehicleId, driverId, from, to, page, size);
     }
 }

@@ -5,6 +5,7 @@ import com.octane.fleet.usecase.fueling.FindFleetFuelingUseCase;
 import com.octane.fleet.usecase.fueling.ListFleetFuelingsUseCase;
 import com.octane.fleet.usecase.fueling.RegisterFleetFuelingRequest;
 import com.octane.fleet.usecase.fueling.RegisterFleetFuelingUseCase;
+import com.octane.shared.auth.AuthenticatedUserService;
 import com.octane.shared.exception.BusinessException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(FleetFuelingHandler.class)
 class FleetFuelingHandlerTest {
+
+    @MockitoBean
+    private AuthenticatedUserService authService;
 
     @Autowired
     private MockMvc mockMvc;

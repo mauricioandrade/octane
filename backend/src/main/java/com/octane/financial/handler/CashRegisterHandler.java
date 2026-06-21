@@ -1,6 +1,7 @@
 package com.octane.financial.handler;
 
 import com.octane.financial.usecase.*;
+import com.octane.shared.auth.AuthenticatedUserService;
 import com.octane.shared.pagination.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,17 +18,20 @@ public class CashRegisterHandler {
     private final AddCashMovementUseCase addCashMovementUseCase;
     private final GetCashRegisterSummaryUseCase getCashRegisterSummaryUseCase;
     private final ListCashRegistersUseCase listCashRegistersUseCase;
+    private final AuthenticatedUserService authService;
 
     public CashRegisterHandler(OpenCashRegisterUseCase openCashRegisterUseCase,
                                 CloseCashRegisterUseCase closeCashRegisterUseCase,
                                 AddCashMovementUseCase addCashMovementUseCase,
                                 GetCashRegisterSummaryUseCase getCashRegisterSummaryUseCase,
-                                ListCashRegistersUseCase listCashRegistersUseCase) {
+                                ListCashRegistersUseCase listCashRegistersUseCase,
+                                AuthenticatedUserService authService) {
         this.openCashRegisterUseCase = openCashRegisterUseCase;
         this.closeCashRegisterUseCase = closeCashRegisterUseCase;
         this.addCashMovementUseCase = addCashMovementUseCase;
         this.getCashRegisterSummaryUseCase = getCashRegisterSummaryUseCase;
         this.listCashRegistersUseCase = listCashRegistersUseCase;
+        this.authService = authService;
     }
 
     @PostMapping
@@ -59,6 +63,7 @@ public class CashRegisterHandler {
             @RequestParam UUID stationId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
+        authService.validateStationAccess(stationId);
         return listCashRegistersUseCase.execute(stationId, page, size);
     }
 }

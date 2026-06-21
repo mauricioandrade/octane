@@ -5,6 +5,7 @@ import com.octane.commission.usecase.entry.CalculateCommissionUseCase;
 import com.octane.commission.usecase.entry.GetShiftCommissionUseCase;
 import com.octane.commission.usecase.entry.ListCommissionEntriesUseCase;
 import com.octane.commission.usecase.entry.MarkCommissionPaidUseCase;
+import com.octane.shared.auth.AuthenticatedUserService;
 import com.octane.shared.pagination.PageResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +27,18 @@ public class CommissionEntryHandler {
     private final ListCommissionEntriesUseCase listCommissionEntriesUseCase;
     private final GetShiftCommissionUseCase getShiftCommissionUseCase;
     private final MarkCommissionPaidUseCase markCommissionPaidUseCase;
+    private final AuthenticatedUserService authService;
 
     public CommissionEntryHandler(CalculateCommissionUseCase calculateCommissionUseCase,
                                    ListCommissionEntriesUseCase listCommissionEntriesUseCase,
                                    GetShiftCommissionUseCase getShiftCommissionUseCase,
-                                   MarkCommissionPaidUseCase markCommissionPaidUseCase) {
+                                   MarkCommissionPaidUseCase markCommissionPaidUseCase,
+                                   AuthenticatedUserService authService) {
         this.calculateCommissionUseCase = calculateCommissionUseCase;
         this.listCommissionEntriesUseCase = listCommissionEntriesUseCase;
         this.getShiftCommissionUseCase = getShiftCommissionUseCase;
         this.markCommissionPaidUseCase = markCommissionPaidUseCase;
+        this.authService = authService;
     }
 
     @PostMapping("/calculate/{shiftId}")
@@ -53,6 +57,7 @@ public class CommissionEntryHandler {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
+        authService.validateStationAccess(stationId);
         return listCommissionEntriesUseCase.execute(stationId, paid, from, to, page, size);
     }
 

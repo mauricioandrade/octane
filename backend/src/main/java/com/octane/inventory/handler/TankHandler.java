@@ -2,6 +2,7 @@ package com.octane.inventory.handler;
 
 import com.octane.inventory.domain.repository.TankRepository;
 import com.octane.inventory.usecase.*;
+import com.octane.shared.auth.AuthenticatedUserService;
 import com.octane.shared.pagination.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
@@ -19,15 +20,18 @@ public class TankHandler {
     private final RegisterDeliveryUseCase registerDeliveryUseCase;
     private final AdjustTankLevelUseCase adjustTankLevelUseCase;
     private final TankRepository tankRepository;
+    private final AuthenticatedUserService authService;
 
     public TankHandler(CreateTankUseCase createTankUseCase,
                        RegisterDeliveryUseCase registerDeliveryUseCase,
                        AdjustTankLevelUseCase adjustTankLevelUseCase,
-                       TankRepository tankRepository) {
+                       TankRepository tankRepository,
+                       AuthenticatedUserService authService) {
         this.createTankUseCase = createTankUseCase;
         this.registerDeliveryUseCase = registerDeliveryUseCase;
         this.adjustTankLevelUseCase = adjustTankLevelUseCase;
         this.tankRepository = tankRepository;
+        this.authService = authService;
     }
 
     @PostMapping
@@ -38,6 +42,7 @@ public class TankHandler {
 
     @GetMapping
     public List<TankResponse> listByStation(@RequestParam UUID stationId) {
+        authService.validateStationAccess(stationId);
         return tankRepository.findByStationId(stationId).stream()
             .map(TankResponse::from)
             .toList();

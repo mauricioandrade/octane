@@ -2,6 +2,7 @@ package com.octane.report.handler;
 
 import com.octane.report.usecase.GetSalesReportUseCase;
 import com.octane.report.usecase.GetShiftReportUseCase;
+import com.octane.shared.auth.AuthenticatedUserService;
 import com.octane.report.usecase.SalesReportResponse;
 import com.octane.report.usecase.ShiftReportResponse;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,11 +28,14 @@ public class ReportHandler {
 
     private final GetSalesReportUseCase getSalesReportUseCase;
     private final GetShiftReportUseCase getShiftReportUseCase;
+    private final AuthenticatedUserService authService;
 
     public ReportHandler(GetSalesReportUseCase getSalesReportUseCase,
-                         GetShiftReportUseCase getShiftReportUseCase) {
+                         GetShiftReportUseCase getShiftReportUseCase,
+                         AuthenticatedUserService authService) {
         this.getSalesReportUseCase = getSalesReportUseCase;
         this.getShiftReportUseCase = getShiftReportUseCase;
+        this.authService = authService;
     }
 
     @GetMapping("/sales")
@@ -39,6 +43,7 @@ public class ReportHandler {
             @RequestParam UUID stationId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        authService.validateStationAccess(stationId);
         return getSalesReportUseCase.execute(stationId, from, to);
     }
 
@@ -47,6 +52,7 @@ public class ReportHandler {
             @RequestParam UUID stationId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        authService.validateStationAccess(stationId);
         return getShiftReportUseCase.execute(stationId, from, to);
     }
 
@@ -55,6 +61,7 @@ public class ReportHandler {
             @RequestParam UUID stationId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        authService.validateStationAccess(stationId);
         var report = getSalesReportUseCase.execute(stationId, from, to);
         var sb = new StringBuilder();
         sb.append("Data;Receita;Litros;Quantidade\n");
@@ -72,6 +79,7 @@ public class ReportHandler {
             @RequestParam UUID stationId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        authService.validateStationAccess(stationId);
         var report = getShiftReportUseCase.execute(stationId, from, to);
         var sb = new StringBuilder();
         sb.append("Frentista;Abertura;Fechamento;Duração (min);Receita;Litros;Abastecimentos\n");

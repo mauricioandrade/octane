@@ -11,6 +11,7 @@ import com.octane.serviceorder.usecase.FindServiceOrderUseCase;
 import com.octane.serviceorder.usecase.GetVehicleHistoryUseCase;
 import com.octane.serviceorder.usecase.ListServiceOrdersUseCase;
 import com.octane.serviceorder.usecase.ServiceOrderResponse;
+import com.octane.shared.auth.AuthenticatedUserService;
 import com.octane.shared.exception.BusinessException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ServiceOrderHandler.class)
 class ServiceOrderHandlerTest {
+
+    @MockitoBean
+    private AuthenticatedUserService authService;
 
     @Autowired
     private MockMvc mockMvc;

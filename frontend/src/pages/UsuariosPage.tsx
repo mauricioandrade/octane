@@ -4,12 +4,12 @@ import { Plus, Pencil } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { TopBar } from '@/components/layout/TopBar'
-import { UserSheet } from '@/components/usuários/UserSheet'
+import { UserSheet } from '@/components/usuarios/UserSheet'
 import { getUsers } from '@/api/users'
 import { USER_ROLE_LABELS } from '@/types'
 import type { AppUser } from '@/types'
 
-export function UsuáriosPage() {
+export function UsuariosPage() {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['users'],
     queryFn: getUsers,
